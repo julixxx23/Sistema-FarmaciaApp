@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "ventas")
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class Venta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "venta_id")
@@ -53,12 +54,22 @@ public class Venta {
     private BigDecimal ventaTotal;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "venta_estado",nullable = false)
+    @Column(name = "venta_estado", nullable = false)
     private VentaEstado ventaEstado = VentaEstado.completada;
 
     @Column(name = "auditoria_fecha_creacion", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime auditoriaFechaCreacion;
+
+    // Datos FEL
+    @Column(name = "venta_uuid", length = 50)
+    private String ventaUuid;
+
+    @Column(name = "venta_numero_autorizacion", length = 50)
+    private String ventaNumeroAutorizacion;
+
+    @Column(name = "venta_fecha_certificacion")
+    private LocalDateTime ventaFechaCertificacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sucursal_id")
@@ -68,6 +79,7 @@ public class Venta {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-
-
+    // Relación con detalles de la venta
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VentaDetalle> detalles;
 }

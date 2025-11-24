@@ -1,5 +1,6 @@
 package farmacias.AppOchoa.dto.compra;
 
+import farmacias.AppOchoa.dto.compradetalle.CompraDetalleResponseDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalSimpleDTO;
 import farmacias.AppOchoa.dto.usuario.UsuarioSimpleDTO;
 import farmacias.AppOchoa.model.CompraEstado;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

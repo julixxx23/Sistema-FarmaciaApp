@@ -1,5 +1,6 @@
 package farmacias.AppOchoa.dto.venta;
 
+import farmacias.AppOchoa.dto.ventadetalle.VentaDetalleCreateDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
