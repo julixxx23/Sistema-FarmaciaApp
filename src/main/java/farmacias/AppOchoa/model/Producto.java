@@ -37,7 +37,7 @@ public class Producto {
 
     @Column(name = "producto_estado", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     @Builder.Default
-    private Boolean productoEstado;
+    private Boolean productoEstado = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
