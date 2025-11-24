@@ -2,6 +2,7 @@ package farmacias.AppOchoa.dto.venta;
 
 import farmacias.AppOchoa.dto.sucursal.SucursalSimpleDTO;
 import farmacias.AppOchoa.dto.usuario.UsuarioSimpleDTO;
+import farmacias.AppOchoa.dto.ventadetalle.VentaDetalleResponseDTO;
 import farmacias.AppOchoa.model.Venta;
 import farmacias.AppOchoa.model.VentaEstado;
 import lombok.*;
