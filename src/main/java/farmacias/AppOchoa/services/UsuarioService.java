@@ -12,8 +12,10 @@ public interface UsuarioService {
 
     UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto);
     UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto);
+
     void eliminarUsuario(Long id);
     void cambiarEstado(Long id, Boolean nuevoEstado);
+
     UsuarioResponseDTO obtenerPorId(Long id);
     List<UsuarioSimpleDTO> listarUsuariosActivos();
     UsuarioResponseDTO login(LoginDTO dto);
