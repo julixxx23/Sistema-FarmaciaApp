@@ -36,18 +36,18 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public ProductoResponseDTO agregarProducto(ProductoCreateDTO dto) {
-        // 1. Validar unicidad de nombre
+        //Validar unicidad de nombre
         if (productoRepository.existsByProductoNombre(dto.getNombre())) {
             throw new RuntimeException("Ya existe un producto con ese nombre");
         }
 
-        // 2. Validar unicidad de código de barras (si se proporciona)
+        //Validar unicidad de código de barras (si se proporciona)
         if (dto.getCodigoBarras() != null && !dto.getCodigoBarras().isBlank() &&
                 productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
             throw new RuntimeException("Ya existe un producto con ese código de barras");
         }
 
-        // 3. Buscar relaciones
+
         Categoria categoria = buscarCategoria(dto.getCategoriaId());
         Presentacion presentacion = buscarPresentacion(dto.getPresentacionId());
 
@@ -70,24 +70,24 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public ProductoResponseDTO actualizarProducto(Long id, ProductoUpdateDTO dto) {
-        // 1. Buscar producto existente
+        //Buscar producto existente
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // 2. Validar unicidad de nombre (excepto para este producto)
+        //Validar unicidad de nombre (excepto para este producto)
         if (!producto.getProductoNombre().equals(dto.getNombre()) &&
                 productoRepository.existsByProductoNombre(dto.getNombre())) {
             throw new RuntimeException("Ya existe otro producto con ese nombre");
         }
 
-        // 3. Validar unicidad de código de barras (excepto para este producto)
+        //Validar unicidad de código de barras (excepto para este producto)
         if (dto.getCodigoBarras() != null &&
                 !dto.getCodigoBarras().equals(producto.getProductoCodigoBarras()) &&
                 productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
             throw new RuntimeException("Ya existe otro producto con ese código de barras");
         }
 
-        // 4. Buscar y actualizar relaciones (si se proporcionan)
+
         if (dto.getCategoriaId() != null) {
             Categoria categoria = buscarCategoria(dto.getCategoriaId());
             producto.setCategoria(categoria);
@@ -98,7 +98,7 @@ public class ProductoServiceImpl implements ProductoService {
             producto.setPresentacion(presentacion);
         }
 
-        // 5. Actualizar campos simples
+        //Actualizar campos simples
         producto.setProductoNombre(dto.getNombre());
         producto.setProductoCodigoBarras(dto.getCodigoBarras());
         producto.setProductoPrecioCompra(dto.getPrecioCompra());
@@ -111,7 +111,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void eliminarProducto(Long id) {
-        // Eliminación lógica cambiar estado
+        //Eliminación lógica cambiar estado
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         producto.setProductoEstado(false);
@@ -148,7 +148,7 @@ public class ProductoServiceImpl implements ProductoService {
                 .collect(Collectors.toList());
     }
 
-    // Métodos auxiliares para buscar relaciones
+    //Métodos auxiliares para buscar relaciones
     private Categoria buscarCategoria(Long categoriaId) {
         if (categoriaId == null) {
             return null;
