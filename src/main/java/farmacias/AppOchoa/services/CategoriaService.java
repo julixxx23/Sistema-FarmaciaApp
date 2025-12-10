@@ -20,5 +20,4 @@ public interface CategoriaService {
 
     void eliminar(Long id);
 
-
 }
