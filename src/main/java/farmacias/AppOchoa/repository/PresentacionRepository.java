@@ -8,7 +8,7 @@ import java.util.List;
 public interface PresentacionRepository extends JpaRepository<Presentacion, Long> {
 
     //Para validar si existe antes de crear
-    boolean existsByNombrePresentacion(String nombre);
+    boolean existsByPresentacionNombre(String nombre);
 
     //Para listar presentaciones activas
     List<Presentacion> findByPresentacionEstadoTrue();
