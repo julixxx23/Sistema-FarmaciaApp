@@ -13,4 +13,7 @@ public class InventarioLotesUpdateDTO {
     @Min(value = 0, message = "La cantidad no puede ser negativa")
     private Integer cantidadActual;
 
+    @NotNull(message = "La cantidad minima es obligatoria")
+    public Integer CantidadMinima;
+
 }

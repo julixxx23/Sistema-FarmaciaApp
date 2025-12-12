@@ -30,4 +30,5 @@ public class Inventario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sucursal_id")
     private Sucursal sucursal;
+
 }
