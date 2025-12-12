@@ -41,13 +41,13 @@ public class ProductoServiceImpl implements ProductoService {
             throw new RuntimeException("Ya existe un producto con ese nombre");
         }
 
-        //Validar unicidad de código de barras (si se proporciona)
+        //Validar unicidad de código de barras
         if (dto.getCodigoBarras() != null && !dto.getCodigoBarras().isBlank() &&
                 productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
             throw new RuntimeException("Ya existe un producto con ese código de barras");
         }
 
-
+        // crear variables de las relaciones
         Categoria categoria = buscarCategoria(dto.getCategoriaId());
         Presentacion presentacion = buscarPresentacion(dto.getPresentacionId());
 
