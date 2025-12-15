@@ -35,4 +35,6 @@ public interface InventarioLotesRepository extends JpaRepository<InventarioLotes
 
     // Para buscar por estado de lote
     List<InventarioLotes> findByLoteEstado(String estado);
+
+    List<InventarioLotes> findByInventarioLoteEstadoTrue();
 }
