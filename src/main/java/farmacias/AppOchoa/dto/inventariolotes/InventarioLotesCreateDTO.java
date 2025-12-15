@@ -34,5 +34,5 @@ public class InventarioLotesCreateDTO {
     @DecimalMin(value = "0.01", message = "El precio debe ser mayor a 0")
     @Digits(integer = 8, fraction = 2, message = "Formato inválido (máx 8 enteros, 2 decimales)")
     private BigDecimal precioCompra;
-
+    
 }
