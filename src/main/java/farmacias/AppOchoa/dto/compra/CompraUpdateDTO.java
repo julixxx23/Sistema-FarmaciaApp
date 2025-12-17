@@ -20,7 +20,6 @@ import java.util.List;
 public class CompraUpdateDTO {
 
 
-
     @Size(max = 65535, message = "Las observaciones no deben exceder 65535 caracteres")
     private String observaciones;
 

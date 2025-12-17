@@ -10,7 +10,7 @@ public interface AlertaService {
 
     AlertaResponseDTO listarPorId(Long id);
     List<AlertaSimpleDTO> listarTodas();
-    List<AlertaSimpleDTO> listarActivas();
+    List<AlertaSimpleDTO> listarNoLeidas();
 
     AlertaResponseDTO actualizar(Long id, AlertaUpdateDTO dto);
     void cambiarEstado(Long id);
