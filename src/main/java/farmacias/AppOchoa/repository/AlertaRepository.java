@@ -30,4 +30,7 @@ public interface AlertaRepository extends JpaRepository<Alerta, Long> {
     //Para contar alertas no leídas
     long countByAlertaLeidaFalse();
 
+    // Estado de alertas
+    List<Alerta> findByInventarioLoteEstadoTrue();
+
 }

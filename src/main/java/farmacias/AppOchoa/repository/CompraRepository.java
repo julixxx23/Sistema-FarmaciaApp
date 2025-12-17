@@ -52,4 +52,6 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
     @Query("SELECT c FROM Compra c WHERE c.compraTotal > :montoMinimo " +
             "AND c.compraEstado = 'activa'")
     List<Compra> findComprasConMontoMayorA(@Param("montoMinimo") BigDecimal montoMinimo);
+
+    List<Compra> findByCompraEstadoTrue();
 }

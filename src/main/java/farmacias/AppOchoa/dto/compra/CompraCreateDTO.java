@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.compradetalle.CompraDetalleCreateDTO;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CompraCreateDTO {
+
 
     @NotNull(message = "La sucursal es obligatoria")
     private Long sucursalId;
@@ -27,4 +29,6 @@ public class CompraCreateDTO {
 
     @NotEmpty(message = "Debe incluir al menos un detalle de compra")
     private List<CompraDetalleCreateDTO> detalles;
+
+    public BigDecimal getCompraTotal;
 }

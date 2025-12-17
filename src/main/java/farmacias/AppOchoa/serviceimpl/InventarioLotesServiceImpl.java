@@ -44,7 +44,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
         Producto producto = buscarProducto(dto.getProductoId());
         Sucursal sucursal = buscarSucursal(dto.getSucursalId());
 
-
+        //Convertir DTO a entidad
         InventarioLotes inventarioLotes = InventarioLotes.builder()
                 .loteNumero(dto.getNumeroLote())
                 .loteCantidadInicial(dto.getCantidadInicial())
@@ -53,8 +53,10 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
                 .producto(producto)
                 .sucursal(sucursal)
                 .build();
-
+       //Guarda Inventario Lotes creado
         InventarioLotes guardar = inventarioLotesRepository.save(inventarioLotes);
+
+        //Convierte a ResponseDTO
         return InventarioLotesResponseDTO.fromEntity(guardar);
     }
 
@@ -98,6 +100,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     public InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto) {
         InventarioLotes inventarioLotes = inventarioLotesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inventario Lotes no encontrado por ID: " + id));
+
 
         //Actualiza relaciones
         inventarioLotes.setLoteCantidadInicial(dto.getCantidadActual());
