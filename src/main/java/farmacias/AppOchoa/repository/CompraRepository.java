@@ -13,45 +13,39 @@ import java.util.Optional;
 
 public interface CompraRepository extends JpaRepository<Compra, Long> {
 
-    //Compras por sucursal
-    List<Compra> findBySucursalId(Long sucursalId);
+    // 1. Navegación: Compra -> sucursal -> sucursalId
+    List<Compra> findBySucursalSucursalId(Long sucursalId);
 
-    //Compras por usuario (quien registró)
-    List<Compra> findByUsuarioId(Long usuarioId);
+    // 2. Navegación: Compra -> usuario -> usuarioId
+    List<Compra> findByUsuarioUsuarioId(Long usuarioId);
 
-    //Compras por fecha exacta
     List<Compra> findByCompraFecha(LocalDate fecha);
 
+    // 3. Usa el Enum CompraEstado en lugar de String para mayor seguridad
     List<Compra> findByCompraEstado(CompraEstado estado);
 
-    //Compras por rango de fechas (para reportes)
     List<Compra> findByCompraFechaBetween(LocalDate fechaInicio, LocalDate fechaFin);
 
-    //Compras por sucursal y estado
-    List<Compra> findBySucursalIdAndCompraEstado(Long sucursalId, String estado);
+    // 4. Corrección de nombres compuestos
+    List<Compra> findBySucursalSucursalIdAndCompraEstado(Long sucursalId, CompraEstado estado);
 
-    //Compras por sucursal en rango de fechas
-    List<Compra> findBySucursalIdAndCompraFechaBetween(
+    List<Compra> findBySucursalSucursalIdAndCompraFechaBetween(
             Long sucursalId, LocalDate fechaInicio, LocalDate fechaFin);
 
-    //Compras activas recientes (para dashboard)
-    List<Compra> findTop10ByCompraEstadoOrderByCompraFechaDesc(String estado);
+    // 5. El parámetro debe ser CompraEstado para coincidir con la entidad
+    List<Compra> findTop10ByCompraEstadoOrderByCompraFechaDesc(CompraEstado estado);
 
-    //Verificar si existen compras para una sucursal en fecha
-    boolean existsBySucursalIdAndCompraFecha(Long sucursalId, LocalDate fecha);
+    boolean existsBySucursalSucursalIdAndCompraFecha(Long sucursalId, LocalDate fecha);
 
-    //Consulta personalizada para total de compras por mes
+    // 6. JPQL: Cambiado c.sucursal.id por c.sucursal.sucursalId
     @Query("SELECT MONTH(c.compraFecha) as mes, SUM(c.compraTotal) as total " +
             "FROM Compra c " +
-            "WHERE YEAR(c.compraFecha) = :anio AND c.sucursal.id = :sucursalId " +
+            "WHERE YEAR(c.compraFecha) = :anio AND c.sucursal.sucursalId = :sucursalId " +
             "GROUP BY MONTH(c.compraFecha)")
     List<Object[]> findTotalComprasPorMes(@Param("anio") int anio,
                                           @Param("sucursalId") Long sucursalId);
 
-    //Consulta para compras con total mayor a X (para auditoría)
     @Query("SELECT c FROM Compra c WHERE c.compraTotal > :montoMinimo " +
             "AND c.compraEstado = 'activa'")
     List<Compra> findComprasConMontoMayorA(@Param("montoMinimo") BigDecimal montoMinimo);
-
-    List<Compra> findByCompraEstadoTrue();
 }
