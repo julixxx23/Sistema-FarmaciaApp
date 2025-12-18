@@ -1,6 +1,5 @@
 package farmacias.AppOchoa.serviceimpl;
 
-
 import farmacias.AppOchoa.dto.sucursal.SucursalCreateDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalResponseDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalSimpleDTO;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-
 public class SucursalServiceImpl implements SucursalService {
 
     private final SucursalRepository sucursalRepository;
@@ -28,7 +26,7 @@ public class SucursalServiceImpl implements SucursalService {
     @Override
     public SucursalResponseDTO crear(SucursalCreateDTO dto){
         if(sucursalRepository.existsBySucursalNombre(dto.getNombre())){
-            throw new RuntimeException("Ya existe una sucursal con ese nombre: " +dto.getNombre());
+            throw new RuntimeException("Ya existe una sucursal con ese nombre: " + dto.getNombre());
         }
 
         Sucursal sucursal = Sucursal.builder()
@@ -38,58 +36,51 @@ public class SucursalServiceImpl implements SucursalService {
                 .sucursalEstado(true)
                 .build();
 
-        Sucursal guardar = sucursalRepository.save(sucursal);
-
-        return SucursalResponseDTO.fromEntity(guardar);
-
-
+        return SucursalResponseDTO.fromEntity(sucursalRepository.save(sucursal));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SucursalResponseDTO obtenerPorId (Long id){
-        Sucursal sucursal = sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " +id));
-
-        return SucursalResponseDTO.fromEntity(sucursal);
-
-
+        return sucursalRepository.findById(id)
+                .map(SucursalResponseDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
     }
-    @Override
-    public List<SucursalSimpleDTO> listarTodas(){
-        List<Sucursal> sucursales = sucursalRepository.findAll();
 
-        return sucursales.stream()
-                .map(SucursalSimpleDTO:: fromEntity)
+    @Override
+    @Transactional(readOnly = true)
+    public List<SucursalSimpleDTO> listarTodas(){
+        return sucursalRepository.findAll().stream()
+                .map(SucursalSimpleDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SucursalSimpleDTO> listarActivas(){
-        List<Sucursal> sucursales = sucursalRepository.findBySucursalEstadoTrue();
-
-        return sucursales.stream()
-                .map(SucursalSimpleDTO:: fromEntity)
+        return sucursalRepository.findBySucursalEstadoTrue().stream()
+                .map(SucursalSimpleDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
     public SucursalResponseDTO actualizar(Long id, SucursalUpdateDTO dto){
         Sucursal sucursal = sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " +id));
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
 
-        if(!sucursal.getSucursalNombre().equals(dto.getNombre())){
+        if(!sucursal.getSucursalNombre().equalsIgnoreCase(dto.getNombre())){
             if(sucursalRepository.existsBySucursalNombre(dto.getNombre())){
-                throw new RuntimeException("Ya existe otra sucursal con ese nombre: " +dto.getNombre());
+                throw new RuntimeException("Ya existe otra sucursal con ese nombre: " + dto.getNombre());
             }
         }
 
+        // CORRECCIÓN: Actualizar todos los campos necesarios
         sucursal.setSucursalNombre(dto.getNombre());
+        sucursal.setSucursalDireccion(dto.getDireccion()); // No olvides la dirección
+        sucursal.setSucursalTelefono(dto.getTelefono());   // No olvides el teléfono
         sucursal.setSucursalEstado(dto.getEstado());
 
-        Sucursal guardar = sucursalRepository.save(sucursal);
-
-        return SucursalResponseDTO.fromEntity(guardar);
-
+        return SucursalResponseDTO.fromEntity(sucursalRepository.save(sucursal));
     }
 
     @Override
@@ -97,30 +88,16 @@ public class SucursalServiceImpl implements SucursalService {
         Sucursal sucursal = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
 
-        sucursal.setSucursalEstado(true);
+        // CORRECCIÓN: Antes tenías sucursal.setSucursalEstado(true);
+        // Eso hacía que siempre se activara, ignorando el parámetro.
+        sucursal.setSucursalEstado(estado);
 
         sucursalRepository.save(sucursal);
     }
 
     @Override
     public void eliminarSucursal(Long id){
+        // Aplicamos el borrado lógico
         cambiarEstado(id, false);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -1,6 +1,7 @@
 package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Compra;
+import farmacias.AppOchoa.model.CompraEstado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,8 +22,7 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
     //Compras por fecha exacta
     List<Compra> findByCompraFecha(LocalDate fecha);
 
-    //Compras por estado
-    List<Compra> findByCompraEstado(String estado);
+    List<Compra> findByCompraEstado(CompraEstado estado);
 
     //Compras por rango de fechas (para reportes)
     List<Compra> findByCompraFechaBetween(LocalDate fechaInicio, LocalDate fechaFin);

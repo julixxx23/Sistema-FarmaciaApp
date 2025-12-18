@@ -49,5 +49,4 @@ public class InventarioLotes {
     @JoinColumn(name = "sucursal_id")
     private Sucursal sucursal;
 
-
 }
