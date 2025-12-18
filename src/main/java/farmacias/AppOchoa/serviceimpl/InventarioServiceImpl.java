@@ -34,7 +34,8 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     public InventarioResponseDTO crear(InventarioCreateDTO dto) {
-        if (inventarioRepository.existsByProductoProductoIdAndSucursalSucursalId(dto.getProductoId(), dto.getSucursalId())) {
+        // CORREGIDO: Cambio del método antiguo al nuevo
+        if (inventarioRepository.existsByProducto_ProductoIdAndSucursal_SucursalId(dto.getProductoId(), dto.getSucursalId())) {
             throw new RuntimeException("Ya existe un registro de inventario para este producto en la sucursal seleccionada.");
         }
 
@@ -73,7 +74,6 @@ public class InventarioServiceImpl implements InventarioService {
                 .collect(Collectors.toList());
     }
 
-    // ÚNICO MÉTODO ACTUALIZAR CORRETO
     @Override
     public InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto) {
         Inventario inventario = inventarioRepository.findById(id)
