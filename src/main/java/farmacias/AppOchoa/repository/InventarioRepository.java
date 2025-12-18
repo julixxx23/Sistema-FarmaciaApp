@@ -2,6 +2,7 @@ package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Inventario;
 import farmacias.AppOchoa.model.Sucursal;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
 
     // 2. Listar solo sucursales activas
     List<Inventario> findByInventarioEstadoTrue();
+
+    boolean existsByProductoProductoIdAndSucursalSucursalId(@NotNull(message = "El producto es obligatorio") Long productoId, @NotNull(message = "La sucursal es obligatoria") Long sucursalId);
 }

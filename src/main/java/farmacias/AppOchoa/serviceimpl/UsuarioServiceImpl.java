@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
-
 public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final SucursalRepository sucursalRepository;
@@ -31,11 +31,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto){
         if(usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())){
-            throw new RuntimeException("El nombre del usuario ya esta en uso");
+            throw new RuntimeException("El nombre de usuario '" + dto.getNombreUsuario() + "' ya está en uso");
         }
 
-        Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+        // Permitir que la sucursal sea opcional (ej: para Admin central)
+        Sucursal sucursal = null;
+        if (dto.getSucursalId() != null) {
+            sucursal = sucursalRepository.findById(dto.getSucursalId())
+                    .orElseThrow(() -> new RuntimeException("Sucursal no encontrada con ID: " + dto.getSucursalId()));
+        }
 
         Usuario usuario = Usuario.builder()
                 .nombreUsuarioUsuario(dto.getNombreUsuario())
@@ -47,83 +51,87 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .sucursal(sucursal)
                 .build();
 
-        Usuario guardado = usuarioRepository.save(usuario);
-        return UsuarioResponseDTO.fromEntity(guardado);
+        return UsuarioResponseDTO.fromEntity(usuarioRepository.save(usuario));
     }
 
     @Override
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
 
-        Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+        // 1. Validar nombre de usuario si cambia
+        if (!usuario.getNombreUsuarioUsuario().equals(dto.getNombreUsuario())) {
+            if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
+                throw new RuntimeException("El nuevo nombre de usuario ya está siendo usado por otra cuenta");
+            }
+            usuario.setNombreUsuarioUsuario(dto.getNombreUsuario());
+        }
+
+        // 2. Manejo de sucursal opcional
+        if (dto.getSucursalId() != null) {
+            Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
+                    .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+            usuario.setSucursal(sucursal);
+        } else {
+            usuario.setSucursal(null);
+        }
 
         usuario.setUsuarioNombre(dto.getNombre());
         usuario.setUsuarioApellido(dto.getApellido());
         usuario.setUsuarioRol(dto.getRol());
         usuario.setUsuarioEstado(dto.getEstado());
-        usuario.setSucursal(sucursal);
 
-        Usuario actualizado = usuarioRepository.save(usuario);
-        return UsuarioResponseDTO.fromEntity(actualizado);
+        // 3. Actualización opcional de contraseña (si el DTO lo permite en el futuro)
+        // if (dto.getNuevaContrasena() != null) usuario.setUsuarioContrasenaHash(passwordEncoder.encode(dto.getNuevaContrasena()));
 
+        return UsuarioResponseDTO.fromEntity(usuarioRepository.save(usuario));
     }
 
     @Override
     public void eliminarUsuario(Long id){
-        if(!usuarioRepository.existsById(id)){
-            throw  new RuntimeException("Usuario no encontrado");
-
-        }
-        usuarioRepository.deleteById(id);
+        // En lugar de borrarlo físicamente, lo ideal es cambiar su estado para mantener integridad referencial
+        cambiarEstado(id, false);
     }
 
     @Override
     public void cambiarEstado(Long id, Boolean nuevoEstado){
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
         usuario.setUsuarioEstado(nuevoEstado);
         usuarioRepository.save(usuario);
-
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UsuarioResponseDTO obtenerPorId(Long id){
-        Usuario usuario = usuarioRepository.findById(id)
+        return usuarioRepository.findById(id)
+                .map(UsuarioResponseDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        return UsuarioResponseDTO.fromEntity(usuario);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UsuarioSimpleDTO> listarUsuariosActivos(){
         return usuarioRepository.findByUsuarioEstadoTrue()
                 .stream()
                 .map(UsuarioSimpleDTO::fromEntity)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UsuarioResponseDTO login(LoginDTO dto){
         Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
-                .orElseThrow(() -> new RuntimeException("Credenciales invalidas"));
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
 
         if(!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())){
-            throw new RuntimeException("Credenciales invalidas");
+            throw new RuntimeException("Credenciales inválidas");
         }
 
         if(Boolean.FALSE.equals(usuario.getUsuarioEstado())){
-            throw new RuntimeException("Usuario inactivo");
+            throw new RuntimeException("La cuenta de usuario está desactivada");
         }
 
         return UsuarioResponseDTO.fromEntity(usuario);
     }
-
-
-
-
-
-
 }

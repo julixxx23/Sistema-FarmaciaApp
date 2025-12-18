@@ -12,4 +12,12 @@ public class VentaUpdateDTO {
 
     @NotNull(message = "El estado es obligatorio")
     private VentaEstado estado;
+
+    @NotNull(message = "El nombre del cliente es obligatorio")
+    private String nombreCliente;
+
+    @NotNull(message = "El nit del cliente es obligatorio")
+    private String nitCliente;
+
+
 }

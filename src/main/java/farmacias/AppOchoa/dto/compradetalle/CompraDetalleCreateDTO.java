@@ -31,4 +31,5 @@ public class CompraDetalleCreateDTO {
 
     @NotNull(message = "La fecha de vencimiento es obligatoria")
     private LocalDate fechaVencimiento;
+
 }

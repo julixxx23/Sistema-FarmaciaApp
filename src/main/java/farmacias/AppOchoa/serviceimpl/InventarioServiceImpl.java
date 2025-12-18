@@ -1,10 +1,9 @@
 package farmacias.AppOchoa.serviceimpl;
 
-
 import farmacias.AppOchoa.dto.inventario.InventarioCreateDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioResponseDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioSimpleDTO;
-import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesUpdateDTO;
+import farmacias.AppOchoa.dto.inventario.InventarioUpdateDTO;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.InventarioRepository;
 import farmacias.AppOchoa.repository.ProductoRepository;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-
 public class InventarioServiceImpl implements InventarioService {
 
     private final InventarioRepository inventarioRepository;
@@ -28,16 +26,16 @@ public class InventarioServiceImpl implements InventarioService {
     public InventarioServiceImpl(
             InventarioRepository inventarioRepository,
             ProductoRepository productoRepository,
-            SucursalRepository sucursalRepository){
+            SucursalRepository sucursalRepository) {
         this.inventarioRepository = inventarioRepository;
         this.productoRepository = productoRepository;
         this.sucursalRepository = sucursalRepository;
     }
 
     @Override
-    public InventarioResponseDTO crear (InventarioCreateDTO dto){
-        if(inventarioRepository.existsByProductoIdAndSucursalId(dto.getProductoId(), dto.getSucursalId())){
-            throw new RuntimeException("Ya existe el inventario del producto en sucursal: " +dto.getProductoId()  + "en sucursal" + dto.getSucursalId());
+    public InventarioResponseDTO crear(InventarioCreateDTO dto) {
+        if (inventarioRepository.existsByProductoProductoIdAndSucursalSucursalId(dto.getProductoId(), dto.getSucursalId())) {
+            throw new RuntimeException("Ya existe un registro de inventario para este producto en la sucursal seleccionada.");
         }
 
         Producto producto = buscarProducto(dto.getProductoId());
@@ -50,90 +48,66 @@ public class InventarioServiceImpl implements InventarioService {
                 .sucursal(sucursal)
                 .build();
 
-        Inventario guardar = inventarioRepository.save(inventario);
-
-        return InventarioResponseDTO.fromEntity(guardar);
-
-
-    }
-    // Métodos auxiliares para buscar relaciones
-    private Producto buscarProducto(Long productoId){
-        return productoRepository.findById(productoId)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado por ID: " +productoId));
-    }
-
-    private Sucursal buscarSucursal(Long sucursalId){
-        return sucursalRepository.findById(sucursalId)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " +sucursalId));
+        return InventarioResponseDTO.fromEntity(inventarioRepository.save(inventario));
     }
 
     @Override
-    public InventarioResponseDTO listaPorId (Long id){
+    public InventarioResponseDTO listaPorId(Long id) {
         Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lista de inventarios no encontrada por ID: " +id));
-
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con ID: " + id));
         return InventarioResponseDTO.fromEntity(inventario);
     }
 
     @Override
-    public List<InventarioSimpleDTO> listarTodos(){
-        List<Inventario> inventarios = inventarioRepository.findAll();
-
-        return inventarios.stream()
-                .map(InventarioSimpleDTO:: fromEntity)
-                .collect(Collectors.toList());
-
-    }
-    @Override
-    public List<InventarioSimpleDTO> listarActivos(){
-        List<Inventario> inventarios = inventarioRepository.findByInventarioEstadoTrue();
-
-        return inventarios.stream()
-                .map(InventarioSimpleDTO :: fromEntity)
+    public List<InventarioSimpleDTO> listarTodos() {
+        return inventarioRepository.findAll().stream()
+                .map(InventarioSimpleDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public InventarioResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto){
+    public List<InventarioSimpleDTO> listarActivos() {
+        return inventarioRepository.findAll().stream()
+                .filter(i -> i.getInventarioCantidadActual() > 0)
+                .map(InventarioSimpleDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // ÚNICO MÉTODO ACTUALIZAR CORRETO
+    @Override
+    public InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto) {
         Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado por ID: " +id));
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con ID: " + id));
 
         inventario.setInventarioCantidadActual(dto.getCantidadActual());
         inventario.setInventarioCantidadMinima(dto.getCantidadMinima());
 
-        Inventario guardar = inventarioRepository.save(inventario);
-
-        return InventarioResponseDTO.fromEntity(guardar);
-
+        return InventarioResponseDTO.fromEntity(inventarioRepository.save(inventario));
     }
 
     @Override
-    public void cambiaEstado(Long id, Boolean estado){
+    public void cambiaEstado(Long id, Boolean estado) {
         Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado por ID: " +id));
-        // Actualiza estado
-        if (!estado) {
-            inventario.setInventarioCantidadActual(0); // "Inactivar" poniendo stock a 0
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con ID: " + id));
+
+        if (Boolean.FALSE.equals(estado)) {
+            inventario.setInventarioCantidadActual(0);
         }
-        // Guarda estado
         inventarioRepository.save(inventario);
     }
 
     @Override
-    public void eliminar(Long id){
+    public void eliminar(Long id) {
         cambiaEstado(id, false);
     }
 
+    private Producto buscarProducto(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+    }
 
-
-
-
-
-
-
-
-
-
-
-
+    private Sucursal buscarSucursal(Long id) {
+        return sucursalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada con ID: " + id));
+    }
 }

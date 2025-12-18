@@ -1,6 +1,7 @@
 package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Venta;
+import farmacias.AppOchoa.model.VentaEstado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,8 +19,7 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     List<Venta> findBySucursalIdAndVentaFechaBetween(
             Long sucursalId, LocalDateTime inicio, LocalDateTime fin);
 
-    //Para ver ventas activas/anuladas
-    List<Venta> findByVentaEstado(String estado);
+    List<Venta> findByVentaEstado(VentaEstado estado);
 
     //Para validar que no se repita número factura
     boolean existsByVentaNumeroFactura(String numeroFactura);

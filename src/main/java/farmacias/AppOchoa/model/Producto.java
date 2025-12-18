@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class Producto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "producto_id")
@@ -22,23 +22,29 @@ public class Producto {
     @Column(name = "producto_nombre", nullable = false, length = 150)
     private String productoNombre;
 
-    @Column(name = "producto_codigo_barras", unique = true,  length = 50)
+    @Column(name = "producto_codigo_barras", unique = true, length = 50)
     private String productoCodigoBarras;
 
-    @Column(name = "producto_precio_compra", nullable = false)
+    @Column(name = "producto_precio_compra", nullable = false, precision = 12, scale = 2)
     private BigDecimal productoPrecioCompra;
 
-    @Column(name = "producto_precio_venta", nullable = false)
+    @Column(name = "producto_precio_venta", nullable = false, precision = 12, scale = 2)
     private BigDecimal productoPrecioVenta;
 
-    @Column(name = "producto_requiere_receta", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    // Nuevo campo de IVA sincronizado con el SQL DECIMAL(5,2)
+    @Column(name = "producto_iva", nullable = false, precision = 5, scale = 2)
     @Builder.Default
-    private Boolean productoRequiereReceta = true;
+    private BigDecimal productoIva = BigDecimal.ZERO;
 
-    @Column(name = "producto_estado", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "producto_requiere_receta", nullable = false)
+    @Builder.Default
+    private Boolean productoRequiereReceta = false;
+
+    @Column(name = "producto_estado", nullable = false)
     @Builder.Default
     private Boolean productoEstado = true;
 
+    // Relaciones
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;

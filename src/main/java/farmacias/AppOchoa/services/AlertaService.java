@@ -1,5 +1,6 @@
 package farmacias.AppOchoa.services;
 
+import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaSimpleDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
@@ -7,6 +8,8 @@ import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
 import java.util.List;
 
 public interface AlertaService {
+
+    AlertaResponseDTO crear(AlertaCreateDTO dto);
 
     AlertaResponseDTO listarPorId(Long id);
     List<AlertaSimpleDTO> listarTodas();

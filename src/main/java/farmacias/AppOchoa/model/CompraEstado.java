@@ -3,5 +3,5 @@ package farmacias.AppOchoa.model;
 
 public enum CompraEstado {
     ACTIVA,
-    ANULADA
+    activa, anulada, ANULADA
 }
