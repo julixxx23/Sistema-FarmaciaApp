@@ -12,28 +12,29 @@ import java.util.Optional;
 @Repository
 public interface InventarioLotesRepository extends JpaRepository<InventarioLotes, Long> {
 
-    // BÚSQUEDAS BÁSICAS Y AJUSTES
-    Optional<InventarioLotes> findByProductoIdAndSucursalId(Long productoId, Long sucursalId);
+    // BÚSQUEDAS BÁSICAS - Navegación: Producto -> productoId y Sucursal -> sucursalId
+    Optional<InventarioLotes> findByProducto_ProductoIdAndSucursal_SucursalId(Long productoId, Long sucursalId);
 
-    List<InventarioLotes> findAllByProductoIdAndSucursalId(Long productoId, Long sucursalId);
+    List<InventarioLotes> findAllByProducto_ProductoIdAndSucursal_SucursalId(Long productoId, Long sucursalId);
 
-    List<InventarioLotes> findBySucursalId(Long sucursalId);
+    List<InventarioLotes> findBySucursal_SucursalId(Long sucursalId);
 
-    //VALIDACIONES DE EXISTENCIA
-    boolean existsByProductoIdAndSucursalId(Long productoId, Long sucursalId);
+    // VALIDACIONES - Estos nombres deben coincidir exactamente con el Service
+    boolean existsByProducto_ProductoIdAndSucursal_SucursalId(Long productoId, Long sucursalId);
 
-    boolean existsByLoteNumeroAndSucursalId(String loteNumero, Long sucursalId);
+    // Este es el método que causaba el error en la línea 41
+    boolean existsByLoteNumeroAndSucursal_SucursalId(String loteNumero, Long sucursalId);
 
-
+    // ESTADO Y STOCK
     List<InventarioLotes> findByLoteEstado(LoteEstado estado);
 
     List<InventarioLotes> findByLoteCantidadActualLessThan(Integer cantidadMinima);
 
-    //FECHAS Y VENCIMIENTOS
+    // FECHAS Y VENCIMIENTOS
     List<InventarioLotes> findByLoteFechaVencimientoBetween(LocalDate fechaInicio, LocalDate fechaFin);
 
     List<InventarioLotes> findByLoteFechaVencimientoLessThanEqual(LocalDate fechaLimite);
 
-    //BÚSQUEDA POR ESCÁNER O CÓDIGO
+    // ESCÁNER / CÓDIGO
     Optional<InventarioLotes> findByLoteNumero(String loteNumero);
 }

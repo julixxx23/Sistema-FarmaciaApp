@@ -1,9 +1,7 @@
 package farmacias.AppOchoa.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -13,11 +11,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class VentaDetalle {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "detalle_id", nullable = false)
+    @Column(name = "detalle_id")
     private Long detalleId;
 
     @Column(name = "detalle_cantidad", nullable = false)
@@ -26,15 +24,15 @@ public class VentaDetalle {
     @Column(name = "detalle_precio_unitario", nullable = false, precision = 10, scale = 2)
     private BigDecimal detallePrecioUnitario;
 
-    @Column(name = "detalle_subtotal", nullable = false)
+    @Column(name = "detalle_subtotal", nullable = false, precision = 10, scale = 2)
     private BigDecimal detalleSubtotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venta_id")
+    @JoinColumn(name = "venta_id", nullable = false)
     private Venta venta;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id")
+    @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)

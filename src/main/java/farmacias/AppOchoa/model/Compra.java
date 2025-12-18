@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class Compra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +29,13 @@ public class Compra {
     @Column(name = "compra_total", nullable = false, precision = 10, scale = 2)
     private BigDecimal compraTotal;
 
-    @Lob
-    @Column(name = "compra_observaciones")
+
+    @Column(name = "compra_observaciones", columnDefinition = "TEXT")
     private String compraObservaciones;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "compra_estado", nullable = false)
+    @Column(name = "compra_estado", nullable = false, length = 20)
+    @Builder.Default
     private CompraEstado compraEstado = CompraEstado.activa;
 
     @Column(name = "auditoria_fecha_creacion", nullable = false, updatable = false)
@@ -51,6 +51,6 @@ public class Compra {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<CompraDetalle> detalles = new ArrayList<>();
-
 }

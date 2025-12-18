@@ -25,8 +25,8 @@ public class Alerta {
     @Column(name = "alerta_tipo", nullable = false)
     private AlertaTipo alertaTipo = AlertaTipo.stock_bajo;
 
-    @Lob
-    @Column(name = "alerta_mensaje", nullable = false)
+
+    @Column(name = "alerta_mensaje", columnDefinition = "TEXT")
     private String alertaMensaje;
 
     @Column(name = "alerta_fecha",nullable = false, updatable = false)

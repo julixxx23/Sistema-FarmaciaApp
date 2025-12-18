@@ -1,29 +1,34 @@
 package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Inventario;
-import farmacias.AppOchoa.model.Sucursal;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface InventarioRepository extends JpaRepository<Inventario, Long> {
 
-    //Para ajustar stock y transferir
-    Optional<Inventario> findByIdProductoAndSucursalId(Long productoId, Long sucursalId);
+    // Buscar inventario por producto y sucursal
+    Optional<Inventario> findByProducto_ProductoIdAndSucursal_SucursalId(Long productoId, Long sucursalId);
 
-    // Para consultar stock bajo mínimo
-    List<Inventario> findByInventarioCantidadActualLessThanEqual(Integer cantidad);
+    // Consultar stock bajo o igual a cierta cantidad - CORREGIDO con @Query
+    @Query("SELECT i FROM Inventario i WHERE i.inventarioCantidadActual <= :cantidad")
+    List<Inventario> findByInventarioCantidadActualLessThanEqual(@Param("cantidad") Integer cantidad);
 
-    // Para buscar en sucursal específica
-    List<Inventario> findBySucursalId(Long sucursalId);
+    // Buscar todos los inventarios de una sucursal específica
+    List<Inventario> findBySucursal_SucursalId(Long sucursalId);
 
-    // Para evitar productos duplicados
-    boolean existsByProductoIdAndSucursalId(Long productoId, Long sucursalId);
+    // Verificar si existe un producto en una sucursal
+    boolean existsByProducto_ProductoIdAndSucursal_SucursalId(Long productoId, Long sucursalId);
 
-    // 2. Listar solo sucursales activas
-    List<Inventario> findByInventarioEstadoTrue();
+    // Buscar productos con stock bajo el mínimo - CORREGIDO con @Query
+    @Query("SELECT i FROM Inventario i WHERE i.inventarioCantidadActual < i.inventarioCantidadMinima")
+    List<Inventario> findByInventarioCantidadActualLessThanInventarioCantidadMinima();
 
-    boolean existsByProductoProductoIdAndSucursalSucursalId(@NotNull(message = "El producto es obligatorio") Long productoId, @NotNull(message = "La sucursal es obligatoria") Long sucursalId);
+    // Buscar por ID de inventario
+    Optional<Inventario> findByInventarioId(Long inventarioId);
 }
