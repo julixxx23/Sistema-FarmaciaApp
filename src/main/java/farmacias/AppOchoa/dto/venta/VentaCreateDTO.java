@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class VentaCreateDTO {
 
+    public BigDecimal VentaTotal;
     @NotNull(message = "La sucursal es obligatoria")
     private Long sucursalId;
 

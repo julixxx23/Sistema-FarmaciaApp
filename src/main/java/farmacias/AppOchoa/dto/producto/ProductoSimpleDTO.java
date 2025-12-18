@@ -1,28 +1,31 @@
 package farmacias.AppOchoa.dto.producto;
 
 import farmacias.AppOchoa.model.Producto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class ProductoSimpleDTO {
-    private Long productoId;
-    private String nombre;
-    private BigDecimal precioVenta;
 
-    public static ProductoSimpleDTO fromEntity(Producto producto){
+    private Long id;
+    private String nombre;
+    private String codigoBarras;
+    private BigDecimal precioVenta; // Solo el de venta para mostrar al vendedor
+    private String nombreCategoria;
+    private Boolean requiereReceta;
+
+    public static ProductoSimpleDTO fromEntity(Producto producto) {
         return ProductoSimpleDTO.builder()
-                .productoId(producto.getProductoId())
-                .nombre((producto.getProductoNombre()))
+                .id(producto.getProductoId())
+                .nombre(producto.getProductoNombre())
+                .codigoBarras(producto.getProductoCodigoBarras())
                 .precioVenta(producto.getProductoPrecioVenta())
+                .requiereReceta(producto.getProductoRequiereReceta())
+                .nombreCategoria(producto.getCategoria() != null ?
+                        producto.getCategoria().getCategoriaNombre() : "N/A")
                 .build();
     }
 }
