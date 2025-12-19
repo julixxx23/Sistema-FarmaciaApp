@@ -7,11 +7,10 @@ import farmacias.AppOchoa.dto.sucursal.SucursalUpdateDTO;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.services.SucursalService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,7 +40,7 @@ public class SucursalServiceImpl implements SucursalService {
 
     @Override
     @Transactional(readOnly = true)
-    public SucursalResponseDTO obtenerPorId (Long id){
+    public SucursalResponseDTO obtenerPorId(Long id){
         return sucursalRepository.findById(id)
                 .map(SucursalResponseDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
@@ -49,18 +48,16 @@ public class SucursalServiceImpl implements SucursalService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SucursalSimpleDTO> listarTodas(){
-        return sucursalRepository.findAll().stream()
-                .map(SucursalSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    public Page<SucursalSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+        return sucursalRepository.findBySucursalEstadoTrue(pageable)
+                .map(SucursalSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SucursalSimpleDTO> listarActivas(){
-        return sucursalRepository.findBySucursalEstadoTrue().stream()
-                .map(SucursalSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    public Page<SucursalSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+        return sucursalRepository.findAll(pageable)
+                .map(SucursalSimpleDTO::fromEntity);
     }
 
     @Override
@@ -68,17 +65,20 @@ public class SucursalServiceImpl implements SucursalService {
         Sucursal sucursal = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
 
-        if(!sucursal.getSucursalNombre().equalsIgnoreCase(dto.getNombre())){
-            if(sucursalRepository.existsBySucursalNombre(dto.getNombre())){
-                throw new RuntimeException("Ya existe otra sucursal con ese nombre: " + dto.getNombre());
+        String nuevoNombre = dto.getNombre().trim();
+        if(!sucursal.getSucursalNombre().equalsIgnoreCase(nuevoNombre)){
+            if(sucursalRepository.existsBySucursalNombre(nuevoNombre)){
+                throw new RuntimeException("Ya existe otra sucursal con ese nombre: " + nuevoNombre);
             }
+            sucursal.setSucursalNombre(nuevoNombre);
         }
 
-        // CORRECCIÓN: Actualizar todos los campos necesarios
-        sucursal.setSucursalNombre(dto.getNombre());
-        sucursal.setSucursalDireccion(dto.getDireccion()); // No olvides la dirección
-        sucursal.setSucursalTelefono(dto.getTelefono());   // No olvides el teléfono
-        sucursal.setSucursalEstado(dto.getEstado());
+        sucursal.setSucursalDireccion(dto.getDireccion());
+        sucursal.setSucursalTelefono(dto.getTelefono());
+
+        if(dto.getEstado() != null){
+            sucursal.setSucursalEstado(dto.getEstado());
+        }
 
         return SucursalResponseDTO.fromEntity(sucursalRepository.save(sucursal));
     }
@@ -87,17 +87,12 @@ public class SucursalServiceImpl implements SucursalService {
     public void cambiarEstado(Long id, Boolean estado){
         Sucursal sucursal = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
-
-        // CORRECCIÓN: Antes tenías sucursal.setSucursalEstado(true);
-        // Eso hacía que siempre se activara, ignorando el parámetro.
         sucursal.setSucursalEstado(estado);
-
         sucursalRepository.save(sucursal);
     }
 
     @Override
-    public void eliminarSucursal(Long id){
-        // Aplicamos el borrado lógico
+    public void eliminar(Long id){
         cambiarEstado(id, false);
     }
 }

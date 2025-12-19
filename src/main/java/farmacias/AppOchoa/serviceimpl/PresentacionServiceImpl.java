@@ -7,6 +7,8 @@ import farmacias.AppOchoa.dto.presentacion.PresentacionUpdateDTO;
 import farmacias.AppOchoa.model.Presentacion;
 import farmacias.AppOchoa.repository.PresentacionRepository;
 import farmacias.AppOchoa.services.PresentacionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,7 @@ public class PresentacionServiceImpl implements PresentacionService {
 
         Presentacion presentacion = Presentacion.builder()
                 .presentacionNombre(dto.getNombre())
-                .presentacionEstado(true) // CORRECCIÓN: Asegurar que nazca activa
+                .presentacionEstado(true)
                 .build();
 
         return PresentacionResponseDTO.fromEntity(presentacionRepository.save(presentacion));
@@ -53,10 +55,24 @@ public class PresentacionServiceImpl implements PresentacionService {
 
     @Override
     public List<PresentacionSimpleDTO> listarActivas(){
-        // Verifica que tu repositorio tenga: List<Presentacion> findByPresentacionEstadoTrue();
         return presentacionRepository.findByPresentacionEstadoTrue().stream()
                 .map(PresentacionSimpleDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PresentacionSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+        return presentacionRepository.findByPresentacionEstadoTrue(pageable)
+                .map(PresentacionSimpleDTO::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PresentacionSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+        return presentacionRepository.findAll(pageable)
+                .map(PresentacionSimpleDTO::fromEntity);
     }
 
     @Override
@@ -64,7 +80,6 @@ public class PresentacionServiceImpl implements PresentacionService {
         Presentacion presentacion = presentacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Presentación no encontrada por ID: " + id));
 
-        // Validar si el nombre cambia y si el nuevo ya existe
         if(!presentacion.getPresentacionNombre().equalsIgnoreCase(dto.getNombre())){
             if(presentacionRepository.existsByPresentacionNombre(dto.getNombre())){
                 throw new RuntimeException("Ya existe otra presentación con el nombre: " + dto.getNombre());
@@ -73,7 +88,6 @@ public class PresentacionServiceImpl implements PresentacionService {
 
         presentacion.setPresentacionNombre(dto.getNombre());
 
-        // CORRECCIÓN: Si el DTO de update tiene campo 'estado', actualízalo aquí
         if (dto.getEstado() != null) {
             presentacion.setPresentacionEstado(dto.getEstado());
         }
@@ -91,7 +105,6 @@ public class PresentacionServiceImpl implements PresentacionService {
 
     @Override
     public void eliminar(Long id){
-        // Aplicamos eliminación lógica
         cambiarEstado(id, false);
     }
 }
