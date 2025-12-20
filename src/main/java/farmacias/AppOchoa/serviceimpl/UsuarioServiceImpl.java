@@ -89,7 +89,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void eliminarUsuario(Long id){
-        // En lugar de borrarlo físicamente, lo ideal es cambiar su estado para mantener integridad referencial
         cambiarEstado(id, false);
     }
 

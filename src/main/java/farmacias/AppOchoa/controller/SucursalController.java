@@ -46,7 +46,7 @@ public class SucursalController {
         return ResponseEntity.ok(sucursalResponseDTO);
     }
 
-    @PutMapping("/{id}/estado")
+    @PatchMapping("/{id}/estado")
     public ResponseEntity<Void> cambiarEstado(@PathVariable Long id, @RequestParam Boolean estado){
         sucursalService.cambiarEstado(id, estado);
         return ResponseEntity.noContent().build();
