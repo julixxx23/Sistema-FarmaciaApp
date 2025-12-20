@@ -11,6 +11,8 @@ import farmacias.AppOchoa.repository.CategoriaRepository;
 import farmacias.AppOchoa.repository.PresentacionRepository;
 import farmacias.AppOchoa.repository.ProductoRepository;
 import farmacias.AppOchoa.services.ProductoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,10 +133,9 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductoSimpleDTO> listarProductosActivos() {
-        return productoRepository.findByProductoEstadoTrue().stream()
-                .map(ProductoSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ProductoSimpleDTO> listarProductosActivos(Pageable pageable) {
+        return productoRepository.findByProductoEstadoTrue(pageable)
+                .map(ProductoSimpleDTO::fromEntity);
     }
 
     // Métodos auxiliares privados

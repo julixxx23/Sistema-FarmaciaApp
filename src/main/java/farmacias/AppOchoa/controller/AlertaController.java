@@ -1,0 +1,70 @@
+package farmacias.AppOchoa.controller;
+
+import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO;
+import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
+import farmacias.AppOchoa.dto.alerta.AlertaSimpleDTO;
+import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
+import farmacias.AppOchoa.services.AlertaService;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/alertas")
+@AllArgsConstructor
+@CrossOrigin(origins = "*")
+public class AlertaController {
+    private final AlertaService alertaService;
+
+    @GetMapping
+    public ResponseEntity<Page<AlertaSimpleDTO>> listarTodasPaginadas(
+            @PageableDefault(size = 10, sort = "auditoriaFechaCreacion", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        return ResponseEntity.ok(alertaService.listarTodasPaginadas(pageable));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AlertaResponseDTO> listarPorId(@PathVariable Long id) {
+        AlertaResponseDTO alertaResponseDTO = alertaService.listarPorId(id);
+        return ResponseEntity.ok(alertaResponseDTO);
+    }
+
+    @GetMapping("/no-leidas")
+    public ResponseEntity<Page<AlertaSimpleDTO>> listarNoLeidasPaginadas(
+            @PageableDefault(size = 10, sort = "auditoriaFechaCreacion", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        return ResponseEntity.ok(alertaService.listarNoLeidasPaginadas(pageable));
+    }
+
+    @PostMapping
+    public ResponseEntity<AlertaResponseDTO> crear(@Valid @RequestBody AlertaCreateDTO dto) {
+        AlertaResponseDTO alertaResponseDTO = alertaService.crear(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(alertaResponseDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AlertaResponseDTO> actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody AlertaUpdateDTO dto) {
+        AlertaResponseDTO alertaResponseDTO = alertaService.actualizar(id, dto);
+        return ResponseEntity.ok(alertaResponseDTO);
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Long id) {
+        alertaService.cambiarEstado(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        alertaService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+}

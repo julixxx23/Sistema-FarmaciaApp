@@ -1,6 +1,6 @@
 package farmacias.AppOchoa.serviceimpl;
 
-import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO; // Asegúrate de crear este DTO
+import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaSimpleDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
@@ -10,11 +10,10 @@ import farmacias.AppOchoa.model.Producto;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.services.AlertaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,13 +35,11 @@ public class AlertaServiceImpl implements AlertaService {
         this.inventarioLotesRepository = inventarioLotesRepository;
     }
 
-    //Método para crear alertas (útil para el sistema o el admin)
     @Override
     public AlertaResponseDTO crear(AlertaCreateDTO dto) {
         Producto producto = buscarProducto(dto.getProductoId());
         Sucursal sucursal = buscarSucursal(dto.getSucursalId());
 
-        // El lote es opcional en algunas alertas (ej. stock general de sucursal)
         InventarioLotes lote = null;
         if (dto.getLoteId() != null) {
             lote = buscarInventarioLotes(dto.getLoteId());
@@ -60,6 +57,7 @@ public class AlertaServiceImpl implements AlertaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlertaResponseDTO listarPorId(Long id) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
@@ -67,17 +65,17 @@ public class AlertaServiceImpl implements AlertaService {
     }
 
     @Override
-    public List<AlertaSimpleDTO> listarTodas() {
-        return alertaRepository.findAll().stream()
-                .map(AlertaSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<AlertaSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+        return alertaRepository.findAll(pageable)
+                .map(AlertaSimpleDTO::fromEntity);
     }
 
     @Override
-    public List<AlertaSimpleDTO> listarNoLeidas() {
-        return alertaRepository.findByAlertaLeidaFalse().stream()
-                .map(AlertaSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<AlertaSimpleDTO> listarNoLeidasPaginadas(Pageable pageable) {
+        return alertaRepository.findByAlertaLeidaFalse(pageable)
+                .map(AlertaSimpleDTO::fromEntity);
     }
 
     @Override
@@ -96,7 +94,6 @@ public class AlertaServiceImpl implements AlertaService {
     public void cambiarEstado(Long id) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
-        // Alternar estado: si es true pasa a false, si es false pasa a true
         alerta.setAlertaLeida(!alerta.getAlertaLeida());
         alertaRepository.save(alerta);
     }
@@ -109,7 +106,7 @@ public class AlertaServiceImpl implements AlertaService {
         alertaRepository.deleteById(id);
     }
 
-    // Métodos auxiliares privados para evitar repetición de código
+    // Métodos auxiliares privados
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
