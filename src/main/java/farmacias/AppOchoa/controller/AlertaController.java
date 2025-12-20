@@ -24,7 +24,7 @@ public class AlertaController {
 
     @GetMapping
     public ResponseEntity<Page<AlertaSimpleDTO>> listarTodasPaginadas(
-            @PageableDefault(size = 10, sort = "auditoriaFechaCreacion", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 10, sort = "alertaFecha", direction = Sort.Direction.DESC)
             Pageable pageable) {
         return ResponseEntity.ok(alertaService.listarTodasPaginadas(pageable));
     }
@@ -37,7 +37,7 @@ public class AlertaController {
 
     @GetMapping("/no-leidas")
     public ResponseEntity<Page<AlertaSimpleDTO>> listarNoLeidasPaginadas(
-            @PageableDefault(size = 10, sort = "auditoriaFechaCreacion", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 10, sort = "alertaFecha", direction = Sort.Direction.DESC)
             Pageable pageable) {
         return ResponseEntity.ok(alertaService.listarNoLeidasPaginadas(pageable));
     }
