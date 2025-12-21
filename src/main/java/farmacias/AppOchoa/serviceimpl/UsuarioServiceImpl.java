@@ -6,39 +6,38 @@ import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.services.UsuarioService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
 public class UsuarioServiceImpl implements UsuarioService {
+
     private final UsuarioRepository usuarioRepository;
     private final SucursalRepository sucursalRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
                               SucursalRepository sucursalRepository,
-                              PasswordEncoder passwordEncoder){
+                              PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.sucursalRepository = sucursalRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto){
-        if(usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())){
+    public UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto) {
+        if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
             throw new RuntimeException("El nombre de usuario '" + dto.getNombreUsuario() + "' ya está en uso");
         }
 
         // Permitir que la sucursal sea opcional (ej: para Admin central)
         Sucursal sucursal = null;
         if (dto.getSucursalId() != null) {
-            sucursal = sucursalRepository.findById(dto.getSucursalId())
-                    .orElseThrow(() -> new RuntimeException("Sucursal no encontrada con ID: " + dto.getSucursalId()));
+            sucursal = buscarSucursal(dto.getSucursalId());
         }
 
         Usuario usuario = Usuario.builder()
@@ -55,11 +54,26 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto){
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO obtenerPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .map(UsuarioResponseDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+    }
 
-        // 1. Validar nombre de usuario si cambia
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UsuarioSimpleDTO> listarUsuariosActivosPaginado(Pageable pageable) {
+        return usuarioRepository.findByUsuarioEstadoTrue(pageable)
+                .map(UsuarioSimpleDTO::fromEntity);
+    }
+
+    @Override
+    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+
+        // Validar nombre de usuario si cambia
         if (!usuario.getNombreUsuarioUsuario().equals(dto.getNombreUsuario())) {
             if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
                 throw new RuntimeException("El nuevo nombre de usuario ya está siendo usado por otra cuenta");
@@ -67,10 +81,9 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setNombreUsuarioUsuario(dto.getNombreUsuario());
         }
 
-        // 2. Manejo de sucursal opcional
+        // Manejo de sucursal opcional
         if (dto.getSucursalId() != null) {
-            Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
-                    .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+            Sucursal sucursal = buscarSucursal(dto.getSucursalId());
             usuario.setSucursal(sucursal);
         } else {
             usuario.setSucursal(null);
@@ -81,56 +94,42 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setUsuarioRol(dto.getRol());
         usuario.setUsuarioEstado(dto.getEstado());
 
-        // 3. Actualización opcional de contraseña (si el DTO lo permite en el futuro)
-        // if (dto.getNuevaContrasena() != null) usuario.setUsuarioContrasenaHash(passwordEncoder.encode(dto.getNuevaContrasena()));
-
         return UsuarioResponseDTO.fromEntity(usuarioRepository.save(usuario));
     }
 
     @Override
-    public void eliminarUsuario(Long id){
-        cambiarEstado(id, false);
-    }
-
-    @Override
-    public void cambiarEstado(Long id, Boolean nuevoEstado){
+    public void cambiarEstado(Long id, Boolean nuevoEstado) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
         usuario.setUsuarioEstado(nuevoEstado);
         usuarioRepository.save(usuario);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public UsuarioResponseDTO obtenerPorId(Long id){
-        return usuarioRepository.findById(id)
-                .map(UsuarioResponseDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public void eliminarUsuario(Long id) {
+        cambiarEstado(id, false);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UsuarioSimpleDTO> listarUsuariosActivos(){
-        return usuarioRepository.findByUsuarioEstadoTrue()
-                .stream()
-                .map(UsuarioSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UsuarioResponseDTO login(LoginDTO dto){
+    public UsuarioResponseDTO login(LoginDTO dto) {
         Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
 
-        if(!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())){
+        if (!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())) {
             throw new RuntimeException("Credenciales inválidas");
         }
 
-        if(Boolean.FALSE.equals(usuario.getUsuarioEstado())){
+        if (Boolean.FALSE.equals(usuario.getUsuarioEstado())) {
             throw new RuntimeException("La cuenta de usuario está desactivada");
         }
 
         return UsuarioResponseDTO.fromEntity(usuario);
+    }
+
+    // Método auxiliar privado
+    private Sucursal buscarSucursal(Long id) {
+        return sucursalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }
 }

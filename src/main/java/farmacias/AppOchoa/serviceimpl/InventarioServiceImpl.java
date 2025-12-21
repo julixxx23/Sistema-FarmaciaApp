@@ -9,11 +9,10 @@ import farmacias.AppOchoa.repository.InventarioRepository;
 import farmacias.AppOchoa.repository.ProductoRepository;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.services.InventarioService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,8 +33,8 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     public InventarioResponseDTO crear(InventarioCreateDTO dto) {
-        // CORREGIDO: Cambio del método antiguo al nuevo
-        if (inventarioRepository.existsByProducto_ProductoIdAndSucursal_SucursalId(dto.getProductoId(), dto.getSucursalId())) {
+        if (inventarioRepository.existsByProducto_ProductoIdAndSucursal_SucursalId(
+                dto.getProductoId(), dto.getSucursalId())) {
             throw new RuntimeException("Ya existe un registro de inventario para este producto en la sucursal seleccionada.");
         }
 
@@ -53,31 +52,31 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public InventarioResponseDTO listaPorId(Long id) {
         Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado ID: " + id));
         return InventarioResponseDTO.fromEntity(inventario);
     }
 
     @Override
-    public List<InventarioSimpleDTO> listarTodos() {
-        return inventarioRepository.findAll().stream()
-                .map(InventarioSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<InventarioSimpleDTO> listarTodosPaginado(Pageable pageable) {
+        return inventarioRepository.findAll(pageable)
+                .map(InventarioSimpleDTO::fromEntity);
     }
 
     @Override
-    public List<InventarioSimpleDTO> listarActivos() {
-        return inventarioRepository.findAll().stream()
-                .filter(i -> i.getInventarioCantidadActual() > 0)
-                .map(InventarioSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<InventarioSimpleDTO> listarActivosPaginado(Pageable pageable) {
+        return inventarioRepository.findActivosPaginado(pageable)
+                .map(InventarioSimpleDTO::fromEntity);
     }
 
     @Override
     public InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto) {
         Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado ID: " + id));
 
         inventario.setInventarioCantidadActual(dto.getCantidadActual());
         inventario.setInventarioCantidadMinima(dto.getCantidadMinima());
@@ -88,7 +87,7 @@ public class InventarioServiceImpl implements InventarioService {
     @Override
     public void cambiaEstado(Long id, Boolean estado) {
         Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado ID: " + id));
 
         if (Boolean.FALSE.equals(estado)) {
             inventario.setInventarioCantidadActual(0);
@@ -101,13 +100,14 @@ public class InventarioServiceImpl implements InventarioService {
         cambiaEstado(id, false);
     }
 
+    // Métodos auxiliares privados
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
     }
 
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }
 }

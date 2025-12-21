@@ -8,13 +8,13 @@ import farmacias.AppOchoa.dto.compradetalle.CompraDetalleCreateDTO;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.services.CompraService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,11 +41,8 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     public CompraResponseDTO crear(CompraCreateDTO dto) {
-        Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + dto.getSucursalId()));
-
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + dto.getUsuarioId()));
+        Sucursal sucursal = buscarSucursal(dto.getSucursalId());
+        Usuario usuario = buscarUsuario(dto.getUsuarioId());
 
         // 1. Crear Cabecera
         Compra compra = Compra.builder()
@@ -61,10 +58,9 @@ public class CompraServiceImpl implements CompraService {
 
         // 2. Procesar Detalles y Lotes
         for (CompraDetalleCreateDTO detDto : dto.getDetalles()) {
-            Producto producto = productoRepository.findById(detDto.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + detDto.getProductoId()));
+            Producto producto = buscarProducto(detDto.getProductoId());
 
-            // Buscar lote existente o crear uno nuevo según el DTO
+            // Buscar lote existente o crear uno nuevo
             InventarioLotes lote = loteRepository.findByLoteNumero(detDto.getNumeroLote())
                     .orElseGet(() -> InventarioLotes.builder()
                             .loteNumero(detDto.getNumeroLote())
@@ -83,7 +79,7 @@ public class CompraServiceImpl implements CompraService {
             BigDecimal subtotal = detDto.getPrecioUnitario().multiply(BigDecimal.valueOf(detDto.getCantidad()));
             totalAcumulado = totalAcumulado.add(subtotal);
 
-            // Crear detalle (usando loteId que es el objeto InventarioLotes en tu Model)
+            // Crear detalle
             CompraDetalle detalle = CompraDetalle.builder()
                     .compra(compra)
                     .producto(producto)
@@ -102,6 +98,7 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompraResponseDTO listarPorId(Long id) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
@@ -109,18 +106,17 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public List<CompraSimpleDTO> listaTodas() {
-        return compraRepository.findAll().stream()
-                .map(CompraSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<CompraSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+        return compraRepository.findAll(pageable)
+                .map(CompraSimpleDTO::fromEntity);
     }
 
     @Override
-    public List<CompraSimpleDTO> listarActivos() {
-        // Asegúrate de que CompraRepository tenga: List<Compra> findByCompraEstado(CompraEstado estado);
-        return compraRepository.findByCompraEstado(CompraEstado.activa).stream()
-                .map(CompraSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<CompraSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+        return compraRepository.findByCompraEstado(CompraEstado.activa, pageable)
+                .map(CompraSimpleDTO::fromEntity);
     }
 
     @Override
@@ -138,7 +134,7 @@ public class CompraServiceImpl implements CompraService {
     @Override
     public void cambiarEstado(Long id, Boolean estado) {
         Compra compra = compraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Compra no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
 
         CompraEstado nuevoEstado = estado ? CompraEstado.activa : CompraEstado.anulada;
 
@@ -158,5 +154,21 @@ public class CompraServiceImpl implements CompraService {
     @Override
     public void eliminar(Long id) {
         cambiarEstado(id, false);
+    }
+
+    // Métodos auxiliares privados
+    private Sucursal buscarSucursal(Long id) {
+        return sucursalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+    }
+
+    private Usuario buscarUsuario(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+    }
+
+    private Producto buscarProducto(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
     }
 }

@@ -11,17 +11,17 @@ import farmacias.AppOchoa.repository.InventarioLotesRepository;
 import farmacias.AppOchoa.repository.ProductoRepository;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.services.InventarioLotesService;
-import farmacias.AppOchoa.services.InventarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class InventarioLotesServiceImpl implements InventarioLotesService {
 
     private final InventarioLotesRepository inventarioLotesRepository;
@@ -29,17 +29,13 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     private final SucursalRepository sucursalRepository;
 
     @Override
-    @Transactional
     public InventarioLotesResponseDTO crear(InventarioLotesCreateDTO dto) {
-        // CORRECCIÓN LÍNEA 41: Nombre coincide con el Repository corregido
         if (inventarioLotesRepository.existsByLoteNumeroAndSucursal_SucursalId(dto.getNumeroLote(), dto.getSucursalId())) {
             throw new RuntimeException("El número de lote " + dto.getNumeroLote() + " ya existe en esta sucursal.");
         }
 
-        Producto producto = productoRepository.findById(dto.getProductoId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+        Producto producto = buscarProducto(dto.getProductoId());
+        Sucursal sucursal = buscarSucursal(dto.getSucursalId());
 
         InventarioLotes lote = InventarioLotes.builder()
                 .loteNumero(dto.getNumeroLote())
@@ -57,43 +53,53 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<InventarioLotesResponseDTO> listarPorSucursal(Long sucursalId) {
-        return inventarioLotesRepository.findBySucursal_SucursalId(sucursalId)
-                .stream()
-                .map(InventarioLotesResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public InventarioLotesResponseDTO buscarPorId(Long id) {
         InventarioLotes lote = inventarioLotesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
         return InventarioLotesResponseDTO.fromEntity(lote);
     }
 
     @Override
-    @Transactional
-    public InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto) {
-        InventarioLotes lote = inventarioLotesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado"));
-        lote.setLoteCantidadActual(dto.getCantidadActual());
-        lote.setLoteEstado(dto.getEstado());
-        return InventarioLotesResponseDTO.fromEntity(inventarioLotesRepository.save(lote));
+    @Transactional(readOnly = true)
+    public Page<InventarioLotesResponseDTO> listarPorSucursalPaginado(Long sucursalId, Pageable pageable) {
+        return inventarioLotesRepository.findBySucursal_SucursalId(sucursalId, pageable)
+                .map(InventarioLotesResponseDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<InventarioLotesResponseDTO> listarProximosAVencer(LocalDate fechaLimite) {
-        return inventarioLotesRepository.findByLoteFechaVencimientoLessThanEqual(fechaLimite)
-                .stream()
-                .map(InventarioLotesResponseDTO::fromEntity)
-                .collect(Collectors.toList());
+    public Page<InventarioLotesResponseDTO> listarProximosAVencerPaginado(LocalDate fechaLimite, Pageable pageable) {
+        return inventarioLotesRepository.findByLoteFechaVencimientoLessThanEqual(fechaLimite, pageable)
+                .map(InventarioLotesResponseDTO::fromEntity);
     }
 
     @Override
-    @Transactional
+    public InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto) {
+        InventarioLotes lote = inventarioLotesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
+
+        lote.setLoteCantidadActual(dto.getCantidadActual());
+        lote.setLoteEstado(dto.getEstado());
+
+        return InventarioLotesResponseDTO.fromEntity(inventarioLotesRepository.save(lote));
+    }
+
+    @Override
     public void eliminar(Long id) {
+        if (!inventarioLotesRepository.existsById(id)) {
+            throw new RuntimeException("Lote no encontrado ID: " + id);
+        }
         inventarioLotesRepository.deleteById(id);
+    }
+
+    // Métodos auxiliares privados
+    private Producto buscarProducto(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+    }
+
+    private Sucursal buscarSucursal(Long id) {
+        return sucursalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }
 }
