@@ -5,16 +5,16 @@ import farmacias.AppOchoa.dto.venta.VentaResponseDTO;
 import farmacias.AppOchoa.dto.venta.VentaSimpleDTO;
 import farmacias.AppOchoa.dto.venta.VentaUpdateDTO;
 import farmacias.AppOchoa.model.VentaEstado;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface VentaService {
 
     VentaResponseDTO crear(VentaCreateDTO dto);
 
     VentaResponseDTO listarPorId(Long id);
-    List<VentaSimpleDTO> listarTodas();
-    List<VentaSimpleDTO> listarActivas();
+    Page<VentaSimpleDTO> listarTodasPaginadas(Pageable pageable);
+    Page<VentaSimpleDTO> listarActivasPaginadas(Pageable pageable);
 
     VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto);
     void cambiarEstado(Long id, VentaEstado nuevoEstado);

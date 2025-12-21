@@ -8,17 +8,16 @@ import farmacias.AppOchoa.dto.ventadetalle.VentaDetalleCreateDTO;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.services.VentaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
-
 public class VentaServiceImpl implements VentaService {
 
     private final VentaRepository ventaRepository;
@@ -42,14 +41,10 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     public VentaResponseDTO crear(VentaCreateDTO dto) {
-        // 1. Validaciones de Entidades Principales
-        Sucursal sucursal = sucursalRepository.findById(dto.getSucursalId())
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada"));
+        Sucursal sucursal = buscarSucursal(dto.getSucursalId());
+        Usuario usuario = buscarUsuario(dto.getUsuarioId());
 
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        // Convierte Compra
+        // Crear cabecera de venta
         Venta venta = Venta.builder()
                 .sucursal(sucursal)
                 .usuario(usuario)
@@ -61,21 +56,17 @@ public class VentaServiceImpl implements VentaService {
 
         BigDecimal acumuladorSubtotal = BigDecimal.ZERO;
 
-        // 3. Procesar Detalles y Actualizar Inventario
+        // Procesar Detalles y Actualizar Inventario
         for (VentaDetalleCreateDTO detalleDto : dto.getDetalles()) {
+            Producto producto = buscarProducto(detalleDto.getProductoId());
+            InventarioLotes lote = buscarLote(detalleDto.getLoteId());
 
-            Producto producto = productoRepository.findById(detalleDto.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + detalleDto.getProductoId()));
-
-            InventarioLotes lote = loteRepository.findById(detalleDto.getLoteId())
-                    .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + detalleDto.getLoteId()));
-
-            // VALIDACIÓN DE STOCK
+            // Validación de stock
             if (lote.getLoteCantidadActual() < detalleDto.getCantidad()) {
                 throw new RuntimeException("Stock insuficiente en el lote: " + lote.getLoteNumero());
             }
 
-            // DESCUENTO DE INVENTARIO
+            // Descuento de inventario
             lote.setLoteCantidadActual(lote.getLoteCantidadActual() - detalleDto.getCantidad());
             loteRepository.save(lote);
 
@@ -96,100 +87,102 @@ public class VentaServiceImpl implements VentaService {
             venta.getDetalles().add(detalle);
         }
 
-        //Totales Finales
+        // Totales Finales
         venta.setVentaSubtotal(acumuladorSubtotal);
         BigDecimal descuento = dto.getDescuento() != null ? dto.getDescuento() : BigDecimal.ZERO;
         venta.setVentaDescuento(descuento);
         venta.setVentaTotal(acumuladorSubtotal.subtract(descuento));
 
-        //Guardar (Se guarda cabecera y detalles por el CascadeType.ALL)
+        // Guardar (Se guarda cabecera y detalles por el CascadeType.ALL)
         Venta guardada = ventaRepository.save(venta);
-
         return VentaResponseDTO.fromEntity(guardada);
     }
 
     @Override
-    public VentaResponseDTO listarPorId(Long id){
+    @Transactional(readOnly = true)
+    public VentaResponseDTO listarPorId(Long id) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada por ID: " +id));
-
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
         return VentaResponseDTO.fromEntity(venta);
     }
 
     @Override
-    public List<VentaSimpleDTO> listarTodas(){
-        List<Venta> ventas = ventaRepository.findAll();
-
-        return ventas.stream()
-                .map(VentaSimpleDTO:: fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<VentaSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+        return ventaRepository.findAll(pageable)
+                .map(VentaSimpleDTO::fromEntity);
     }
 
     @Override
-    public List<VentaSimpleDTO> listarActivas(){
-        List<Venta> ventas = ventaRepository.findByVentaEstado(VentaEstado.completada);
-
-        return ventas.stream()
-                .map(VentaSimpleDTO:: fromEntity)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<VentaSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+        return ventaRepository.findByVentaEstado(VentaEstado.completada, pageable)
+                .map(VentaSimpleDTO::fromEntity);
     }
 
     @Override
-    public VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto){
+    public VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada por ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
 
-
-        // actualizar datos como el nombre del cliente o NIT si hubo error
-        if(dto.getNombreCliente() != null) venta.setVentaNombreCliente(dto.getNombreCliente());
-        if(dto.getNitCliente() != null) venta.setVentaNitCliente(dto.getNitCliente());
+        // Actualizar datos como el nombre del cliente o NIT si hubo error
+        if (dto.getNombreCliente() != null) venta.setVentaNombreCliente(dto.getNombreCliente());
+        if (dto.getNitCliente() != null) venta.setVentaNitCliente(dto.getNitCliente());
 
         Venta guardar = ventaRepository.save(venta);
         return VentaResponseDTO.fromEntity(guardar);
     }
 
     @Override
-    public void cambiarEstado(Long id, VentaEstado nuevoEstado){
+    public void cambiarEstado(Long id, VentaEstado nuevoEstado) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada por ID: " +id));
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
 
         // ANULAR una venta que estaba COMPLETADA
-        if(nuevoEstado == VentaEstado.anulada && venta.getVentaEstado() == VentaEstado.completada){
-            for(VentaDetalle detalle : venta.getDetalles()){
+        if (nuevoEstado == VentaEstado.anulada && venta.getVentaEstado() == VentaEstado.completada) {
+            for (VentaDetalle detalle : venta.getDetalles()) {
                 InventarioLotes lote = detalle.getLote();
 
                 // Devolvemos el stock al lote
-                lote.setLoteCantidadActual(lote.getLoteCantidadActual()+ detalle.getDetalleCantidad());
+                lote.setLoteCantidadActual(lote.getLoteCantidadActual() + detalle.getDetalleCantidad());
 
                 // Si el lote estaba agotado, ahora tiene stock, así que vuelve a estar disponible
-                if(lote.getLoteEstado() == LoteEstado.agotado){
+                if (lote.getLoteEstado() == LoteEstado.agotado) {
                     lote.setLoteEstado(LoteEstado.disponible);
                 }
 
                 loteRepository.save(lote);
             }
-
         }
+
         // Actualizamos el estado de la venta
         venta.setVentaEstado(nuevoEstado);
         ventaRepository.save(venta);
-
     }
 
     @Override
-    public  void eliminar(Long id){
+    public void eliminar(Long id) {
         cambiarEstado(id, VentaEstado.anulada);
     }
 
+    // Métodos auxiliares privados
+    private Sucursal buscarSucursal(Long id) {
+        return sucursalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+    }
 
+    private Usuario buscarUsuario(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+    }
 
+    private Producto buscarProducto(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+    }
 
-
-
-
-
-
-
-
-
+    private InventarioLotes buscarLote(Long id) {
+        return loteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
+    }
 }
