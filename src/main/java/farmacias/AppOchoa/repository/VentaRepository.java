@@ -2,6 +2,8 @@ package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Venta;
 import farmacias.AppOchoa.model.VentaEstado;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,27 +19,27 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     // Para reimprimir factura
     Optional<Venta> findByVentaNumeroFactura(String numeroFactura);
 
-    // Para cierre de caja del día - CORREGIDO
-    List<Venta> findBySucursal_SucursalIdAndVentaFechaBetween(
-            Long sucursalId, LocalDateTime inicio, LocalDateTime fin);
+    // Para cierre de caja del día - con paginación
+    Page<Venta> findBySucursal_SucursalIdAndVentaFechaBetween(
+            Long sucursalId, LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
 
-    // Buscar por estado de venta
-    List<Venta> findByVentaEstado(VentaEstado estado);
+    // Buscar por estado de venta - con paginación
+    Page<Venta> findByVentaEstado(VentaEstado estado, Pageable pageable);
 
     // Para validar que no se repita número factura
     boolean existsByVentaNumeroFactura(String numeroFactura);
 
-    // Para historial de cliente
-    List<Venta> findByVentaNitCliente(String nitCliente);
+    // Para historial de cliente - con paginación
+    Page<Venta> findByVentaNitCliente(String nitCliente, Pageable pageable);
 
-    // Ventas por cajero específico (para rendición de cuentas) - CORREGIDO
-    List<Venta> findByUsuario_UsuarioId(Long usuarioId);
+    // Ventas por cajero específico - con paginación
+    Page<Venta> findByUsuario_UsuarioId(Long usuarioId, Pageable pageable);
 
-    // Ventas por cajero en turno específico - CORREGIDO
-    List<Venta> findByUsuario_UsuarioIdAndVentaFechaBetween(
-            Long usuarioId, LocalDateTime inicio, LocalDateTime fin);
+    // Ventas por cajero en turno específico - con paginación
+    Page<Venta> findByUsuario_UsuarioIdAndVentaFechaBetween(
+            Long usuarioId, LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
 
-    // Total vendido por cajero hoy (para dashboard) - CORREGIDO
+    // Total vendido por cajero hoy (mantiene query individual)
     @Query("SELECT SUM(v.ventaTotal) FROM Venta v " +
             "WHERE v.usuario.usuarioId = :usuarioId " +
             "AND DATE(v.ventaFecha) = CURRENT_DATE " +

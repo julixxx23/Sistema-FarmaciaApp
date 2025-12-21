@@ -2,6 +2,8 @@ package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Compra;
 import farmacias.AppOchoa.model.CompraEstado;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,35 +11,34 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface CompraRepository extends JpaRepository<Compra, Long> {
 
-    // 1. Navegación: Compra -> sucursal -> sucursalId
-    List<Compra> findBySucursalSucursalId(Long sucursalId);
+    // Navegación: Compra -> sucursal -> sucursalId - con paginación
+    Page<Compra> findBySucursalSucursalId(Long sucursalId, Pageable pageable);
 
-    // 2. Navegación: Compra -> usuario -> usuarioId
-    List<Compra> findByUsuarioUsuarioId(Long usuarioId);
+    //Navegación: Compra -> usuario -> usuarioId - con paginación
+    Page<Compra> findByUsuarioUsuarioId(Long usuarioId, Pageable pageable);
 
-    List<Compra> findByCompraFecha(LocalDate fecha);
+    Page<Compra> findByCompraFecha(LocalDate fecha, Pageable pageable);
 
-    // 3. Usa el Enum CompraEstado en lugar de String para mayor seguridad
-    List<Compra> findByCompraEstado(CompraEstado estado);
+    //Usa el Enum CompraEstado - con paginación
+    Page<Compra> findByCompraEstado(CompraEstado estado, Pageable pageable);
 
-    List<Compra> findByCompraFechaBetween(LocalDate fechaInicio, LocalDate fechaFin);
+    Page<Compra> findByCompraFechaBetween(LocalDate fechaInicio, LocalDate fechaFin, Pageable pageable);
 
-    // 4. Corrección de nombres compuestos
-    List<Compra> findBySucursalSucursalIdAndCompraEstado(Long sucursalId, CompraEstado estado);
+    //Corrección de nombres compuestos - con paginación
+    Page<Compra> findBySucursalSucursalIdAndCompraEstado(Long sucursalId, CompraEstado estado, Pageable pageable);
 
-    List<Compra> findBySucursalSucursalIdAndCompraFechaBetween(
-            Long sucursalId, LocalDate fechaInicio, LocalDate fechaFin);
+    Page<Compra> findBySucursalSucursalIdAndCompraFechaBetween(
+            Long sucursalId, LocalDate fechaInicio, LocalDate fechaFin, Pageable pageable);
 
-    // 5. El parámetro debe ser CompraEstado para coincidir con la entidad
+    //Top 10 mantiene List (no necesita paginación por el límite)
     List<Compra> findTop10ByCompraEstadoOrderByCompraFechaDesc(CompraEstado estado);
 
     boolean existsBySucursalSucursalIdAndCompraFecha(Long sucursalId, LocalDate fecha);
 
-    // 6. JPQL: Cambiado c.sucursal.id por c.sucursal.sucursalId
+    //JPQL queries mantienen List (son consultas agregadas)
     @Query("SELECT MONTH(c.compraFecha) as mes, SUM(c.compraTotal) as total " +
             "FROM Compra c " +
             "WHERE YEAR(c.compraFecha) = :anio AND c.sucursal.sucursalId = :sucursalId " +
@@ -47,5 +48,5 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
 
     @Query("SELECT c FROM Compra c WHERE c.compraTotal > :montoMinimo " +
             "AND c.compraEstado = 'activa'")
-    List<Compra> findComprasConMontoMayorA(@Param("montoMinimo") BigDecimal montoMinimo);
+    Page<Compra> findComprasConMontoMayorA(@Param("montoMinimo") BigDecimal montoMinimo, Pageable pageable);
 }
