@@ -132,11 +132,9 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public void cambiarEstado(Long id, Boolean estado) {
+    public void cambiarEstado(Long id, CompraEstado nuevoEstado) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
-
-        CompraEstado nuevoEstado = estado ? CompraEstado.activa : CompraEstado.anulada;
 
         // Revertir stock si se anula
         if (nuevoEstado == CompraEstado.anulada && compra.getCompraEstado() == CompraEstado.activa) {
@@ -153,7 +151,7 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     public void eliminar(Long id) {
-        cambiarEstado(id, false);
+        cambiarEstado(id, CompraEstado.anulada);
     }
 
     // Métodos auxiliares privados
