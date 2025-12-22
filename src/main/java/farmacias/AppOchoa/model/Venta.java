@@ -38,7 +38,7 @@ public class Venta {
     @Builder.Default
     private String ventaSerie = "A";
 
-    // --- DATOS DEL CLIENTE ---
+    //DATOS DEL CLIENTE
     @Column(name = "venta_nit_cliente", length = 20)
     @Builder.Default
     private String ventaNitCliente = "CF";
@@ -47,7 +47,7 @@ public class Venta {
     @Builder.Default
     private String ventaNombreCliente = "Consumidor Final";
 
-    // --- DATOS DE LA OPERACIÓN ---
+    //DATOS DE LA OPERACIÓN
     @Column(name = "venta_fecha", nullable = false, updatable = false)
     private LocalDateTime ventaFecha;
 
