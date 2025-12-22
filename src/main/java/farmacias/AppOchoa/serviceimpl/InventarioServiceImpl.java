@@ -84,20 +84,13 @@ public class InventarioServiceImpl implements InventarioService {
         return InventarioResponseDTO.fromEntity(inventarioRepository.save(inventario));
     }
 
-    @Override
-    public void cambiaEstado(Long id, Boolean estado) {
-        Inventario inventario = inventarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventario no encontrado ID: " + id));
 
-        if (Boolean.FALSE.equals(estado)) {
-            inventario.setInventarioCantidadActual(0);
+    @Override
+    public void eliminar(Long id){
+        if(!inventarioRepository.existsById(id)){
+            throw new RuntimeException("Inventario no encontrado con ID: " +id);
         }
-        inventarioRepository.save(inventario);
-    }
-
-    @Override
-    public void eliminar(Long id) {
-        cambiaEstado(id, false);
+        inventarioRepository.deleteById(id);
     }
 
     // Métodos auxiliares privados

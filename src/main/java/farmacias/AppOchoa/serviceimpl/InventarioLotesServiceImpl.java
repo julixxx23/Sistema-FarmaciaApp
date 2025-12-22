@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceimpl;
 
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesCreateDTO;
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesResponseDTO;
+import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesSimpleDTO;
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesUpdateDTO;
 import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.LoteEstado;
@@ -61,16 +62,16 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<InventarioLotesResponseDTO> listarPorSucursalPaginado(Long sucursalId, Pageable pageable) {
+    public Page<InventarioLotesSimpleDTO> listarPorSucursalPaginado(Long sucursalId, Pageable pageable) {
         return inventarioLotesRepository.findBySucursal_SucursalId(sucursalId, pageable)
-                .map(InventarioLotesResponseDTO::fromEntity);
+                .map(InventarioLotesSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<InventarioLotesResponseDTO> listarProximosAVencerPaginado(LocalDate fechaLimite, Pageable pageable) {
+    public Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(LocalDate fechaLimite, Pageable pageable) {
         return inventarioLotesRepository.findByLoteFechaVencimientoLessThanEqual(fechaLimite, pageable)
-                .map(InventarioLotesResponseDTO::fromEntity);
+                .map(InventarioLotesSimpleDTO::fromEntity);
     }
 
     @Override

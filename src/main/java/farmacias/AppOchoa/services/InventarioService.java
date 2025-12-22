@@ -16,6 +16,5 @@ public interface InventarioService {
     Page<InventarioSimpleDTO> listarActivosPaginado(Pageable pageable);
 
     InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto);
-    void cambiaEstado(Long id, Boolean estado);
     void eliminar(Long id);
 }
