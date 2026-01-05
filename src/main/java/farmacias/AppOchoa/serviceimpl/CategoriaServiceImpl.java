@@ -66,8 +66,7 @@ public class CategoriaServiceImpl implements CategoriaService {
                 .map(CategoriaSimpleDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-
-    // --- NUEVOS MÉTODOS PAGINADOS ---
+    
     @Override
     @Transactional(readOnly = true)
     public Page<CategoriaSimpleDTO> listarTodasPaginadas(Pageable pageable) {
