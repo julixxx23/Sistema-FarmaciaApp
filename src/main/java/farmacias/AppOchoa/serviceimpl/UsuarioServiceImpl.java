@@ -34,7 +34,6 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new RuntimeException("El nombre de usuario '" + dto.getNombreUsuario() + "' ya está en uso");
         }
 
-        // Permitir que la sucursal sea opcional (ej: para Admin central)
         Sucursal sucursal = null;
         if (dto.getSucursalId() != null) {
             sucursal = buscarSucursal(dto.getSucursalId());
