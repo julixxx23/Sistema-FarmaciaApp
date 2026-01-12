@@ -38,7 +38,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public ProductoResponseDTO agregarProducto(ProductoCreateDTO dto) {
-        // 1. Validaciones de unicidad
+        //Validaciones de unicidad
         if (productoRepository.existsByProductoNombre(dto.getNombre())) {
             throw new RuntimeException("Ya existe un producto con el nombre: " + dto.getNombre());
         }
@@ -48,17 +48,16 @@ public class ProductoServiceImpl implements ProductoService {
             throw new RuntimeException("El código de barras ya está registrado: " + dto.getCodigoBarras());
         }
 
-        // 2. Buscar entidades relacionadas
+        //Buscar entidades relacionadas
         Categoria categoria = buscarCategoria(dto.getCategoriaId());
         Presentacion presentacion = buscarPresentacion(dto.getPresentacionId());
 
-        // 3. Construir producto con IVA
         Producto producto = Producto.builder()
                 .productoNombre(dto.getNombre())
                 .productoCodigoBarras(dto.getCodigoBarras())
                 .productoPrecioCompra(dto.getPrecioCompra())
                 .productoPrecioVenta(dto.getPrecioVenta())
-                .productoIva(dto.getIva()) // <-- IVA Integrado
+                .productoIva(dto.getIva())
                 .productoRequiereReceta(dto.getRequiereReceta() != null ? dto.getRequiereReceta() : false)
                 .productoEstado(true)
                 .categoria(categoria)
