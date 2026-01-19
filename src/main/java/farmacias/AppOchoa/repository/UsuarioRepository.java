@@ -11,10 +11,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // Verifica si ya existe un usuario con ese nombre de usuario
     boolean existsByNombreUsuarioUsuario(String nombreUsuarioUsuario);
-
     // Busca un usuario por su nombre de usuario
     Optional<Usuario> findByNombreUsuarioUsuario(String nombreUsuarioUsuario);
-
     // Lista todos los usuarios que tengan usuarioEstado = true - con paginación
     Page<Usuario> findByUsuarioEstadoTrue(Pageable pageable);
 }
