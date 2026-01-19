@@ -35,3 +35,40 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Variables de Entorno y Configuración Sensible ###
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+### Archivos de Configuración con Datos Sensibles ###
+application-local.properties
+application-dev.properties
+application-prod.properties
+*-local.properties
+*-secret.properties
+
+### Logs ###
+*.log
+logs/
+
+### Archivos de Base de Datos Local ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Archivos de Respaldo ###
+*.bak
+*.backup
+*.tmp
+*~
+
+### Certificados y Claves ###
+*.pem
+*.key
+*.crt
+*.jks
+*.p12
