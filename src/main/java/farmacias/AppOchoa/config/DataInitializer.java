@@ -14,12 +14,17 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initData(
             UsuarioRepository usuarioRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            JwtConfig jwtConfig
     ) {
         return args -> {
+
+            //Validar configuración JWT (lanza excepción si está mal configurada)
+            jwtConfig.validateConfig();
+
+            //Crear usuario admin si no existe
             if (!usuarioRepository.existsByNombreUsuarioUsuario("admin")) {
 
-                //Crear usuario administrador por defecto
                 Usuario admin = Usuario.builder()
                         .nombreUsuarioUsuario("admin")
                         .usuarioContrasenaHash(passwordEncoder.encode("admin123"))
@@ -30,15 +35,6 @@ public class DataInitializer {
                         .build();
 
                 usuarioRepository.save(admin);
-
-                System.out.println();
-                System.out.println("Usuario administrador creado");
-                System.out.println("Username: admin");
-                System.out.println("Password: admin123");
-                System.out.println("Rol: ADMIN");
-                System.out.println();
-            } else {
-                System.out.println("Usuario administrador ya existe");
             }
         };
     }
