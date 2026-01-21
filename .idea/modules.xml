@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/AppOchoa.iml" filepath="$PROJECT_DIR$/.idea/AppOchoa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/farmacias.AppOchoa.iml" filepath="$PROJECT_DIR$/.idea/modules/farmacias.AppOchoa.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/farmacias.AppOchoa.main.iml" filepath="$PROJECT_DIR$/.idea/modules/farmacias.AppOchoa.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/farmacias.AppOchoa.test.iml" filepath="$PROJECT_DIR$/.idea/modules/farmacias.AppOchoa.test.iml" />
     </modules>
   </component>
 </project>
