@@ -45,6 +45,10 @@ out/
 *.env
 
 ### Archivos de Configuración con Datos Sensibles ###
+application.yml
+application-*.yml
+src/main/resources/application.yml
+src/main/resources/application-*.yml
 application-local.properties
 application-dev.properties
 application-prod.properties

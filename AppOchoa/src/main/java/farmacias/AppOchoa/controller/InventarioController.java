@@ -63,5 +63,3 @@ public class InventarioController {
 
 
 }
-
-feat: implement role-based security on endpoints and finalize config
