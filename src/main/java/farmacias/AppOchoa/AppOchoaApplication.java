@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class AppOchoaApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(AppOchoaApplication.class, args);
 	}
-
 }
