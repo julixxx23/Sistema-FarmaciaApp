@@ -1,5 +1,6 @@
 package farmacias.AppOchoa.serviceImplTes;
 
+import farmacias.AppOchoa.dto.usuario.UsuarioCreateDTO;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.serviceimpl.UsuarioServiceImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -22,4 +23,6 @@ public class UsuarioServiceImplTest {
     void crearUsuario_Exito(){
         return;
     }
+    UsuarioCreateDTO dto = new UsuarioCreateDTO();
+    dto
 }
