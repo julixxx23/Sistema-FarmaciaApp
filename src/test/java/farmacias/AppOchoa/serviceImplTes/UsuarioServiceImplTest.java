@@ -84,4 +84,35 @@ class UsuarioServiceImplTest {
         verify(sucursalRepository, never())
                 .findById(any());
     }
+
+    @Test
+    @DisplayName("Deberia lanzar excepcion cuando el nombre de usuario ya existe")
+    void crearUsuario_FallaCuandoNombreUsuarioYaExiste() {
+        UsuarioCreateDTO dto = new UsuarioCreateDTO();
+        dto.setNombreUsuario("steveSenior");
+        dto.setContrasena("password123");
+        dto.setNombre("Steve");
+        dto.setApellido("Leon");
+        dto.setRol(UsuarioRol.encargado);
+
+        when(usuarioRepository.existsByNombreUsuarioUsuario("steveSenior"))
+                .thenReturn(true);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> usuarioService.crearUsuario(dto)
+        );
+
+        assertEquals(
+                "El nombre de usuario 'steveSenior' ya está en uso",
+                exception.getMessage()
+        );
+
+        verify(usuarioRepository, times(1))
+                .existsByNombreUsuarioUsuario("steveSenior");
+        verify(usuarioRepository, never())
+                .save(any(Usuario.class));
+        verify(passwordEncoder, never())
+                .encode(any());
+    }
 }
