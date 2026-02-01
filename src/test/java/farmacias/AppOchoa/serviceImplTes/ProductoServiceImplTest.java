@@ -107,7 +107,7 @@ class ProductoServiceImplTest {
         verify(productoRepository, never()).save(any());
     }
 
-    // --- TESTS PARA ACTUALIZAR PRODUCTO ---
+    //TESTS PARA ACTUALIZAR PRODUCTO
 
     @Test
     @DisplayName("Debería actualizar producto correctamente")
