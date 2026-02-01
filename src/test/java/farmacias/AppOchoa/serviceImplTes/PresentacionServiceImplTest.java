@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.presentacion.PresentacionResponseDTO;
 import farmacias.AppOchoa.model.Presentacion;
 import farmacias.AppOchoa.repository.PresentacionRepository;
 import farmacias.AppOchoa.serviceimpl.PresentacionServiceImpl;
+import org.hibernate.boot.jaxb.hbm.spi.JaxbHbmSetType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,11 +13,11 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PresentacionServiceImplTest {
@@ -50,5 +51,30 @@ class PresentacionServiceImplTest {
         assertEquals("Caja de 12 Unidades", resultado.getNombre());
         verify(presentacionRepository).save(ArgumentMatchers.any(Presentacion.class));
     }
+
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion si ya existe una presentacion con ese nombre")
+    void crearPresentacionFallaNombreDuplicado(){
+        //ARRANGE
+        PresentacionCreateDTO dto = new PresentacionCreateDTO();
+        dto.setNombre("Tabletas de 10 Unidades");
+
+        Presentacion presentacionGuarda = Presentacion.builder()
+                .presentacionId(1L)
+                .presentacionNombre("Tabletas de 10 Unidades")
+                .presentacionEstado(true)
+                .build();
+
+        when(presentacionRepository.existsByPresentacionNombre(any())).thenReturn(true);
+
+        //ASSERT & ACT
+        assertThrows(RuntimeException.class, () ->{
+            presentacionService.crear(dto);
+        });
+        verify(presentacionRepository, never()).save(any(Presentacion.class));
+
+    }
+
+
 
 }
