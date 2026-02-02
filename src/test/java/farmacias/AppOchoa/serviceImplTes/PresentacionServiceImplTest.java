@@ -9,6 +9,7 @@ import org.hibernate.boot.jaxb.hbm.spi.JaxbHbmSetType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -87,7 +88,27 @@ class PresentacionServiceImplTest {
         assertThrows(RuntimeException.class, () ->
             presentacionService.obtenerPorId(idNoExistente));
         }
+
+
+    @Test
+    @DisplayName("Eliminar una presentacion deberia cambiar a estado false (Borrado Logico")
+    void eliminarPresentacion_CambiarEstado(){
+        //ARRANGE
+        Long id = 1L;
+        Presentacion presentacionMock = new Presentacion();
+        presentacionMock.setPresentacionId(id);
+        presentacionMock.setPresentacionEstado(true);
+
+        when(presentacionRepository.findById(id)).thenReturn(Optional.of(presentacionMock));
+        //ACT
+        presentacionService.eliminar(id);
+        //ASSERT
+        ArgumentCaptor<Presentacion> captor = ArgumentCaptor.forClass(Presentacion.class);
+        verify(presentacionRepository).save(captor.capture());
+        assertFalse(captor.getValue().getPresentacionEstado(), "El estado deberia de haber cambiado a false");
     }
+
+}
 
 
 
