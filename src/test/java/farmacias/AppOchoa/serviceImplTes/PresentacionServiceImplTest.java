@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -75,6 +77,17 @@ class PresentacionServiceImplTest {
 
     }
 
+    @Test
+    @DisplayName("Deberia lanzar una excepcion si buscamos un ID que no existe")
+    void obtenerPorIdNoEncontrado(){
+        Long idNoExistente = 1l;
+        when(presentacionRepository.findById(idNoExistente)).thenReturn(Optional.empty());
+
+        //ACT & ASSERT
+        assertThrows(RuntimeException.class, () ->
+            presentacionService.obtenerPorId(idNoExistente));
+        }
+    }
 
 
-}
+
