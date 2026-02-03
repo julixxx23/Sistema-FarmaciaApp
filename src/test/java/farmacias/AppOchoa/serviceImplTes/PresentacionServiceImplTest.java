@@ -1,7 +1,10 @@
 package farmacias.AppOchoa.serviceImplTes;
 
+import farmacias.AppOchoa.dto.categoria.CategoriaUpdateDTO;
 import farmacias.AppOchoa.dto.presentacion.PresentacionCreateDTO;
 import farmacias.AppOchoa.dto.presentacion.PresentacionResponseDTO;
+import farmacias.AppOchoa.dto.presentacion.PresentacionUpdateDTO;
+import farmacias.AppOchoa.model.Categoria;
 import farmacias.AppOchoa.model.Presentacion;
 import farmacias.AppOchoa.repository.PresentacionRepository;
 import farmacias.AppOchoa.serviceimpl.PresentacionServiceImpl;
@@ -106,6 +109,34 @@ class PresentacionServiceImplTest {
         ArgumentCaptor<Presentacion> captor = ArgumentCaptor.forClass(Presentacion.class);
         verify(presentacionRepository).save(captor.capture());
         assertFalse(captor.getValue().getPresentacionEstado(), "El estado deberia de haber cambiado a false");
+    }
+    @Test
+    @DisplayName("Deberia crear la actualizacion correctamente")
+    void crearActualizacionCorrectamente(){
+        Long id = 1L;
+        PresentacionUpdateDTO dto = new PresentacionUpdateDTO();
+        dto.setNombre("Liquido 1000 ml.");
+
+        Presentacion presentacionRegistrada = Presentacion.builder()
+                .presentacionId(id)
+                .presentacionNombre("Liquido 500 ml.")
+                .presentacionEstado(true)
+                .build();
+
+        Presentacion presentacionActualizacion = Presentacion.builder()
+                .presentacionId(id)
+                .presentacionNombre("Liquido 1000 ml.")
+                .presentacionEstado(true)
+                .build();
+
+        when(presentacionRepository.findById(id)).thenReturn(Optional.of(presentacionRegistrada));
+        when(presentacionRepository.save(any(Presentacion.class))).thenReturn(presentacionActualizacion);
+        //ACT
+        PresentacionResponseDTO resultado = presentacionService.actualizar(id, dto);
+        //ASSERT
+        assertNotNull(resultado);
+        assertEquals("Liquido 1000 ml.", resultado.getNombre(), "El nombre deberia de haberse actualizado");
+        verify(presentacionRepository).save(any(Presentacion.class));
     }
 
 }
