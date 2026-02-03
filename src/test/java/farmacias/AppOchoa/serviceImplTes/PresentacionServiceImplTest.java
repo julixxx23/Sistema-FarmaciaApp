@@ -138,6 +138,21 @@ class PresentacionServiceImplTest {
         assertEquals("Liquido 1000 ml.", resultado.getNombre(), "El nombre deberia de haberse actualizado");
         verify(presentacionRepository).save(any(Presentacion.class));
     }
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion al actualizar un ID que no existe")
+    void falloActualizacion(){
+        Long id = 1L;
+        PresentacionUpdateDTO dto = new PresentacionUpdateDTO();
+        dto.setNombre("Lactancia");
+
+        when(presentacionRepository.findById(id)).thenReturn(Optional.empty());
+        //ASERRT
+        assertThrows(RuntimeException.class, () ->{
+            presentacionService.actualizar(id, dto);
+        });
+        verify(presentacionRepository, never()).save(any(Presentacion.class));
+    }
+
 
 }
 
