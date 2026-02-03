@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceImplTes;
 
 import farmacias.AppOchoa.dto.categoria.CategoriaCreateDTO;
 import farmacias.AppOchoa.dto.categoria.CategoriaResponseDTO;
+import farmacias.AppOchoa.dto.categoria.CategoriaUpdateDTO;
 import farmacias.AppOchoa.model.Categoria;
 import farmacias.AppOchoa.repository.CategoriaRepository;
 import farmacias.AppOchoa.serviceimpl.CategoriaServiceImpl;
@@ -93,5 +94,34 @@ class CategoriaServiceImplTest {
         verify(categoriaRepository).save(captor.capture());
         assertFalse(captor.getValue().getCategoriaEstado(), "El estado deberia de haber cambiado a false");
     }
+    @Test
+    @DisplayName("Deberia de actualizar una categoria correctamente con los datos validos")
+    void actualizarCategoriaCorrectamente(){
+        Long id = 1L;
+        CategoriaUpdateDTO dto = new CategoriaUpdateDTO();
+        dto.setNombre("Bebes");
+
+        Categoria categoriaRegistrada = Categoria.builder()
+                .categoriaId(id)
+                .categoriaNombre("Sueros")
+                .categoriaEstado(true)
+                .build();
+
+        Categoria categoriaActualizada = Categoria.builder()
+                .categoriaId(id)
+                .categoriaNombre("Bebes")
+                .categoriaEstado(true)
+                .build();
+
+        when(categoriaRepository.findById(id)).thenReturn(Optional.of(categoriaRegistrada));
+        when(categoriaRepository.save(any(Categoria.class))).thenReturn(categoriaActualizada);
+        //ACT
+        CategoriaResponseDTO resultado = categoriaService.actualizar(id, dto);
+        //ASSERT
+        assertNotNull(resultado);
+        assertEquals("Bebes", resultado.getNombre(), "El nombre deberia de haberse actualizado");
+        verify(categoriaRepository).save(any(Categoria.class));
+    }
+
 
 }
