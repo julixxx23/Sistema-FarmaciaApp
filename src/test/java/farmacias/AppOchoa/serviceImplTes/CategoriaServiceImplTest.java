@@ -8,6 +8,7 @@ import farmacias.AppOchoa.serviceimpl.CategoriaServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -15,8 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -51,7 +51,7 @@ class CategoriaServiceImplTest {
     }
 
     @Test
-    @DisplayName("Deberia lanzar una presentacion si ya existe una Categoria con ese nombre")
+    @DisplayName("Deberia lanzar una Excepcion si ya existe una Categoria con ese nombre")
     void crearCategoriaDuplicado(){
         CategoriaCreateDTO dto = new CategoriaCreateDTO();
         dto.setNombre("Suplementos");
@@ -77,4 +77,21 @@ class CategoriaServiceImplTest {
         assertThrows(RuntimeException.class, () ->
                 categoriaService.obtenerPorId(idNoExistente));
     }
+    @Test
+    @DisplayName("Deberia de eliminar una categoria cambiandole de estado")
+    void eliminarCategoria_BorradoLogico(){
+        Long id = 1L;
+        Categoria categoria = new Categoria();
+        categoria.setCategoriaId(id);
+        categoria.setCategoriaEstado(true);
+
+        when(categoriaRepository.findById(id)).thenReturn(Optional.of(categoria));
+        //ACT
+        categoriaService.eliminar(id);
+        //ASSERT
+        ArgumentCaptor<Categoria> captor = ArgumentCaptor.forClass(Categoria.class);
+        verify(categoriaRepository).save(captor.capture());
+        assertFalse(captor.getValue().getCategoriaEstado(), "El estado deberia de haber cambiado a false");
+    }
+
 }
