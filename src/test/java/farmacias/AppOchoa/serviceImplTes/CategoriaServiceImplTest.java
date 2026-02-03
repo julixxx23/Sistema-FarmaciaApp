@@ -11,6 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,5 +67,14 @@ class CategoriaServiceImplTest {
             categoriaService.crear(dto);
         });
         verify(categoriaRepository, never()).save(any(Categoria.class));
+    }
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion si buscamos un ID que no existe")
+    void obtenerPorIdNoEncontrado(){
+        Long idNoExistente = 1l;
+        when(categoriaRepository.findById(idNoExistente)).thenReturn(Optional.empty());
+        //ACT & ASSERT
+        assertThrows(RuntimeException.class, () ->
+                categoriaService.obtenerPorId(idNoExistente));
     }
 }
