@@ -122,6 +122,20 @@ class CategoriaServiceImplTest {
         assertEquals("Bebes", resultado.getNombre(), "El nombre deberia de haberse actualizado");
         verify(categoriaRepository).save(any(Categoria.class));
     }
+    @Test
+    @DisplayName("Deberia lanzar una excepcion al actualizar un ID que no existe")
+    void falloActualizar(){
+        Long id = 1L;
+        CategoriaUpdateDTO dto = new CategoriaUpdateDTO();
+        dto.setNombre("Lactancia");
+
+        when(categoriaRepository.findById(id)).thenReturn(Optional.empty());
+        //ASSERT
+        assertThrows(RuntimeException.class,() ->{
+            categoriaService.actualizar(id, dto);
+        });
+        verify(categoriaRepository, never()).save(any(Categoria.class));
+    }
 
 
 }
