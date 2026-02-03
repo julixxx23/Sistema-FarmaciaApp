@@ -13,9 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CategoriaServiceImplTest {
@@ -45,5 +45,24 @@ class CategoriaServiceImplTest {
         assertNotNull(resultado);
         assertEquals("Vitaminas", resultado.getNombre());
         verify(categoriaRepository).save(any(Categoria.class));
+    }
+
+    @Test
+    @DisplayName("Deberia lanzar una presentacion si ya existe una Categoria con ese nombre")
+    void crearCategoriaDuplicado(){
+        CategoriaCreateDTO dto = new CategoriaCreateDTO();
+        dto.setNombre("Suplementos");
+        Categoria categoria = Categoria.builder()
+                .categoriaId(2L)
+                .categoriaNombre("Suplementos")
+                .categoriaEstado(true)
+                .build();
+
+        when(categoriaRepository.existsByCategoriaNombre(any())).thenReturn(true);
+        //ACT y ASSERT
+        assertThrows(RuntimeException.class, () ->{
+            categoriaService.crear(dto);
+        });
+        verify(categoriaRepository, never()).save(any(Categoria.class));
     }
 }
