@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlertaRepository extends JpaRepository<Alerta, Long> {
-
-    // NOTA: Usamos Producto_ProductoId porque en la entidad Producto el campo es productoId
     Page<Alerta> findByProducto_ProductoId(Long productoId, Pageable pageable);
-
     Page<Alerta> findByAlertaLeidaFalse(Pageable pageable);
 }

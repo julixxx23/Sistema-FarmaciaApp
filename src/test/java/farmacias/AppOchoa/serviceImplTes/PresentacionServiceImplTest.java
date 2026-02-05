@@ -146,7 +146,7 @@ class PresentacionServiceImplTest {
         dto.setNombre("Lactancia");
 
         when(presentacionRepository.findById(id)).thenReturn(Optional.empty());
-        //ASERRT
+        //ASSERT
         assertThrows(RuntimeException.class, () ->{
             presentacionService.actualizar(id, dto);
         });
