@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceImplTes;
 
 import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
+import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
 import farmacias.AppOchoa.model.Alerta;
 import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.Producto;
@@ -14,14 +15,14 @@ import farmacias.AppOchoa.serviceimpl.AlertaServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,8 +76,29 @@ class AlertaServiceImplTest {
         assertNotNull(resultado);
         assertEquals("El stock de Suerox sabor fresa, se esta agotando", resultado.getMensaje());
         verify(alertaRepository).save(any(Alerta.class));
-
+    }
+    @Test
+    @DisplayName("Deberia de eliminar una alerta correctamente")
+    void eliminarAlertaExitosa(){
+        Long id = 1L;
+        Alerta alerta = new Alerta();
+        alerta.setAlertaId(id);
+        when(alertaRepository.existsById(id)).thenReturn(true);
+        //ACT
+        alertaService.eliminar(id);
+        //ASSERT
+        verify(alertaRepository).deleteById(id);
+    }
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion al eliminar una alerta por ID no encontrado")
+    void alertaEliminarFalloId(){
+        Long id =1L;
+        when(alertaRepository.existsById(id)).thenReturn(false);
+        assertThrows(RuntimeException.class, () -> {
+            alertaService.eliminar(id);
+        });
 
 
     }
+
 }
