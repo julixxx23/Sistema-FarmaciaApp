@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceImplTes;
 
 import farmacias.AppOchoa.dto.inventario.InventarioCreateDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioResponseDTO;
+import farmacias.AppOchoa.dto.inventario.InventarioUpdateDTO;
 import farmacias.AppOchoa.model.Inventario;
 import farmacias.AppOchoa.model.Producto;
 import farmacias.AppOchoa.model.Sucursal;
@@ -85,8 +86,40 @@ public class InventarioServiceImplTest {
         });
         assertTrue(excepcion.getMessage().contains("Ya existe un registro de inventario para este producto en la sucursal seleccionada."));
         verify(inventarioRepository, never()).save(any(Inventario.class));
+    }
+    @Test
+    @DisplayName("Deberia de Actualizar un registro correctamente")
+    void actualizarRegistro(){
+        Long id = 1L;
+        InventarioUpdateDTO dto = new InventarioUpdateDTO();
+        dto.setCantidadActual(60);
+        dto.setCantidadMinima(12);
+        Producto producto = new Producto(); producto.setProductoId(1L);
+        Sucursal sucursal = new Sucursal(); sucursal.setSucursalId(1L);
 
+        Inventario inventarioExistente = Inventario.builder()
+                .inventarioId(id)
+                .producto(producto)
+                .sucursal(sucursal)
+                .inventarioCantidadActual(50)
+                .build();
 
+        Inventario inventarioActualizado = Inventario.builder()
+                .inventarioId(id)
+                .producto(producto)
+                .sucursal(sucursal)
+                .inventarioCantidadActual(60)
+                .build();
+
+        when(inventarioRepository.findById(id)).thenReturn(Optional.of(inventarioExistente));
+        when(inventarioRepository.save(any(Inventario.class))).thenReturn(inventarioActualizado);
+
+        //ACT
+        InventarioResponseDTO resultado = inventarioService.actualizar(id, dto);
+
+        //ASSERT
+        assertEquals(60, resultado.getCantidadActual());
+        verify(inventarioRepository).save(any(Inventario.class));
     }
 
 

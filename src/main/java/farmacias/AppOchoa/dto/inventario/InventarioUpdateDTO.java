@@ -21,6 +21,4 @@ public class InventarioUpdateDTO {
     @NotNull(message = "La cantidad minima es obligatoria")
     @Min(value = 1, message = "La cantidad minima debe ser al menos 1")
     private Integer cantidadMinima;
-
-
 }
