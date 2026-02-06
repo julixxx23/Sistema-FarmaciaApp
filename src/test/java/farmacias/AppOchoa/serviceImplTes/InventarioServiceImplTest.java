@@ -121,6 +121,15 @@ public class InventarioServiceImplTest {
         assertEquals(60, resultado.getCantidadActual());
         verify(inventarioRepository).save(any(Inventario.class));
     }
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion si buscamos un ID no existente")
+    void buscarRegistroFallo(){
+        Long id = 1L;
+        when(inventarioRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, ()->{
+            inventarioService.listaPorId(id);
+        });
+    }
 
 
 
