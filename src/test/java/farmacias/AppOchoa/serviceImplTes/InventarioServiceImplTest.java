@@ -18,11 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class InventarioServiceImplTest {
@@ -70,8 +68,27 @@ public class InventarioServiceImplTest {
         assertEquals(1L, resultado.getInventarioId());
         verify(inventarioRepository).save(any(Inventario.class));
 
+    }
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion al registrar un producto ya existente")
+    void falloRegistro(){
+        InventarioCreateDTO dto =  new InventarioCreateDTO();
+        dto.setProductoId(1L);
+        dto.setProductoId(1L);
+        dto.setSucursalId(1L);
+        dto.setCantidadActual(60);
+        dto.setCantidadMinima(12);
+        when(inventarioRepository.existsByProducto_ProductoIdAndSucursal_SucursalId(1L, 1L)).thenReturn(true);
+        //ACT & ASSERT
+        RuntimeException excepcion = assertThrows(RuntimeException.class, () ->{
+            inventarioService.crear(dto);
+        });
+        assertTrue(excepcion.getMessage().contains("Ya existe un registro de inventario para este producto en la sucursal seleccionada."));
+        verify(inventarioRepository, never()).save(any(Inventario.class));
 
 
     }
+
+
 
 }
