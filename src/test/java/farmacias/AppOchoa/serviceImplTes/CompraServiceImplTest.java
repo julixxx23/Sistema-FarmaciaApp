@@ -91,8 +91,16 @@ public class CompraServiceImplTest {
         ArgumentCaptor<Compra> captor = ArgumentCaptor.forClass(Compra.class);
         verify(compraRepository).save(captor.capture());
         assertEquals(CompraEstado.anulada, captor.getValue().getCompraEstado(), "El estado debería haber cambiado a INACTIVA");
-
-
-
     }
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion al buscar un ID que no existe")
+    void buscarFallo(){
+        Long id =  1L;
+        when(compraRepository.findById(1L)).thenReturn(Optional.empty());
+        //ACT
+        assertThrows(RuntimeException.class,()->{
+            compraService.listarPorId(1L);
+        });
+    }
+
 }
