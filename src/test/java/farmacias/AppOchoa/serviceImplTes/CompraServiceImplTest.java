@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceImplTes;
 
 import farmacias.AppOchoa.dto.compra.CompraCreateDTO;;
 import farmacias.AppOchoa.dto.compra.CompraResponseDTO;
+import farmacias.AppOchoa.dto.compra.CompraUpdateDTO;
 import farmacias.AppOchoa.model.Compra;
 import farmacias.AppOchoa.model.CompraEstado;
 import farmacias.AppOchoa.model.Sucursal;
@@ -12,6 +13,7 @@ import org.hibernate.cache.spi.AbstractCacheTransactionSynchronization;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,8 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,6 +75,24 @@ public class CompraServiceImplTest {
         assertNotNull(resultado);
         assertEquals(1L, resultado.getCompraId());
         verify(compraRepository).save(any(Compra.class));
+
+    }
+    @Test
+    @DisplayName("Deberia de elimimar (cambiar de estado) la compra")
+    void eliminacionExitosa(){
+        Long id = 1L;
+        Compra compra = new Compra();
+        compra.setCompraId(1L);
+        compra.setCompraEstado(CompraEstado.activa);
+        when(compraRepository.findById(1L)).thenReturn(Optional.of(compra));
+        //ACT
+        compraService.eliminar(id);
+        //ASSERT
+        ArgumentCaptor<Compra> captor = ArgumentCaptor.forClass(Compra.class);
+        verify(compraRepository).save(captor.capture());
+        assertEquals(CompraEstado.anulada, captor.getValue().getCompraEstado(), "El estado debería haber cambiado a INACTIVA");
+
+
 
     }
 }
