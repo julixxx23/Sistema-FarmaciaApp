@@ -78,4 +78,19 @@ public class VentaServiceImplTest {
         assertEquals(1L, resultado.getVentaId());
         verify(ventaRepository).save(any(Venta.class));
    }
+    @Test
+    @DisplayName("Deberia de buscar una venta por ID correctamente ")
+    void busquedaVentaExitosa(){
+        Long id = 1L;
+        Venta venta = new Venta();
+        venta.setVentaId(1L);
+        when(ventaRepository.findById(1L)).thenReturn(Optional.of(venta));
+        VentaResponseDTO resultado = ventaService.listarPorId(id);
+        //ASSERT
+        assertNotNull(resultado);
+        assertEquals(1L, resultado.getVentaId());
+        verify(ventaRepository).findById(1L);
+    }
+
+
 }
