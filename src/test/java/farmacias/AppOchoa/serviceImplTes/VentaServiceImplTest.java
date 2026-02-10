@@ -118,7 +118,16 @@ public class VentaServiceImplTest {
         assertEquals(VentaEstado.anulada,captor.getValue().getVentaEstado(), "El estado deberia de cambiar a anulada");
     }
     @Test
-    @DisplayName("Deberia de eliminar una venta, correctamente")
+    @DisplayName("Deberia de lanzar una excepcion al eliminar una venta, con ID incorrecto")
+    void eliminarVentaFallo(){
+        Long id = 1L;
+        when(ventaRepository.findById(1L)).thenReturn(Optional.empty());
+        //ACT
+        assertThrows(RuntimeException.class,() ->{
+            ventaService.eliminar(1L);
+        });
+        verify(ventaRepository,  never()).save(any(Venta.class));
+    }
 
 
 
