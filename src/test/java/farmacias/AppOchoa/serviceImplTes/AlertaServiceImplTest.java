@@ -3,6 +3,7 @@ package farmacias.AppOchoa.serviceImplTes;
 import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Alerta;
 import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.Producto;
@@ -94,7 +95,7 @@ class AlertaServiceImplTest {
     void alertaEliminarFalloId(){
         Long id =1L;
         when(alertaRepository.existsById(id)).thenReturn(false);
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             alertaService.eliminar(id);
         });
 

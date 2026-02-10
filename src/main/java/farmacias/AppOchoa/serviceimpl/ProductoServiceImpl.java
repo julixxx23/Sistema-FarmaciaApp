@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.producto.ProductoCreateDTO;
 import farmacias.AppOchoa.dto.producto.ProductoResponseDTO;
 import farmacias.AppOchoa.dto.producto.ProductoSimpleDTO;
 import farmacias.AppOchoa.dto.producto.ProductoUpdateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Categoria;
 import farmacias.AppOchoa.model.Presentacion;
 import farmacias.AppOchoa.model.Producto;
@@ -40,12 +41,12 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoResponseDTO agregarProducto(ProductoCreateDTO dto) {
         //Validaciones de unicidad
         if (productoRepository.existsByProductoNombre(dto.getNombre())) {
-            throw new RuntimeException("Ya existe un producto con el nombre: " + dto.getNombre());
+            throw new ResourceNotFoundException("Ya existe un producto con el nombre: " + dto.getNombre());
         }
 
         if (dto.getCodigoBarras() != null && !dto.getCodigoBarras().isBlank() &&
                 productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
-            throw new RuntimeException("El código de barras ya está registrado: " + dto.getCodigoBarras());
+            throw new ResourceNotFoundException("El código de barras ya está registrado: " + dto.getCodigoBarras());
         }
 
         //Buscar entidades relacionadas
@@ -75,14 +76,14 @@ public class ProductoServiceImpl implements ProductoService {
         // Validar unicidad de nombre si cambió
         if (!producto.getProductoNombre().equalsIgnoreCase(dto.getNombre()) &&
                 productoRepository.existsByProductoNombre(dto.getNombre())) {
-            throw new RuntimeException("Ya existe otro producto con el nombre: " + dto.getNombre());
+            throw new ResourceNotFoundException("Ya existe otro producto con el nombre: " + dto.getNombre());
         }
 
         // Validar unicidad de código de barras si cambió
         if (dto.getCodigoBarras() != null &&
                 !dto.getCodigoBarras().equals(producto.getProductoCodigoBarras()) &&
                 productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
-            throw new RuntimeException("El código de barras ya pertenece a otro producto.");
+            throw new ResourceNotFoundException("El código de barras ya pertenece a otro producto.");
         }
 
         // Actualizar relaciones y campos
@@ -109,7 +110,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public void cambiarEstado(Long id, Boolean nuevoEstado) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado ID: " + id));
         producto.setProductoEstado(nuevoEstado);
         productoRepository.save(producto);
     }
@@ -119,7 +120,7 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoResponseDTO obtenerPorCodigoBarras(String codigo) {
         return productoRepository.findByProductoCodigoBarras(codigo)
                 .map(ProductoResponseDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con código: " + codigo));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con código: " + codigo));
     }
 
     @Override
@@ -127,7 +128,7 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoResponseDTO obtenerPorId(Long id) {
         return productoRepository.findById(id)
                 .map(ProductoResponseDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado ID: " + id));
     }
 
     @Override
@@ -141,12 +142,12 @@ public class ProductoServiceImpl implements ProductoService {
     private Categoria buscarCategoria(Long id) {
         if (id == null) return null;
         return categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada ID: " + id));
     }
 
     private Presentacion buscarPresentacion(Long id) {
         if (id == null) return null;
         return presentacionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Presentación no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Presentación no encontrada ID: " + id));
     }
 }

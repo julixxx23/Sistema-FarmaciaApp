@@ -1,6 +1,7 @@
 package farmacias.AppOchoa.serviceimpl;
 
 import farmacias.AppOchoa.config.JwtConfig;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.services.AuthService;
@@ -42,12 +43,12 @@ public class AuthServiceImpl implements AuthService {
 
         //Verificar que esté activo
         if (!usuario.getUsuarioEstado()) {
-            throw new RuntimeException("Usuario desactivado");
+            throw new ResourceNotFoundException("Usuario desactivado");
         }
 
         //Validar contraseña
         if (!passwordEncoder.matches(contrasena, usuario.getUsuarioContrasenaHash())) {
-            throw new RuntimeException("Contraseña incorrecta");
+            throw new ResourceNotFoundException("Contraseña incorrecta");
         }
 
         //Generar token con claims adicionales
