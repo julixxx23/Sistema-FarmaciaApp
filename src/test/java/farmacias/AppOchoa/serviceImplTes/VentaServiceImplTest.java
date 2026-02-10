@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.venta.VentaResponseDTO;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.model.Venta;
+import farmacias.AppOchoa.model.VentaEstado;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.repository.VentaRepository;
@@ -12,6 +13,7 @@ import farmacias.AppOchoa.serviceimpl.VentaServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -100,6 +102,27 @@ public class VentaServiceImplTest {
         });
         verify(ventaRepository, never()).save(any(Venta.class));
     }
+    @Test
+    @DisplayName("Deberia de eliminar una venta, correctamente")
+    void eliminarVentaExitosa(){
+        Long id = 1L;
+        Venta venta = new Venta();
+        venta.setVentaId(1L);
+        venta.setVentaEstado(VentaEstado.completada);
+
+        when(ventaRepository.findById(1L)).thenReturn(Optional.of(venta));
+        //ACT & ASSERT
+        ventaService.eliminar(1L);
+        ArgumentCaptor<Venta> captor = ArgumentCaptor.forClass(Venta.class);
+        verify(ventaRepository).save(captor.capture());
+        assertEquals(VentaEstado.anulada,captor.getValue().getVentaEstado(), "El estado deberia de cambiar a anulada");
+    }
+    @Test
+    @DisplayName("Deberia de eliminar una venta, correctamente")
+
+
+
+
 
 
 }
