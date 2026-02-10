@@ -21,11 +21,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class VentaServiceImplTest {
@@ -90,6 +88,17 @@ public class VentaServiceImplTest {
         assertNotNull(resultado);
         assertEquals(1L, resultado.getVentaId());
         verify(ventaRepository).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Deberia de lanzar una excepcion al buscar una venta con ID no existente")
+    void falloBusqueda(){
+        Long id = 1L;
+        when(ventaRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class,() ->{
+            ventaService.listarPorId(1L);
+        });
+        verify(ventaRepository, never()).save(any(Venta.class));
     }
 
 
