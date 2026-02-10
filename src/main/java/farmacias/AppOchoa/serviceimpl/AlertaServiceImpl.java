@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.alerta.AlertaCreateDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaSimpleDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Alerta;
 import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.Producto;
@@ -60,7 +61,7 @@ public class AlertaServiceImpl implements AlertaService {
     @Transactional(readOnly = true)
     public AlertaResponseDTO listarPorId(Long id) {
         Alerta alerta = alertaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada ID: " + id));
         return AlertaResponseDTO.fromEntity(alerta);
     }
 
@@ -81,7 +82,7 @@ public class AlertaServiceImpl implements AlertaService {
     @Override
     public AlertaResponseDTO actualizar(Long id, AlertaUpdateDTO dto) {
         Alerta alerta = alertaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada ID: " + id));
 
         if (dto.getLeida() != null) {
             alerta.setAlertaLeida(dto.getLeida());
@@ -93,7 +94,7 @@ public class AlertaServiceImpl implements AlertaService {
     @Override
     public void cambiarEstado(Long id) {
         Alerta alerta = alertaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Alerta no encontrada ID: " + id));
         alerta.setAlertaLeida(!alerta.getAlertaLeida());
         alertaRepository.save(alerta);
     }
@@ -101,7 +102,7 @@ public class AlertaServiceImpl implements AlertaService {
     @Override
     public void eliminar(Long id) {
         if (!alertaRepository.existsById(id)) {
-            throw new RuntimeException("Alerta no encontrada ID: " + id);
+            throw new ResourceNotFoundException("Alerta no encontrada ID: " + id);
         }
         alertaRepository.deleteById(id);
     }
@@ -109,16 +110,16 @@ public class AlertaServiceImpl implements AlertaService {
     // Métodos auxiliares privados
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado ID: " + id));
     }
 
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
     }
 
     private InventarioLotes buscarInventarioLotes(Long id) {
         return inventarioLotesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Lote no encontrado ID: " + id));
     }
 }

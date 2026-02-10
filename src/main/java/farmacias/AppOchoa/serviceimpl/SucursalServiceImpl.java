@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.sucursal.SucursalCreateDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalResponseDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalSimpleDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalUpdateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.services.SucursalService;
@@ -25,7 +26,7 @@ public class SucursalServiceImpl implements SucursalService {
     @Override
     public SucursalResponseDTO crear(SucursalCreateDTO dto){
         if(sucursalRepository.existsBySucursalNombre(dto.getNombre())){
-            throw new RuntimeException("Ya existe una sucursal con ese nombre: " + dto.getNombre());
+            throw new ResourceNotFoundException("Ya existe una sucursal con ese nombre: " + dto.getNombre());
         }
 
         Sucursal sucursal = Sucursal.builder()
@@ -43,7 +44,7 @@ public class SucursalServiceImpl implements SucursalService {
     public SucursalResponseDTO obtenerPorId(Long id){
         return sucursalRepository.findById(id)
                 .map(SucursalResponseDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada por ID: " + id));
     }
 
     @Override
@@ -63,12 +64,12 @@ public class SucursalServiceImpl implements SucursalService {
     @Override
     public SucursalResponseDTO actualizar(Long id, SucursalUpdateDTO dto){
         Sucursal sucursal = sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada por ID: " + id));
 
         String nuevoNombre = dto.getNombre().trim();
         if(!sucursal.getSucursalNombre().equalsIgnoreCase(nuevoNombre)){
             if(sucursalRepository.existsBySucursalNombre(nuevoNombre)){
-                throw new RuntimeException("Ya existe otra sucursal con ese nombre: " + nuevoNombre);
+                throw new ResourceNotFoundException("Ya existe otra sucursal con ese nombre: " + nuevoNombre);
             }
             sucursal.setSucursalNombre(nuevoNombre);
         }

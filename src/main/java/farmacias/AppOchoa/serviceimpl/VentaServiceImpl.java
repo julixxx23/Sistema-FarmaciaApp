@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.venta.VentaResponseDTO;
 import farmacias.AppOchoa.dto.venta.VentaSimpleDTO;
 import farmacias.AppOchoa.dto.venta.VentaUpdateDTO;
 import farmacias.AppOchoa.dto.ventadetalle.VentaDetalleCreateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.services.VentaService;
@@ -63,7 +64,7 @@ public class VentaServiceImpl implements VentaService {
 
             // Validación de stock
             if (lote.getLoteCantidadActual() < detalleDto.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente en el lote: " + lote.getLoteNumero());
+                throw new ResourceNotFoundException("Stock insuficiente en el lote: " + lote.getLoteNumero());
             }
 
             // Descuento de inventario
@@ -102,7 +103,7 @@ public class VentaServiceImpl implements VentaService {
     @Transactional(readOnly = true)
     public VentaResponseDTO listarPorId(Long id) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada ID: " + id));
         return VentaResponseDTO.fromEntity(venta);
     }
 
@@ -123,7 +124,7 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada ID: " + id));
 
         // Actualizar datos como el nombre del cliente o NIT si hubo error
         if (dto.getNombreCliente() != null) venta.setVentaNombreCliente(dto.getNombreCliente());
@@ -136,7 +137,7 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public void cambiarEstado(Long id, VentaEstado nuevoEstado) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada ID: " + id));
 
         // ANULAR una venta que estaba COMPLETADA
         if (nuevoEstado == VentaEstado.anulada && venta.getVentaEstado() == VentaEstado.completada) {
@@ -168,21 +169,21 @@ public class VentaServiceImpl implements VentaService {
     // Métodos auxiliares privados
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
     }
 
     private Usuario buscarUsuario(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
     }
 
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado ID: " + id));
     }
 
     private InventarioLotes buscarLote(Long id) {
         return loteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Lote no encontrado ID: " + id));
     }
 }

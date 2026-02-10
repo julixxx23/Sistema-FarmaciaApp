@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.compra.CompraResponseDTO;
 import farmacias.AppOchoa.dto.compra.CompraSimpleDTO;
 import farmacias.AppOchoa.dto.compra.CompraUpdateDTO;
 import farmacias.AppOchoa.dto.compradetalle.CompraDetalleCreateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.services.CompraService;
@@ -101,7 +102,7 @@ public class CompraServiceImpl implements CompraService {
     @Transactional(readOnly = true)
     public CompraResponseDTO listarPorId(Long id) {
         Compra compra = compraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Compra no encontrada ID: " + id));
         return CompraResponseDTO.fromEntity(compra);
     }
 
@@ -122,7 +123,7 @@ public class CompraServiceImpl implements CompraService {
     @Override
     public CompraResponseDTO actualizar(Long id, CompraUpdateDTO dto) {
         Compra compra = compraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Compra no encontrada ID: " + id));
 
         if (dto.getObservaciones() != null) {
             compra.setCompraObservaciones(dto.getObservaciones());
@@ -134,7 +135,7 @@ public class CompraServiceImpl implements CompraService {
     @Override
     public void cambiarEstado(Long id, CompraEstado nuevoEstado) {
         Compra compra = compraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Compra no encontrada ID: " + id));
 
         // Revertir stock si se anula
         if (nuevoEstado == CompraEstado.anulada && compra.getCompraEstado() == CompraEstado.activa) {
@@ -157,16 +158,16 @@ public class CompraServiceImpl implements CompraService {
     // Métodos auxiliares privados
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
     }
 
     private Usuario buscarUsuario(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
     }
 
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado ID: " + id));
     }
 }

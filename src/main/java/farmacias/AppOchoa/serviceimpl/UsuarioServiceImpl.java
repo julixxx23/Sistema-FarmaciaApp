@@ -1,6 +1,7 @@
 package farmacias.AppOchoa.serviceimpl;
 
 import farmacias.AppOchoa.dto.usuario.*;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.SucursalRepository;
@@ -57,7 +58,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioResponseDTO obtenerPorId(Long id) {
         return usuarioRepository.findById(id)
                 .map(UsuarioResponseDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
     }
 
     @Override
@@ -75,7 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Validar nombre de usuario si cambia
         if (!usuario.getNombreUsuarioUsuario().equals(dto.getNombreUsuario())) {
             if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
-                throw new RuntimeException("El nuevo nombre de usuario ya está siendo usado por otra cuenta");
+                throw new ResourceNotFoundException("El nuevo nombre de usuario ya está siendo usado por otra cuenta");
             }
             usuario.setNombreUsuarioUsuario(dto.getNombreUsuario());
         }
@@ -99,7 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void cambiarEstado(Long id, Boolean nuevoEstado) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
         usuario.setUsuarioEstado(nuevoEstado);
         usuarioRepository.save(usuario);
     }
@@ -113,14 +114,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional(readOnly = true)
     public UsuarioResponseDTO login(LoginDTO dto) {
         Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
-                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+                .orElseThrow(() -> new ResourceNotFoundException("Credenciales inválidas"));
 
         if (!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())) {
-            throw new RuntimeException("Credenciales inválidas");
+            throw new ResourceNotFoundException("Credenciales inválidas");
         }
 
         if (Boolean.FALSE.equals(usuario.getUsuarioEstado())) {
-            throw new RuntimeException("La cuenta de usuario está desactivada");
+            throw new ResourceNotFoundException("La cuenta de usuario está desactivada");
         }
 
         return UsuarioResponseDTO.fromEntity(usuario);
@@ -129,6 +130,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     // Método auxiliar privado
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
     }
 }

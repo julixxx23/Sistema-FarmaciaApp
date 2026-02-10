@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesCreateDTO;
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesResponseDTO;
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesSimpleDTO;
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesUpdateDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.LoteEstado;
 import farmacias.AppOchoa.model.Producto;
@@ -32,7 +33,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     @Override
     public InventarioLotesResponseDTO crear(InventarioLotesCreateDTO dto) {
         if (inventarioLotesRepository.existsByLoteNumeroAndSucursal_SucursalId(dto.getNumeroLote(), dto.getSucursalId())) {
-            throw new RuntimeException("El número de lote " + dto.getNumeroLote() + " ya existe en esta sucursal.");
+            throw new ResourceNotFoundException("El número de lote " + dto.getNumeroLote() + " ya existe en esta sucursal.");
         }
 
         Producto producto = buscarProducto(dto.getProductoId());
@@ -56,7 +57,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     @Transactional(readOnly = true)
     public InventarioLotesResponseDTO buscarPorId(Long id) {
         InventarioLotes lote = inventarioLotesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Lote no encontrado ID: " + id));
         return InventarioLotesResponseDTO.fromEntity(lote);
     }
 
@@ -77,7 +78,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     @Override
     public InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto) {
         InventarioLotes lote = inventarioLotesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Lote no encontrado ID: " + id));
 
         lote.setLoteCantidadActual(dto.getCantidadActual());
         lote.setLoteEstado(dto.getEstado());
@@ -88,7 +89,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     @Override
     public void eliminar(Long id) {
         if (!inventarioLotesRepository.existsById(id)) {
-            throw new RuntimeException("Lote no encontrado ID: " + id);
+            throw new ResourceNotFoundException("Lote no encontrado ID: " + id);
         }
         inventarioLotesRepository.deleteById(id);
     }
@@ -96,11 +97,11 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     // Métodos auxiliares privados
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado ID: " + id));
     }
 
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
     }
 }
