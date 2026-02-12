@@ -32,4 +32,15 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(cuerpoRespuesta, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Object> manejarBadRequestException(BadRequestException ex, WebRequest request) {
+        Map<String, Object> cuerpoRespuesta = new HashMap<>();
+        cuerpoRespuesta.put("timestamp", LocalDateTime.now());
+        cuerpoRespuesta.put("mensaje", ex.getMessage());
+        cuerpoRespuesta.put("detalles", request.getDescription(false));
+        cuerpoRespuesta.put("estado", HttpStatus.BAD_REQUEST.value()); // 400
+
+        return new ResponseEntity<>(cuerpoRespuesta, HttpStatus.BAD_REQUEST);
+    }
 }
