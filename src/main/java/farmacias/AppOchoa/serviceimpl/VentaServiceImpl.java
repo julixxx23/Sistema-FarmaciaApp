@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.venta.VentaResponseDTO;
 import farmacias.AppOchoa.dto.venta.VentaSimpleDTO;
 import farmacias.AppOchoa.dto.venta.VentaUpdateDTO;
 import farmacias.AppOchoa.dto.ventadetalle.VentaDetalleCreateDTO;
+import farmacias.AppOchoa.exception.BadRequestException;
 import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.*;
@@ -64,7 +65,7 @@ public class VentaServiceImpl implements VentaService {
 
             // Validación de stock
             if (lote.getLoteCantidadActual() < detalleDto.getCantidad()) {
-                throw new ResourceNotFoundException("Stock insuficiente en el lote: " + lote.getLoteNumero());
+                throw new BadRequestException("Stock insuficiente en el lote: " + lote.getLoteNumero());
             }
 
             // Descuento de inventario
