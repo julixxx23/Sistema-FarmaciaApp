@@ -21,6 +21,7 @@ public class UsuarioResponseDTO {
     private Boolean estado;
     private LocalDateTime fechaCreacion;
     private SucursalSimpleDTO sucursal;
+    private String token;
 
     // Método helper para construir nombreCompleto
     public static UsuarioResponseDTO fromEntity(farmacias.AppOchoa.model.Usuario usuario) {

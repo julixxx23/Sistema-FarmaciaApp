@@ -7,6 +7,7 @@ import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.services.UsuarioService;
+import farmacias.AppOchoa.util.JwtUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,13 +21,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final SucursalRepository sucursalRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
                               SucursalRepository sucursalRepository,
-                              PasswordEncoder passwordEncoder) {
+                              PasswordEncoder passwordEncoder,
+                              JwtUtil jwtUtil) {
         this.usuarioRepository = usuarioRepository;
         this.sucursalRepository = sucursalRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -73,7 +77,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
 
-        // Validar nombre de usuario si cambia
         if (!usuario.getNombreUsuarioUsuario().equals(dto.getNombreUsuario())) {
             if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
                 throw new ResourceNotFoundException("El nuevo nombre de usuario ya está siendo usado por otra cuenta");
@@ -81,7 +84,6 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setNombreUsuarioUsuario(dto.getNombreUsuario());
         }
 
-        // Manejo de sucursal opcional
         if (dto.getSucursalId() != null) {
             Sucursal sucursal = buscarSucursal(dto.getSucursalId());
             usuario.setSucursal(sucursal);
@@ -124,10 +126,14 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ResourceNotFoundException("La cuenta de usuario está desactivada");
         }
 
-        return UsuarioResponseDTO.fromEntity(usuario);
+        String token = jwtUtil.generateToken(usuario.getNombreUsuarioUsuario());
+
+        UsuarioResponseDTO response = UsuarioResponseDTO.fromEntity(usuario);
+        response.setToken(token);
+
+        return response;
     }
 
-    // Método auxiliar privado
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
