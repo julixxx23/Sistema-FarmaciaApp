@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,12 +20,14 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ENCARGADO')")
     public ResponseEntity<Page<UsuarioSimpleDTO>> listarUsuarioPaginados(
             @PageableDefault(size = 10, sort = "usuarioNombre")Pageable pageable){
         return ResponseEntity.ok(usuarioService.listarUsuariosActivosPaginado(pageable));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'ENCARGADO')")
     public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable Long id){
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.obtenerPorId(id);
         return ResponseEntity.ok(usuarioResponseDTO);
@@ -37,30 +40,29 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioUpdateDTO dto){
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.actualizarUsuario(id, dto);
         return ResponseEntity.ok(usuarioResponseDTO);
     }
 
     @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> cambiarEstado(@PathVariable Long id, @RequestParam Boolean estado){
         usuarioService.cambiarEstado(id, estado);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id){
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
-    //Login
+
     @PostMapping("/login")
     public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginDTO dto){
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.login(dto);
         return ResponseEntity.ok(usuarioResponseDTO);
     }
-
-
-
-
 }
