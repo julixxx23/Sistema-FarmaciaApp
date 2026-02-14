@@ -1,5 +1,6 @@
 package farmacias.AppOchoa.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -69,4 +70,18 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(cuerpoRespuesta, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> manejarDuplicados_ErroresDB(DataIntegrityViolationException data, WebRequest request){
+        Map<String, Object> cuerpoRespuesta = new HashMap<>();
+        cuerpoRespuesta.put("timestamp", LocalDateTime.now());
+        cuerpoRespuesta.put("mensaje", "Error de integridad de datos: el registro ya existe o viola una restricción");
+        cuerpoRespuesta.put("error", data.getMessage());
+        cuerpoRespuesta.put("estado", HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(cuerpoRespuesta, HttpStatus.CONFLICT);
+
+    }
+
+
 }
