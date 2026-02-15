@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.usuario.UsuarioSimpleDTO;
 import farmacias.AppOchoa.dto.ventadetalle.VentaDetalleResponseDTO;
 import farmacias.AppOchoa.model.Venta;
 import farmacias.AppOchoa.model.VentaEstado;
+import farmacias.AppOchoa.model.VentaFel;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,22 +20,18 @@ import java.util.stream.Collectors;
 public class VentaResponseDTO {
 
     private Long ventaId;
-    // Datos FEL
+
+
     private String uuid;
     private String numeroAutorizacion;
     private String serie;
     private String numeroFactura;
     private LocalDateTime fechaCertificacion;
-
-    // Cliente
+    private String felEstado;
     private String nitCliente;
     private String nombreCliente;
-
-    // Relaciones
     private SucursalSimpleDTO sucursal;
     private UsuarioSimpleDTO usuario;
-
-    // Datos venta
     private LocalDateTime fechaVenta;
     private BigDecimal subtotal;
     private BigDecimal descuento;
@@ -47,30 +44,28 @@ public class VentaResponseDTO {
     public static VentaResponseDTO fromEntity(Venta venta) {
         if (venta == null) return null;
 
+        VentaFel fel = venta.getVentaFel();
+
         return VentaResponseDTO.builder()
                 .ventaId(venta.getVentaId())
-                // Datos FEL - Asegúrate de que estos campos existan en Venta.java
-                .uuid(venta.getVentaUuid())
-                .numeroAutorizacion(venta.getVentaNumeroAutorizacion())
+                .uuid(fel != null ? fel.getFelUuid() : null)
+                .numeroAutorizacion(fel != null ? fel.getFelNumeroAutorizacion() : null)
+                .fechaCertificacion(fel != null ? fel.getFelFechaCertificacion() : null)
+                .felEstado(fel != null ? fel.getFelEstado().name() : null)
                 .serie(venta.getVentaSerie())
                 .numeroFactura(venta.getVentaNumeroFactura())
-                .fechaCertificacion(venta.getVentaFechaCertificacion())
-                // Cliente
                 .nitCliente(venta.getVentaNitCliente())
                 .nombreCliente(venta.getVentaNombreCliente())
-                // Relaciones con protección contra Null
                 .sucursal(venta.getSucursal() != null ?
                         SucursalSimpleDTO.fromEntity(venta.getSucursal()) : null)
                 .usuario(venta.getUsuario() != null ?
                         UsuarioSimpleDTO.fromEntity(venta.getUsuario()) : null)
-                // Datos venta
                 .fechaVenta(venta.getVentaFecha())
                 .subtotal(venta.getVentaSubtotal())
                 .descuento(venta.getVentaDescuento())
                 .total(venta.getVentaTotal())
                 .estado(venta.getVentaEstado())
                 .fechaCreacion(venta.getAuditoriaFechaCreacion())
-                // Detalles
                 .detalles(venta.getDetalles() != null ?
                         venta.getDetalles().stream()
                                 .map(VentaDetalleResponseDTO::fromEntity)

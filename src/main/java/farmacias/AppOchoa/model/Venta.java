@@ -22,15 +22,6 @@ public class Venta {
     @Column(name = "venta_id")
     private Long ventaId;
 
-    @Column(name = "venta_uuid", length = 50)
-    private String ventaUuid;
-
-    @Column(name = "venta_numero_autorizacion", length = 50)
-    private String ventaNumeroAutorizacion;
-
-    @Column(name = "venta_fecha_certificacion")
-    private LocalDateTime ventaFechaCertificacion;
-
     @Column(name = "venta_numero_factura", unique = true, length = 50)
     private String ventaNumeroFactura;
 
@@ -38,7 +29,6 @@ public class Venta {
     @Builder.Default
     private String ventaSerie = "A";
 
-    //DATOS DEL CLIENTE
     @Column(name = "venta_nit_cliente", length = 20)
     @Builder.Default
     private String ventaNitCliente = "CF";
@@ -47,7 +37,6 @@ public class Venta {
     @Builder.Default
     private String ventaNombreCliente = "Consumidor Final";
 
-    //DATOS DE LA OPERACIÓN
     @Column(name = "venta_fecha", nullable = false, updatable = false)
     private LocalDateTime ventaFecha;
 
@@ -88,4 +77,7 @@ public class Venta {
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<VentaDetalle> detalles = new ArrayList<>();
+
+    @OneToOne(mappedBy = "venta", cascade = CascadeType.ALL)
+    private VentaFel ventaFel;
 }
