@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
         cuerpoRespuesta.put("timestamp", LocalDateTime.now());
         cuerpoRespuesta.put("mensaje", forbidden.getMessage());
         cuerpoRespuesta.put("detalles", request.getDescription(false));
-        cuerpoRespuesta.put("estado", HttpStatus.FORBIDDEN.value());
+        cuerpoRespuesta.put("estado", HttpStatus.FORBIDDEN.value()); // 403
 
         return new ResponseEntity<>(cuerpoRespuesta, HttpStatus.FORBIDDEN);
     }
