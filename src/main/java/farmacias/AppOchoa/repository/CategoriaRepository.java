@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     List<Categoria> findByCategoriaEstadoTrue();
-    // Este método debe recibir Pageable para que el Service no marque error
     Page<Categoria> findByCategoriaEstadoTrue(Pageable pageable);
     boolean existsByCategoriaNombre(String nombre);
 }

@@ -1,10 +1,15 @@
 package farmacias.AppOchoa.repository;
 
+import farmacias.AppOchoa.model.CajaCorte;
+import farmacias.AppOchoa.model.CajaSesiones;
+import farmacias.AppOchoa.model.SesionEstado;
 import farmacias.AppOchoa.model.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
