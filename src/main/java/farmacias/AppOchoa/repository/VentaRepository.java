@@ -20,8 +20,7 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     Optional<Venta> findByVentaNumeroFactura(String numeroFactura);
 
     // Para cierre de caja del día - con paginación
-    Page<Venta> findBySucursal_SucursalIdAndVentaFechaBetween(
-            Long sucursalId, LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
+    Page<Venta> findBySucursal_SucursalIdAndVentaFechaBetween(Long sucursalId, LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
 
     // Buscar por estado de venta - con paginación
     Page<Venta> findByVentaEstado(VentaEstado estado, Pageable pageable);
