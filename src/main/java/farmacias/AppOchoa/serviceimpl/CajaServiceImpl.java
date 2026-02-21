@@ -2,12 +2,15 @@ package farmacias.AppOchoa.serviceimpl;
 
 import farmacias.AppOchoa.dto.caja.CajaCreateDTO;
 import farmacias.AppOchoa.dto.caja.CajaResponseDTO;
+import farmacias.AppOchoa.dto.caja.CajaSimpleDTO;
 import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Caja;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.CajaRepository;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.services.CajaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +28,7 @@ public class CajaServiceImpl implements CajaService {
     }
 
     @Override
-    public CajaResponseDTO crear(CajaCreateDTO dto){
+    public CajaResponseDTO crearCaja(CajaCreateDTO dto){
         if(cajaRepository.existsBySucursalIdAndCajaNombre(dto.getSucursalId(), dto.getCajaNombre())){
             throw new RuntimeException("Ya existe una caja con este nombre");
         }
@@ -45,10 +48,19 @@ public class CajaServiceImpl implements CajaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CajaResponseDTO buscarPorId(Long id){
         return cajaRepository.findById(id)
                 .map(CajaResponseDTO:: fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Caja no encontrada por ID"));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CajaSimpleDTO> listarCajasActivas(Pageable pageable){
+        return cajaRepository.findAll(pageable)
+                .map(CajaSimpleDTO::fromEntity);
+    }
+
 
 }
