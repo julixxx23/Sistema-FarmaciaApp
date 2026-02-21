@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceimpl;
 
 import farmacias.AppOchoa.dto.caja.CajaCreateDTO;
 import farmacias.AppOchoa.dto.caja.CajaResponseDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Caja;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.CajaRepository;
@@ -41,6 +42,13 @@ public class CajaServiceImpl implements CajaService {
         if(id == null) return  null;
         return sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID"));
+    }
+
+    @Override
+    public CajaResponseDTO buscarPorId(Long id){
+        return cajaRepository.findById(id)
+                .map(CajaResponseDTO:: fromEntity)
+                .orElseThrow(() -> new ResourceNotFoundException("Caja no encontrada por ID"));
     }
 
 }
