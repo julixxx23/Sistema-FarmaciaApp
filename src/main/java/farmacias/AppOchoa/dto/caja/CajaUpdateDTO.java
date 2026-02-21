@@ -17,4 +17,5 @@ public class CajaUpdateDTO {
     @NotBlank(message = "El nombre de la caja es obligatorio")
     @Size(min = 5, max = 100, message = "El nombre debe contener entre 5 y 100 caracteres")
     private String cajaNombre;
+    private Long sucursalId;
 }
