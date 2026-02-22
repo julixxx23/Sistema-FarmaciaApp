@@ -18,8 +18,8 @@ public class AutorizacionSimpleDTO {
     private AutorizacionTipo autorizacionTipo;
     private LocalDateTime autorizacionFecha;
 
-    public static AutorizacionResponseDTO fromEntity(Autorizacion  autorizacion){
-        return AutorizacionResponseDTO.builder()
+    public static AutorizacionSimpleDTO fromEntity(Autorizacion  autorizacion){
+        return AutorizacionSimpleDTO.builder()
                 .autorizacionId(autorizacion.getAutorizacionId())
                 .autorizacionTipo(autorizacion.getAutorizacionTipo())
                 .autorizacionFecha(autorizacion.getAutorizacionFecha())

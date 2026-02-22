@@ -1,0 +1,77 @@
+package farmacias.AppOchoa.serviceimpl;
+
+import farmacias.AppOchoa.dto.autorizacion.AutorizacionCreateDTO;
+import farmacias.AppOchoa.dto.autorizacion.AutorizacionResponseDTO;
+import farmacias.AppOchoa.dto.autorizacion.AutorizacionSimpleDTO;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
+import farmacias.AppOchoa.model.Autorizacion;
+import farmacias.AppOchoa.model.Usuario;
+import farmacias.AppOchoa.repository.AutorizacionRepository;
+import farmacias.AppOchoa.repository.UsuarioRepository;
+import farmacias.AppOchoa.services.AutorizacionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class AutorizacionServiceImpl implements AutorizacionService {
+    private final AutorizacionRepository autorizacionRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public AutorizacionServiceImpl(
+            AutorizacionRepository autorizacionRepository,
+            UsuarioRepository usuarioRepository){
+        this.autorizacionRepository = autorizacionRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
+    @Override
+    public AutorizacionResponseDTO crear(AutorizacionCreateDTO dto){
+        Usuario usuario = buscarCajero(dto.getCajeroId());
+        Usuario usuario1 =  buscarSupervisor(dto.getSupervisorId());
+
+        Autorizacion autorizacion = Autorizacion.builder()
+                .autorizacionReferenciaId(dto.getAutorizacionReferenciaId())
+                .cajero(usuario)
+                .supervisor(usuario1)
+                .autorizacionTipo(dto.getAutorizacionTipo())
+                .build();
+        return AutorizacionResponseDTO.fromEntity(autorizacionRepository.save(autorizacion));
+    }
+    //Auxiliares
+    private Usuario buscarCajero(Long id){
+        if(id == null) return null;
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cajero no encontrado por ID"));
+    }
+    private Usuario buscarSupervisor(Long id){
+        if(id == null) return null;
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Supervisor no encontrado por ID"));
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public AutorizacionResponseDTO buscarPorId(Long id){
+        return autorizacionRepository.findById(id)
+                .map(AutorizacionResponseDTO:: fromEntity)
+                .orElseThrow(()-> new ResourceNotFoundException("Autorizacion no encontrada por ID"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AutorizacionSimpleDTO> listarTodas(Pageable pageable){
+        return autorizacionRepository.findAll(pageable)
+                .map(AutorizacionSimpleDTO:: fromEntity);
+    }
+    @Override
+    public void eliminar(Long id){
+        if(!autorizacionRepository.existsById(id)){
+            throw new ResourceNotFoundException("Autorizacion no encontrada por ID");
+        }
+        autorizacionRepository.deleteById(id);
+
+    }
+
+
+}

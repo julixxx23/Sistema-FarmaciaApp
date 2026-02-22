@@ -11,4 +11,5 @@ public interface AutorizacionRepository extends JpaRepository<Autorizacion, Long
     List<Autorizacion> findBySupervisorId(Long supervisorId);
     List<Autorizacion> findByAutorizacionFechaBetween(LocalDateTime inicio, LocalDateTime fin);
     List<Autorizacion> findByAutorizacionTipo(AutorizacionTipo autorizacionTipo);
+
 }
