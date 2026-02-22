@@ -70,15 +70,13 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
                 .map(CajaSesionesSimpleDTO::fromEntity);
     }
     @Override
-    public void eliminar(Long id){
-        if(!cajaSesionesRepository.existsById(id)){
-            throw new ResourceNotFoundException("Sesion no encontrada por ID");
-        }
-        cajaSesionesRepository.deleteById(id);
+    public void eliminar(Long id) {
+        throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
+    }
     }
 
 
 
 
 
-}
+

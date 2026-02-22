@@ -65,13 +65,10 @@ public class AutorizacionServiceImpl implements AutorizacionService {
                 .map(AutorizacionSimpleDTO:: fromEntity);
     }
     @Override
-    public void eliminar(Long id){
-        if(!autorizacionRepository.existsById(id)){
-            throw new ResourceNotFoundException("Autorizacion no encontrada por ID");
-        }
-        autorizacionRepository.deleteById(id);
+    public void eliminar(Long id) {
+        throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
+    }
 
     }
 
 
-}

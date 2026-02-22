@@ -72,17 +72,16 @@ private Usuario buscarUsuario(Long id){
                 .map(CajaCorteSimpleDTO::fromEntity);
     }
     @Override
-    public void eliminar(Long id){
-        if(!cajaCortesRepository.existsById(id)){
-            throw new ResourceNotFoundException("Caja Corte no encontrado POR ID");
-        }
-        cajaCortesRepository.deleteById(id);
+    public void eliminar(Long id) {
+        throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
+    }
     }
 
 
 
 
-}
+
+
 
 
 
