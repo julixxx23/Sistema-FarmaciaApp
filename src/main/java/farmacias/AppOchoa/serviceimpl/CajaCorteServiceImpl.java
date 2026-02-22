@@ -71,6 +71,15 @@ private Usuario buscarUsuario(Long id){
         return cajaCortesRepository.findAll(pageable)
                 .map(CajaCorteSimpleDTO::fromEntity);
     }
+    @Override
+    public void eliminar(Long id){
+        if(!cajaCortesRepository.existsById(id)){
+            throw new ResourceNotFoundException("Caja Corte no encontrado POR ID");
+        }
+        cajaCortesRepository.deleteById(id);
+    }
+
+
 
 
 }
