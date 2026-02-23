@@ -26,4 +26,5 @@ public class VentaPagoCreateDTO {
     private MetodoPagoEstado metodoPago;
     @Size(min = 5, max = 100, message = "La referencia debe tener entre 5 y 100 caracteres")
     private String referenciaTransaccion;
+    private BigDecimal montoVuelto;
 }
