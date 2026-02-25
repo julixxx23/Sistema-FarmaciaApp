@@ -11,6 +11,5 @@ public interface CajaSesionesService {
     CajaSesionesResponseDTO crear(CajaSesionesCreateDTO dto);
     CajaSesionesResponseDTO buscarPorId(Long id);
     Page<CajaSesionesSimpleDTO> listarSesiones(Pageable pageable);
-
     void eliminar(Long id);
 }

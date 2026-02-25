@@ -40,6 +40,4 @@ public class CajaCorteController {
         cajaCorteService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
