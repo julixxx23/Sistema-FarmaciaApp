@@ -53,6 +53,14 @@ public class VentaFelServiceImpl implements VentaFelService {
         return ventaFelRepository.findAll(pageable)
                 .map(VentaFelSimpleDTO:: fromEntity);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VentaFelSimpleDTO> buscarPorTermino(String termino, Pageable pageable) {
+        return ventaFelRepository.findByFelUuidContainingIgnoreCaseOrFelNumeroAutorizacionContainingIgnoreCaseOrVenta_VentaNitClienteContainingIgnoreCase(
+                        termino, termino, termino, pageable)
+                .map(VentaFelSimpleDTO::fromEntity);
+    }
     @Override
     public void eliminar(Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");

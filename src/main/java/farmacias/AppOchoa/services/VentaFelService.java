@@ -10,5 +10,6 @@ public interface VentaFelService {
     VentaFelResponseDTO crear(VentaFelCreateDTO dto);
     VentaFelResponseDTO buscarPorId(Long id);
     Page<VentaFelSimpleDTO> listarActivas(Pageable pageable);
+    Page<VentaFelSimpleDTO> buscarPorTermino(String termino, Pageable pageable);
     void eliminar(Long id);
 }
