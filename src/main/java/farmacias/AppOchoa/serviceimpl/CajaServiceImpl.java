@@ -31,7 +31,7 @@ public class CajaServiceImpl implements CajaService {
 
     @Override
     public CajaResponseDTO crearCaja(CajaCreateDTO dto){
-        if(cajaRepository.existsBySucursalIdAndCajaNombre(dto.getSucursalId(), dto.getCajaNombre())){
+        if(cajaRepository.existsBySucursalSucursalIdAndCajaNombre(dto.getSucursalId(), dto.getCajaNombre())){
             throw new IllegalArgumentException("Ya existe una caja con este nombre");
         }
         Sucursal sucursal =  buscarSucursal(dto.getSucursalId());
@@ -71,7 +71,7 @@ public class CajaServiceImpl implements CajaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Caja no encontrada por ID"));
         //Validar unicidad de nombre
         if(!caja.getCajaNombre().equalsIgnoreCase(dto.getCajaNombre()) &&
-                cajaRepository.existsBySucursalIdAndCajaNombre(caja.getSucursal().getSucursalId(),dto.getCajaNombre())){
+                cajaRepository.existsBySucursalSucursalIdAndCajaNombre(caja.getSucursal().getSucursalId(), dto.getCajaNombre())){
             throw new IllegalArgumentException("Ya existe otra caja con ese nombre" + dto.getCajaNombre());
         }
         //Actualizar relaciones

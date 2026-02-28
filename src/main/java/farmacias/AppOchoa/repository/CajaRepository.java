@@ -11,7 +11,7 @@ import java.util.List;
 public interface CajaRepository extends JpaRepository<Caja, Long> {
     boolean existsByCajaNombre(String caja);
     List<Caja> findByCajaId(Long id);
-    boolean existsBySucursalIdAndCajaNombre(Long sucursalId, String cajaNombre);
+    boolean existsBySucursalSucursalIdAndCajaNombre(Long sucursalId, String cajaNombre);
     Page<Caja> findByCajaEstado(CajaEstado cajaEstado, Pageable pageable);
 
 }

@@ -10,10 +10,10 @@ import java.util.List;
 public interface CajaCortesRepository extends JpaRepository<CajaCorte, Long> {
 
     // Buscar cortes de una sesión específica
-    List<CajaCorte> findByCajaSesionesId(Long sesionId);
+    List<CajaCorte> findByCajaSesionesSesionId(Long sesionId);
 
     // Buscar cortes autorizados por un supervisor
-    List<CajaCorte> findByUsuarioId(Long supervisorId);
+    List<CajaCorte> findByUsuarioUsuarioId(Long usuarioId);
 
     // Buscar cortes por rango de fechas
     List<CajaCorte> findByCorteFechaBetween(LocalDateTime inicio, LocalDateTime fin);
