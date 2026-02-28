@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.ventafelnotascredito.VentaFelNotasCreditoCreateDTO
 import farmacias.AppOchoa.dto.ventafelnotascredito.VentaFelNotasCreditoResponseDTO;
 import farmacias.AppOchoa.dto.ventafelnotascredito.VentaFelNotasCreditoSimpleDTO;
 import farmacias.AppOchoa.exception.ResourceNotFoundException;
+import farmacias.AppOchoa.model.NotaEstado;
 import farmacias.AppOchoa.model.VentaFel;
 import farmacias.AppOchoa.model.VentaFelNotasCredito;
 import farmacias.AppOchoa.repository.VentaFelNotasCreditoRepository;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -54,6 +57,30 @@ public class VentaFelNotasCreditoServiceImpl implements VentaFelNotasCreditoServ
     public Page<VentaFelNotasCreditoSimpleDTO> listarNotas(Pageable pageable){
         return ventaFelNotasCreditoRepository.findAll(pageable)
                 .map(VentaFelNotasCreditoSimpleDTO:: fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VentaFelNotasCreditoSimpleDTO> buscarPorFiltros(NotaEstado estado, LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable) {
+        Page<VentaFelNotasCredito> resultados;
+
+        boolean tieneEstado = (estado != null);
+        boolean tieneFechas = (fechaInicio != null && fechaFin != null);
+
+        if (tieneEstado && tieneFechas) {
+            // Trae Estado y Fechas
+            resultados = ventaFelNotasCreditoRepository.findByNotaEstadoAndAuditoriaFechaCreacionBetween(estado, fechaInicio, fechaFin, pageable);
+        } else if (tieneEstado) {
+            //Trae SOLO Estado
+            resultados = ventaFelNotasCreditoRepository.findByNotaEstado(estado, pageable);
+        } else if (tieneFechas) {
+            //Trae SOLO Fechas
+            resultados = ventaFelNotasCreditoRepository.findByAuditoriaFechaCreacionBetween(fechaInicio, fechaFin, pageable);
+        } else {
+            resultados = ventaFelNotasCreditoRepository.findAll(pageable);
+        }
+
+        return resultados.map(VentaFelNotasCreditoSimpleDTO::fromEntity);
     }
     @Override
     public void eliminar(Long id) {
