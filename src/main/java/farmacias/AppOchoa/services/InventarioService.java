@@ -14,7 +14,7 @@ public interface InventarioService {
     InventarioResponseDTO listaPorId(Long id);
     Page<InventarioSimpleDTO> listarTodosPaginado(Pageable pageable);
     Page<InventarioSimpleDTO> listarActivosPaginado(Pageable pageable);
-
+    Page<InventarioSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto);
     void eliminar(Long id);
 }

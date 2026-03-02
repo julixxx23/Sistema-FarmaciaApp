@@ -73,6 +73,12 @@ public class InventarioServiceImpl implements InventarioService {
         return inventarioRepository.findActivosPaginado(pageable)
                 .map(InventarioSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<InventarioSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return inventarioRepository.buscarPorTexto(texto, pageable)
+                .map(InventarioSimpleDTO::fromEntity);
+    }
 
     @Override
     public InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto) {

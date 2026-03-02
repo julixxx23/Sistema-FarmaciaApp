@@ -38,6 +38,12 @@ public class InventarioController {
             @PageableDefault(size = 10, sort = "inventarioCantidadActual")Pageable pageable){
         return ResponseEntity.ok(inventarioService.listarTodosPaginado(pageable));
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<InventarioSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(inventarioService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<InventarioResponseDTO> crear(@Valid @RequestBody InventarioCreateDTO dto){
@@ -56,7 +62,5 @@ public class InventarioController {
         inventarioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
 }

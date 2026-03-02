@@ -36,4 +36,9 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     // Para listar activos (con stock mayor a 0)
     @Query("SELECT i FROM Inventario i WHERE i.inventarioCantidadActual > 0")
     Page<Inventario> findActivosPaginado(Pageable pageable);
+    @Query("SELECT i FROM Inventario i WHERE " +
+            "LOWER(i.producto.productoNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(i.producto.productoCodigoBarras) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(i.sucursal.sucursalNombre) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<Inventario> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }
