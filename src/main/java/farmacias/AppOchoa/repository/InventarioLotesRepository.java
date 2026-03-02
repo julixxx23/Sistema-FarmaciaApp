@@ -5,6 +5,8 @@ import farmacias.AppOchoa.model.LoteEstado;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -32,4 +34,11 @@ public interface InventarioLotesRepository extends JpaRepository<InventarioLotes
 
     // ESCÁNER / CÓDIGO
     Optional<InventarioLotes> findByLoteNumero(String loteNumero);
+    @Query("SELECT l FROM InventarioLotes l WHERE " +
+            "LOWER(l.loteNumero) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(l.producto.productoNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(l.producto.productoCodigoBarras) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(l.sucursal.sucursalNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(CAST(l.loteEstado AS string)) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<InventarioLotes> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

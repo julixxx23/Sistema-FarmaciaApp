@@ -15,5 +15,6 @@ public interface InventarioLotesService {
     InventarioLotesResponseDTO buscarPorId(Long id);
     InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto);
     Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(LocalDate fechaLimite, Pageable pageable);
+    Page<InventarioLotesSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     void eliminar(Long id);
 }

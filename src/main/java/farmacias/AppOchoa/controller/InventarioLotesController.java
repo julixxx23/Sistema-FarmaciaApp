@@ -43,6 +43,12 @@ public class InventarioLotesController {
             @PageableDefault(size = 10, sort = "loteFechaVencimiento") Pageable pageable) {
         return ResponseEntity.ok(inventarioLotesService.listarProximosAVencerPaginado(fechaLimite, pageable));
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<InventarioLotesSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(inventarioLotesService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<InventarioLotesResponseDTO> crear(@Valid @RequestBody InventarioLotesCreateDTO dto){

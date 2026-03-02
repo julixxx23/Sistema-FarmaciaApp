@@ -74,6 +74,12 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
         return inventarioLotesRepository.findByLoteFechaVencimientoLessThanEqual(fechaLimite, pageable)
                 .map(InventarioLotesSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<InventarioLotesSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return inventarioLotesRepository.buscarPorTexto(texto, pageable)
+                .map(InventarioLotesSimpleDTO::fromEntity);
+    }
 
     @Override
     public InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto) {
