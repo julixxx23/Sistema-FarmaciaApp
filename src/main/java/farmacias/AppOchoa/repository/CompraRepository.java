@@ -49,4 +49,11 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
     @Query("SELECT c FROM Compra c WHERE c.compraTotal > :montoMinimo " +
             "AND c.compraEstado = 'activa'")
     Page<Compra> findComprasConMontoMayorA(@Param("montoMinimo") BigDecimal montoMinimo, Pageable pageable);
+    @Query("SELECT c FROM Compra c WHERE " +
+            "LOWER(c.compraObservaciones) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(c.usuario.nombreUsuarioUsuario) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(c.usuario.usuarioNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(c.sucursal.sucursalNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(CAST(c.compraEstado AS string)) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<Compra> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

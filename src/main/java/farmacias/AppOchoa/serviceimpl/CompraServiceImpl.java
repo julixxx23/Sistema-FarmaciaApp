@@ -119,6 +119,12 @@ public class CompraServiceImpl implements CompraService {
         return compraRepository.findByCompraEstado(CompraEstado.activa, pageable)
                 .map(CompraSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CompraSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return compraRepository.buscarPorTexto(texto, pageable)
+                .map(CompraSimpleDTO::fromEntity);
+    }
 
     @Override
     public CompraResponseDTO actualizar(Long id, CompraUpdateDTO dto) {

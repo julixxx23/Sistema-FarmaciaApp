@@ -39,6 +39,12 @@ public class CompraController {
             @PageableDefault(size = 10, sort = "compraFecha")Pageable pageable){
         return ResponseEntity.ok(compraService.listarTodasPaginadas(pageable));
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<CompraSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(compraService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<CompraResponseDTO> crear(@Valid @RequestBody CompraCreateDTO dto){
