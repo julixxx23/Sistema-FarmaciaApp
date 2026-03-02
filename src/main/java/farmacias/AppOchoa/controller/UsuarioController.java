@@ -32,6 +32,12 @@ public class UsuarioController {
         UsuarioResponseDTO usuarioResponseDTO = usuarioService.obtenerPorId(id);
         return ResponseEntity.ok(usuarioResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<UsuarioSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(usuarioService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> crearUsuario(@Valid @RequestBody UsuarioCreateDTO dto){

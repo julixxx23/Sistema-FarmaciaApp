@@ -14,6 +14,7 @@ public interface UsuarioService {
 
     UsuarioResponseDTO obtenerPorId(Long id);
     Page<UsuarioSimpleDTO> listarUsuariosActivosPaginado(Pageable pageable);
+    Page<UsuarioSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
 
     UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto);
     void cambiarEstado(Long id, Boolean nuevoEstado);

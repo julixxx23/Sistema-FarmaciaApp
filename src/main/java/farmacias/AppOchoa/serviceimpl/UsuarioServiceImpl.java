@@ -71,6 +71,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findByUsuarioEstadoTrue(pageable)
                 .map(UsuarioSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UsuarioSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return usuarioRepository.buscarPorTexto(texto, pageable)
+                .map(UsuarioSimpleDTO::fromEntity);
+    }
 
     @Override
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto) {
