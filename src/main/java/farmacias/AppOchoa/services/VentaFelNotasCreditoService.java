@@ -14,5 +14,6 @@ public interface VentaFelNotasCreditoService {
     VentaFelNotasCreditoResponseDTO buscarPorId(Long id);
     Page<VentaFelNotasCreditoSimpleDTO> listarNotas(Pageable pageable);
     Page<VentaFelNotasCreditoSimpleDTO> buscarPorFiltros(NotaEstado estado, LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable);
+    Page<VentaFelNotasCreditoSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     void eliminar(Long id);
 }

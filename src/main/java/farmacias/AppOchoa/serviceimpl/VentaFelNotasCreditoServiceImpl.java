@@ -58,6 +58,12 @@ public class VentaFelNotasCreditoServiceImpl implements VentaFelNotasCreditoServ
         return ventaFelNotasCreditoRepository.findAll(pageable)
                 .map(VentaFelNotasCreditoSimpleDTO:: fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VentaFelNotasCreditoSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return ventaFelNotasCreditoRepository.buscarPorTexto(texto, pageable)
+                .map(VentaFelNotasCreditoSimpleDTO::fromEntity);
+    }
 
     @Override
     @Transactional(readOnly = true)
