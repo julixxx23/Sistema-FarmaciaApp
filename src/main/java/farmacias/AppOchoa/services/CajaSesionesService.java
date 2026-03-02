@@ -11,5 +11,6 @@ public interface CajaSesionesService {
     CajaSesionesResponseDTO crear(CajaSesionesCreateDTO dto);
     CajaSesionesResponseDTO buscarPorId(Long id);
     Page<CajaSesionesSimpleDTO> listarSesiones(Pageable pageable);
+    Page<CajaSesionesSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     void eliminar(Long id);
 }

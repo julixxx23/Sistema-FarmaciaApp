@@ -30,6 +30,12 @@ public class CajaSesionesController {
         CajaSesionesResponseDTO cajaSesionesResponseDTO = cajaSesionesService.buscarPorId(id);
         return ResponseEntity.ok(cajaSesionesResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<CajaSesionesSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(cajaSesionesService.buscarPorTexto(texto, pageable));
+    }
     @PostMapping
     public ResponseEntity<CajaSesionesResponseDTO> crear(@Valid @RequestBody CajaSesionesCreateDTO dto){
         CajaSesionesResponseDTO cajaSesionesResponseDTO = cajaSesionesService.crear(dto);

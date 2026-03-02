@@ -63,6 +63,12 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
                 .map(CajaSesionesResponseDTO::fromEntity)
                 .orElseThrow(()-> new ResourceNotFoundException("Caja no encontrada por ID"));
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CajaSesionesSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return cajaSesionesRepository.buscarPorTexto(texto, pageable)
+                .map(CajaSesionesSimpleDTO::fromEntity);
+    }
     @Transactional(readOnly = true)
     @Override
     public Page<CajaSesionesSimpleDTO> listarSesiones(Pageable pageable){

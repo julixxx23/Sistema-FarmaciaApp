@@ -5,6 +5,8 @@ import farmacias.AppOchoa.model.SesionEstado;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +27,10 @@ public interface CajaSesionesRepository extends JpaRepository<CajaSesiones, Long
 
     // Verificar si una caja tiene sesión abierta
     boolean existsByCajaCajaIdAndSesionEstado(Long cajaId, SesionEstado estado);
+    @Query("SELECT s FROM CajaSesiones s WHERE " +
+            "LOWER(s.usuario.nombreUsuarioUsuario) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(s.usuario.usuarioNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(s.caja.cajaNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(CAST(s.sesionEstado AS string)) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<CajaSesiones> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }
