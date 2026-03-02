@@ -10,5 +10,6 @@ public interface CajaCorteService {
     CajaCorteResponseDTO crear(CajaCorteCreateDTO dto);
     CajaCorteResponseDTO buscarPorId(Long id);
     Page<CajaCorteSimpleDTO> listarCortes(Pageable pageable);
+    Page<CajaCorteSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     void eliminar(Long id);
 }

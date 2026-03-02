@@ -69,6 +69,12 @@ public class CajaCorteServiceImpl implements CajaCorteService {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado por ID"));
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CajaCorteSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return cajaCortesRepository.buscarPorTexto(texto, pageable)
+                .map(CajaCorteSimpleDTO::fromEntity);
+    }
 
     @Override
     @Transactional(readOnly = true)

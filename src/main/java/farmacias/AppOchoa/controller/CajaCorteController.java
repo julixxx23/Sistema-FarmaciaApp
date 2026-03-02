@@ -30,6 +30,12 @@ public class CajaCorteController {
         CajaCorteResponseDTO cajaCorteResponseDTO = cajaCorteService.buscarPorId(id);
         return ResponseEntity.ok(cajaCorteResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<CajaCorteSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(cajaCorteService.buscarPorTexto(texto, pageable));
+    }
     @PostMapping
     public ResponseEntity<CajaCorteResponseDTO> crear(@Valid @RequestBody CajaCorteCreateDTO dto){
         CajaCorteResponseDTO cajaCorteResponseDTO = cajaCorteService.crear(dto);
