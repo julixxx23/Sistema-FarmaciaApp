@@ -11,5 +11,6 @@ public interface AutorizacionService {
     AutorizacionResponseDTO crear(AutorizacionCreateDTO dto);
     AutorizacionResponseDTO buscarPorId(Long id);
     Page<AutorizacionSimpleDTO> listarTodas(Pageable pageable);
+    Page<AutorizacionSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     void eliminar(Long id);
 }

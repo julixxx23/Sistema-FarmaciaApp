@@ -36,6 +36,12 @@ public class AutorizacionController {
         AutorizacionResponseDTO autorizacionResponseDTO = autorizacionService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(autorizacionResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<AutorizacionSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(autorizacionService.buscarPorTexto(texto, pageable));
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         autorizacionService.eliminar(id);

@@ -57,6 +57,12 @@ public class AutorizacionServiceImpl implements AutorizacionService {
                 .map(AutorizacionResponseDTO:: fromEntity)
                 .orElseThrow(()-> new ResourceNotFoundException("Autorizacion no encontrada por ID"));
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AutorizacionSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return autorizacionRepository.buscarPorTexto(texto, pageable)
+                .map(AutorizacionSimpleDTO::fromEntity);
+    }
 
     @Override
     @Transactional(readOnly = true)
