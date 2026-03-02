@@ -64,6 +64,12 @@ public class CajaServiceImpl implements CajaService {
         return cajaRepository.findByCajaEstado(CajaEstado.activa, pageable)
                 .map(CajaSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CajaSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return cajaRepository.buscarPorTexto(texto, pageable)
+                .map(CajaSimpleDTO::fromEntity);
+    }
 
     @Override
     public CajaResponseDTO actualizarCaja(Long id, CajaUpdateDTO dto){

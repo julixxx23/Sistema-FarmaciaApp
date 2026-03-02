@@ -15,6 +15,7 @@ public interface CajaService {
     CajaResponseDTO actualizarCaja(Long id, CajaUpdateDTO dto);
     CajaResponseDTO buscarPorId(Long id);
     Page<CajaSimpleDTO> listarCajasActivas(Pageable pageable);
+    Page<CajaSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     void cambiarEstado(Long id, CajaEstado cajaEstado);
     void eliminar(Long id);
 }
