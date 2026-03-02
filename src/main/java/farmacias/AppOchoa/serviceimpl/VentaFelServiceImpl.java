@@ -26,6 +26,7 @@ public class VentaFelServiceImpl implements VentaFelService {
         this.ventaFelRepository = ventaFelRepository;
         this.ventaRepository = ventaRepository;
     }
+
     @Override
     public VentaFelResponseDTO crear(VentaFelCreateDTO dto){
         Venta venta = buscarVenta(dto.getVentaId());
@@ -35,11 +36,13 @@ public class VentaFelServiceImpl implements VentaFelService {
                 .build();
         return VentaFelResponseDTO.fromEntity(ventaFelRepository.save(ventaFel));
     }
+
     private Venta buscarVenta(Long id){
         if(id == null) return null;
         return ventaRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Venta no encontrada por ID"));
     }
+
     @Override
     @Transactional(readOnly = true)
     public VentaFelResponseDTO buscarPorId(Long id){
@@ -47,20 +50,21 @@ public class VentaFelServiceImpl implements VentaFelService {
                 .map(VentaFelResponseDTO::fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Documento FEL no encontrado por ID"));
     }
+
     @Override
     @Transactional(readOnly = true)
     public Page<VentaFelSimpleDTO> listarActivas(Pageable pageable){
         return ventaFelRepository.findAll(pageable)
-                .map(VentaFelSimpleDTO:: fromEntity);
+                .map(VentaFelSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaFelSimpleDTO> buscarPorTermino(String termino, Pageable pageable) {
-        return ventaFelRepository.findByFelUuidContainingIgnoreCaseOrFelNumeroAutorizacionContainingIgnoreCaseOrVenta_VentaNitClienteContainingIgnoreCase(
-                        termino, termino, termino, pageable)
+    public Page<VentaFelSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return ventaFelRepository.buscarPorTexto(texto, pageable)
                 .map(VentaFelSimpleDTO::fromEntity);
     }
+
     @Override
     public void eliminar(Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");

@@ -23,28 +23,25 @@ public class VentaFelController {
 
     @GetMapping
     public ResponseEntity<Page<VentaFelSimpleDTO>> listarActivas(
-            @RequestParam(required = false) String buscar,
             @PageableDefault(size = 10, sort = "felNumeroAutorizacion") Pageable pageable) {
-
-        //Si el usuario escribió algo en la barra de búsqueda
-        if (buscar != null && !buscar.isBlank()) {
-            return ResponseEntity.ok(ventaFelService.buscarPorTermino(buscar, pageable));
-        }
-
-        //Si la barra está vacía, lista todas las facturas
         return ResponseEntity.ok(ventaFelService.listarActivas(pageable));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<VentaFelSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(ventaFelService.buscarPorTexto(texto, pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VentaFelResponseDTO> buscarPorId(@PathVariable Long id) {
-        VentaFelResponseDTO ventaFelResponseDTO = ventaFelService.buscarPorId(id);
-        return ResponseEntity.ok(ventaFelResponseDTO);
+        return ResponseEntity.ok(ventaFelService.buscarPorId(id));
     }
 
     @PostMapping
     public ResponseEntity<VentaFelResponseDTO> crear(@Valid @RequestBody VentaFelCreateDTO dto) {
-        VentaFelResponseDTO ventaFelResponseDTO = ventaFelService.crear(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ventaFelResponseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ventaFelService.crear(dto));
     }
 
     @DeleteMapping("/{id}")
