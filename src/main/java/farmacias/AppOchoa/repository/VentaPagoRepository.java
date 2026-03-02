@@ -2,6 +2,8 @@ package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.MetodoPagoEstado;
 import farmacias.AppOchoa.model.VentaPago;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +24,10 @@ public interface VentaPagoRepository extends JpaRepository<VentaPago, Long> {
     @Query("SELECT COALESCE(SUM(vp.montoRecibido - vp.montoVuelto), 0) FROM VentaPago vp " +
             "WHERE vp.cajaSesiones.sesionId = :sesionId")
     BigDecimal sumarTotalPorSesion(@Param("sesionId") Long sesionId);
+    @Query("SELECT p FROM VentaPago p WHERE " +
+            "LOWER(p.referenciaTransaccion) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(CAST(p.metodoPago AS string)) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(p.venta.ventaNombreCliente) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(p.venta.ventaNitCliente) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<VentaPago> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

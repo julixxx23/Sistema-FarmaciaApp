@@ -73,6 +73,12 @@ public class VentaPagosServiceImpl implements VentaPagoService {
                 .map(VentaPagoSimpleDTO:: fromEntity);
     }
     @Override
+    @Transactional(readOnly = true)
+    public Page<VentaPagoSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return ventaPagoRepository.buscarPorTexto(texto, pageable)
+                .map(VentaPagoSimpleDTO::fromEntity);
+    }
+    @Override
     public void eliminar(Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }

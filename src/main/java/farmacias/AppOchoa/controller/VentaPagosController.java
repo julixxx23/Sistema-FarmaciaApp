@@ -30,6 +30,12 @@ public class VentaPagosController {
         VentaPagoResponseDTO ventaPagoResponseDTO = ventaPagoService.buscarPorId(id);
         return ResponseEntity.ok(ventaPagoResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<VentaPagoSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(ventaPagoService.buscarPorTexto(texto, pageable));
+    }
     @PostMapping
     public ResponseEntity<VentaPagoResponseDTO> crear(@Valid @RequestBody VentaPagoCreateDTO dto){
         VentaPagoResponseDTO ventaPagoResponseDTO = ventaPagoService.crear(dto);
