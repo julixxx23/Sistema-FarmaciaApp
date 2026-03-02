@@ -42,6 +42,12 @@ public class VentaController {
             @PageableDefault(size = 10, sort = "ventaFecha")Pageable pageable){
         return ResponseEntity.ok(ventaService.listarTodasPaginadas(pageable));
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<VentaSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(ventaService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<VentaResponseDTO> crear(@Valid @RequestBody VentaCreateDTO dto){

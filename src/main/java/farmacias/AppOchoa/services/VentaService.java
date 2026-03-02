@@ -15,7 +15,7 @@ public interface VentaService {
     VentaResponseDTO listarPorId(Long id);
     Page<VentaSimpleDTO> listarTodasPaginadas(Pageable pageable);
     Page<VentaSimpleDTO> listarActivasPaginadas(Pageable pageable);
-
+    Page<VentaSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
     VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto);
     void cambiarEstado(Long id, VentaEstado nuevoEstado);
     void eliminar(Long id);

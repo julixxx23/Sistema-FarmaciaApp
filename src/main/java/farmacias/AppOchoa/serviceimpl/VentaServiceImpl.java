@@ -121,6 +121,12 @@ public class VentaServiceImpl implements VentaService {
         return ventaRepository.findByVentaEstado(VentaEstado.completada, pageable)
                 .map(VentaSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VentaSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return ventaRepository.buscarPorTexto(texto, pageable)
+                .map(VentaSimpleDTO::fromEntity);
+    }
 
     @Override
     public VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto) {

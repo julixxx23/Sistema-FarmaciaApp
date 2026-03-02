@@ -44,4 +44,12 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
             "AND DATE(v.ventaFecha) = CURRENT_DATE " +
             "AND v.ventaEstado = 'completada'")
     Double findTotalVendidoHoyPorUsuario(@Param("usuarioId") Long usuarioId);
+    @Query("SELECT v FROM Venta v WHERE " +
+            "LOWER(v.ventaNumeroFactura) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(v.ventaNitCliente) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(v.ventaNombreCliente) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(v.usuario.nombreUsuarioUsuario) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(v.sucursal.sucursalNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
+            "LOWER(CAST(v.ventaEstado AS string)) LIKE LOWER(CONCAT('%', :texto, '%'))")
+    Page<Venta> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }
