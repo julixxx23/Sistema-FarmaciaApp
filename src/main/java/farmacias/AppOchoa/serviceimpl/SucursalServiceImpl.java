@@ -60,6 +60,12 @@ public class SucursalServiceImpl implements SucursalService {
         return sucursalRepository.findAll(pageable)
                 .map(SucursalSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<SucursalSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return sucursalRepository.buscarPorTexto(texto, pageable)
+                .map(SucursalSimpleDTO::fromEntity);
+    }
 
     @Override
     public SucursalResponseDTO actualizar(Long id, SucursalUpdateDTO dto){

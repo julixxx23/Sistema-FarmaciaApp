@@ -14,11 +14,10 @@ public interface SucursalService {
     SucursalResponseDTO actualizar(Long id, SucursalUpdateDTO dto);
     void cambiarEstado(Long id, Boolean estado);
     void eliminar(Long id);
-
     // Métodos de consulta
     SucursalResponseDTO obtenerPorId(Long id);
-
     // Métodos de paginación
     Page<SucursalSimpleDTO> listarActivasPaginadas(Pageable pageable);
     Page<SucursalSimpleDTO> listarTodasPaginadas(Pageable pageable);
+    Page<SucursalSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
 }

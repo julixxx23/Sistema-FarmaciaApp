@@ -33,6 +33,12 @@ public class SucursalController {
         SucursalResponseDTO sucursalResponseDTO = sucursalService.obtenerPorId(id);
         return ResponseEntity.ok(sucursalResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<SucursalSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(sucursalService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<SucursalResponseDTO> crear(@Valid @RequestBody SucursalCreateDTO dto){
