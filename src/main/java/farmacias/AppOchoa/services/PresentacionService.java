@@ -21,6 +21,7 @@ public interface PresentacionService {
     PresentacionResponseDTO obtenerPorId(Long id);
     List<PresentacionSimpleDTO> listarTodas();
     List<PresentacionSimpleDTO> listarActivas();
+    Page<PresentacionSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
 
     // Métodos de paginación
     Page<PresentacionSimpleDTO> listarActivasPaginadas(Pageable pageable);

@@ -32,6 +32,12 @@ public class PresentacionController {
         PresentacionResponseDTO presentacionResponseDTO = presentacionService.obtenerPorId(id);
         return ResponseEntity.ok(presentacionResponseDTO);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<PresentacionSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(presentacionService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<PresentacionResponseDTO> crear(@Valid @RequestBody PresentacionCreateDTO dto){
