@@ -137,6 +137,12 @@ public class ProductoServiceImpl implements ProductoService {
         return productoRepository.findByProductoEstadoTrue(pageable)
                 .map(ProductoSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductoSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return productoRepository.buscarPorTexto(texto, pageable)
+                .map(ProductoSimpleDTO::fromEntity);
+    }
 
     // Métodos auxiliares privados
     private Categoria buscarCategoria(Long id) {
