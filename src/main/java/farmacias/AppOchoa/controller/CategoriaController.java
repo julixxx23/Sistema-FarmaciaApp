@@ -34,6 +34,12 @@ public class CategoriaController {
         CategoriaResponseDTO categoria = categoriaService.obtenerPorId(id);
         return ResponseEntity.ok(categoria);
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<CategoriaSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(categoriaService.buscarPorTexto(texto, pageable));
+    }
 
     //Método para crear
     @PostMapping

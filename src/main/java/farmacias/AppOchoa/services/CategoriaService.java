@@ -20,4 +20,5 @@ public interface CategoriaService {
     // Métodos de paginación (El nombre que busca tu Controller)
     Page<CategoriaSimpleDTO> listarActivasPaginadas(Pageable pageable);
     Page<CategoriaSimpleDTO> listarTodasPaginadas(Pageable pageable);
+    Page<CategoriaSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
 }

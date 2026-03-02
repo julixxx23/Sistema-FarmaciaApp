@@ -81,6 +81,12 @@ public class CategoriaServiceImpl implements CategoriaService {
         return categoriaRepository.findByCategoriaEstadoTrue(pageable)
                 .map(CategoriaSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CategoriaSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+        return categoriaRepository.buscarPorTexto(texto, pageable)
+                .map(CategoriaSimpleDTO::fromEntity);
+    }
 
     @Override
     public CategoriaResponseDTO actualizar(Long id, CategoriaUpdateDTO dto){
