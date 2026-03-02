@@ -11,11 +11,10 @@ public interface AlertaService {
 
     AlertaResponseDTO crear(AlertaCreateDTO dto);
     AlertaResponseDTO listarPorId(Long id);
-
     Page<AlertaSimpleDTO> listarTodasPaginadas(Pageable pageable);
     Page<AlertaSimpleDTO> listarNoLeidasPaginadas(Pageable pageable);
-
     AlertaResponseDTO actualizar(Long id, AlertaUpdateDTO dto);
     void cambiarEstado(Long id);
     void eliminar(Long id);
+    Page<AlertaSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
 }

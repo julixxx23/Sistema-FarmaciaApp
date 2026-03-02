@@ -41,6 +41,12 @@ public class AlertaController {
             Pageable pageable) {
         return ResponseEntity.ok(alertaService.listarNoLeidasPaginadas(pageable));
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<AlertaSimpleDTO>> buscar(
+            @RequestParam String texto,
+            Pageable pageable) {
+        return ResponseEntity.ok(alertaService.buscarPorTexto(texto, pageable));
+    }
 
     @PostMapping
     public ResponseEntity<AlertaResponseDTO> crear(@Valid @RequestBody AlertaCreateDTO dto) {
