@@ -58,7 +58,6 @@ public class VentaServiceImplTest {
                 .ventaId(1L)
                 .ventaFecha(LocalDate.of(2026, 2, 8).atStartOfDay())
                 .ventaNumeroFactura("8949404")
-                .ventaNumeroAutorizacion("00002")
                 .ventaNitCliente("12849493")
                 .ventaNombreCliente("Julian Orellana")
                 .ventaSubtotal(BigDecimal.valueOf(250))
