@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.ventafel.VentaFelCreateDTO;
 import farmacias.AppOchoa.dto.ventafel.VentaFelResponseDTO;
 import farmacias.AppOchoa.dto.ventafel.VentaFelSimpleDTO;
 import farmacias.AppOchoa.services.VentaFelService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/ventasfel")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Ventas Fel-controller")
 public class VentaFelController {
 
     private final VentaFelService ventaFelService;

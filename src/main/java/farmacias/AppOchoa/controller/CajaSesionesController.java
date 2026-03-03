@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesCreateDTO;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesResponseDTO;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesSimpleDTO;
 import farmacias.AppOchoa.services.CajaSesionesService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/cajasesiones")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "CajaSesiones-controller")
 public class CajaSesionesController {
     private final CajaSesionesService cajaSesionesService;
 

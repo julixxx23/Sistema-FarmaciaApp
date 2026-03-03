@@ -6,6 +6,7 @@ import farmacias.AppOchoa.dto.compra.CompraSimpleDTO;
 import farmacias.AppOchoa.dto.compra.CompraUpdateDTO;
 import farmacias.AppOchoa.model.CompraEstado;
 import farmacias.AppOchoa.services.CompraService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/compras")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Compra-controller")
 public class CompraController {
     private final CompraService compraService;
 

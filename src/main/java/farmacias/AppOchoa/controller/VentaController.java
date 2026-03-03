@@ -7,6 +7,7 @@ import farmacias.AppOchoa.dto.venta.VentaSimpleDTO;
 import farmacias.AppOchoa.dto.venta.VentaUpdateDTO;
 import farmacias.AppOchoa.model.VentaEstado;
 import farmacias.AppOchoa.services.VentaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/ventas")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Ventas-controller")
 public class VentaController {
     private final VentaService ventaService;
 

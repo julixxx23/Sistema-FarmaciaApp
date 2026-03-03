@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.inventario.InventarioResponseDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioSimpleDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioUpdateDTO;
 import farmacias.AppOchoa.services.InventarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/inventarios")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Inventario-controller")
 public class InventarioController {
     private final InventarioService inventarioService;
 

@@ -2,6 +2,7 @@ package farmacias.AppOchoa.controller;
 
 import farmacias.AppOchoa.dto.usuario.*;
 import farmacias.AppOchoa.services.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/usuarios")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Usuario-controller")
 public class UsuarioController {
     private final UsuarioService usuarioService;
 

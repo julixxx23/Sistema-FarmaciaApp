@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.autorizacion.AutorizacionCreateDTO;
 import farmacias.AppOchoa.dto.autorizacion.AutorizacionResponseDTO;
 import farmacias.AppOchoa.dto.autorizacion.AutorizacionSimpleDTO;
 import farmacias.AppOchoa.services.AutorizacionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/autorizaciones")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Autorizaciones-controller")
 public class AutorizacionController {
     private final AutorizacionService autorizacionService;
 

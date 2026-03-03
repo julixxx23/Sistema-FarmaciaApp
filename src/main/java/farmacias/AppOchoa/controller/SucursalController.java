@@ -6,6 +6,7 @@ import farmacias.AppOchoa.dto.sucursal.SucursalResponseDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalSimpleDTO;
 import farmacias.AppOchoa.dto.sucursal.SucursalUpdateDTO;
 import farmacias.AppOchoa.services.SucursalService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/sucursales")
 @RequiredArgsConstructor
 @CrossOrigin(origins= "*")
+@Tag(name = "Sucursal-controller")
 public class SucursalController {
     private final SucursalService sucursalService;
 

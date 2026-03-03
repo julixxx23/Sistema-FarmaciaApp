@@ -4,6 +4,7 @@ import farmacias.AppOchoa.dto.ventapago.VentaPagoCreateDTO;
 import farmacias.AppOchoa.dto.ventapago.VentaPagoResponseDTO;
 import farmacias.AppOchoa.dto.ventapago.VentaPagoSimpleDTO;
 import farmacias.AppOchoa.services.VentaPagoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/ventapagos")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Ventas pagos-controller")
 public class VentaPagosController {
     private final VentaPagoService ventaPagoService;
 

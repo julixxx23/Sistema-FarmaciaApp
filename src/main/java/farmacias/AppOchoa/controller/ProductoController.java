@@ -6,6 +6,7 @@ import farmacias.AppOchoa.dto.producto.ProductoResponseDTO;
 import farmacias.AppOchoa.dto.producto.ProductoSimpleDTO;
 import farmacias.AppOchoa.dto.producto.ProductoUpdateDTO;
 import farmacias.AppOchoa.services.ProductoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/productos")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Producto-controller")
 public class ProductoController {
     private final ProductoService productoService;
 

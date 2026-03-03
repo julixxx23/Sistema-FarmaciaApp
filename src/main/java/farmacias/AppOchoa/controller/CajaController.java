@@ -6,6 +6,7 @@ import farmacias.AppOchoa.dto.caja.CajaSimpleDTO;
 import farmacias.AppOchoa.dto.caja.CajaUpdateDTO;
 import farmacias.AppOchoa.model.CajaEstado;
 import farmacias.AppOchoa.services.CajaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/caja")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Caja-controller")
 public class CajaController {
     private final CajaService cajaService;
 

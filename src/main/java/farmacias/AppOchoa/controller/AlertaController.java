@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.alerta.AlertaResponseDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaSimpleDTO;
 import farmacias.AppOchoa.dto.alerta.AlertaUpdateDTO;
 import farmacias.AppOchoa.services.AlertaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/alertas")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Alerta-controller")
 public class AlertaController {
     private final AlertaService alertaService;
 

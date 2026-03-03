@@ -6,6 +6,7 @@ import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesSimpleDTO;
 import farmacias.AppOchoa.dto.inventariolotes.InventarioLotesUpdateDTO;
 import farmacias.AppOchoa.model.LoteEstado;
 import farmacias.AppOchoa.services.InventarioLotesService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 @RequestMapping("/api/v1/inventarioslotes")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Inventario-controller")
 public class InventarioLotesController {
     private final InventarioLotesService inventarioLotesService;
 

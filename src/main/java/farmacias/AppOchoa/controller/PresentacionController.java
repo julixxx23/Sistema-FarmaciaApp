@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.presentacion.PresentacionResponseDTO;
 import farmacias.AppOchoa.dto.presentacion.PresentacionSimpleDTO;
 import farmacias.AppOchoa.dto.presentacion.PresentacionUpdateDTO;
 import farmacias.AppOchoa.services.PresentacionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/presentaciones")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Presentacion-controller")
 public class PresentacionController {
     private final PresentacionService presentacionService;
 
