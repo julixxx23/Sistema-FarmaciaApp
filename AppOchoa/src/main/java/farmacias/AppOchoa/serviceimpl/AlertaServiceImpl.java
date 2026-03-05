@@ -9,6 +9,7 @@ import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.Producto;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.*;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.services.AlertaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -101,12 +102,12 @@ public class AlertaServiceImpl implements AlertaService {
     @Override
     public void eliminar(Long id) {
         if (!alertaRepository.existsById(id)) {
-            throw new RuntimeException("Alerta no encontrada ID: " + id);
+            throw new ResourceNotFoundException("Alerta no encontrada ID: " + id);
         }
         alertaRepository.deleteById(id);
     }
 
-    // Métodos auxiliares privados
+    // MÃƒÂ©todos auxiliares privados
     private Producto buscarProducto(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));

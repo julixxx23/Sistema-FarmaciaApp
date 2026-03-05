@@ -5,6 +5,7 @@ import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.repository.UsuarioRepository;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.services.UsuarioService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     private final SucursalRepository sucursalRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 2. AGREGAMOS @Lazy AQUÍ ABAJO PARA ROMPER EL CICLO INFINITO
+    // 2. AGREGAMOS @Lazy AQUÃƒÆ’Ã‚Â ABAJO PARA ROMPER EL CICLO INFINITO
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
                               SucursalRepository sucursalRepository,
                               @Lazy PasswordEncoder passwordEncoder) {
@@ -40,7 +41,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Override
     public UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto) {
         if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
-            throw new RuntimeException("El nombre de usuario '" + dto.getNombreUsuario() + "' ya está en uso");
+            throw new ResourceNotFoundException("El nombre de usuario '" + dto.getNombreUsuario() + "' ya esta en uso");
         }
 
         Sucursal sucursal = null;
@@ -83,7 +84,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
         if (!usuario.getNombreUsuarioUsuario().equals(dto.getNombreUsuario())) {
             if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
-                throw new RuntimeException("El nuevo nombre de usuario ya está siendo usado por otra cuenta");
+                throw new ResourceNotFoundException("El nuevo nombre de usuario ya esta siendo usado por otra cuenta");
             }
             usuario.setNombreUsuarioUsuario(dto.getNombreUsuario());
         }
@@ -120,14 +121,14 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Transactional(readOnly = true)
     public UsuarioResponseDTO login(LoginDTO dto) {
         Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
-                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+                .orElseThrow(() -> new RuntimeException("Credenciales invÃƒÆ’Ã‚Â¡lidas"));
 
         if (!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())) {
-            throw new RuntimeException("Credenciales inválidas");
+            throw new ResourceNotFoundException("Credenciales invÃƒÆ’Ã‚Â¡lidas");
         }
 
         if (Boolean.FALSE.equals(usuario.getUsuarioEstado())) {
-            throw new RuntimeException("La cuenta de usuario está desactivada");
+            throw new ResourceNotFoundException("La cuenta de usuario estÃƒÆ’Ã‚Â¡ desactivada");
         }
 
         return UsuarioResponseDTO.fromEntity(usuario);
