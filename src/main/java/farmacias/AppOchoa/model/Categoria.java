@@ -24,4 +24,8 @@ public class Categoria {
     @Column(name = "categoria_estado", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     @Builder.Default
     private Boolean categoriaEstado = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id", nullable = false)
+    private Farmacia farmacia;
 }

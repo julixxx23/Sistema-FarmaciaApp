@@ -24,4 +24,8 @@ public class Presentacion {
     @Builder.Default
     private Boolean presentacionEstado = true;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id", nullable = false)
+    private Farmacia farmacia;
+
 }
