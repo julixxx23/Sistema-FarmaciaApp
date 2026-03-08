@@ -20,8 +20,8 @@ public class SuscripcionPago {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pagoId;
 
-    @Column(name = "pago_pronto")
-    private BigDecimal pagoPronto;
+    @Column(name = "pago_monto")
+    private BigDecimal pagoMonto;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "pago_plan", nullable = false)
@@ -41,7 +41,6 @@ public class SuscripcionPago {
     private LocalDate pagoPeriodoInicio;
 
     @Column(name = "pago_periodo_fin", nullable = false, updatable = false)
-    @CreationTimestamp
     private LocalDate pagoPeriodoFin;
 
     @Enumerated(EnumType.STRING)
