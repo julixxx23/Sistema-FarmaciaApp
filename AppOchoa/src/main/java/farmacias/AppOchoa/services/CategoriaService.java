@@ -6,18 +6,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface CategoriaService {
-    // Métodos de escritura
-    CategoriaResponseDTO crear(CategoriaCreateDTO dto);
-    CategoriaResponseDTO actualizar(Long id, CategoriaUpdateDTO dto);
-    void cambiarEstado(Long id, Boolean estado);
-    void eliminar(Long id);
-
-    // Métodos de consulta simple
-    CategoriaResponseDTO obtenerPorId(Long id);
-    List<CategoriaSimpleDTO> listarTodas();
-    List<CategoriaSimpleDTO> listarActivas();
-
-    // Métodos de paginación (El nombre que busca tu Controller)
-    Page<CategoriaSimpleDTO> listarActivasPaginadas(Pageable pageable);
-    Page<CategoriaSimpleDTO> listarTodasPaginadas(Pageable pageable);
+    CategoriaResponseDTO crear(Long farmaciaId, CategoriaCreateDTO dto);
+    CategoriaResponseDTO actualizar(Long farmaciaId, Long id, CategoriaUpdateDTO dto);
+    void cambiarEstado(Long farmaciaId, Long id, Boolean estado);
+    void eliminar(Long farmaciaId, Long id);
+    CategoriaResponseDTO obtenerPorId(Long farmaciaId, Long id);
+    Page<CategoriaSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<CategoriaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
 }
