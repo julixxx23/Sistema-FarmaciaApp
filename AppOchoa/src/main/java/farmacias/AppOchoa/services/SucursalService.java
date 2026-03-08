@@ -9,16 +9,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface SucursalService {
 
-    // Métodos de escritura
-    SucursalResponseDTO crear(SucursalCreateDTO dto);
-    SucursalResponseDTO actualizar(Long id, SucursalUpdateDTO dto);
-    void cambiarEstado(Long id, Boolean estado);
-    void eliminar(Long id);
-
+    SucursalResponseDTO crear(Long farmaciaId, SucursalCreateDTO dto);
+    SucursalResponseDTO actualizar(Long farmaciaId, Long id, SucursalUpdateDTO dto);
+    void cambiarEstado(Long farmaciaId, Long id, Boolean estado);
+    void eliminar(Long farmaciaId, Long id);
     // Métodos de consulta
-    SucursalResponseDTO obtenerPorId(Long id);
-
+    SucursalResponseDTO obtenerPorId(Long farmaciaId, Long id);
     // Métodos de paginación
-    Page<SucursalSimpleDTO> listarActivasPaginadas(Pageable pageable);
-    Page<SucursalSimpleDTO> listarTodasPaginadas(Pageable pageable);
+    Page<SucursalSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<SucursalSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
 }

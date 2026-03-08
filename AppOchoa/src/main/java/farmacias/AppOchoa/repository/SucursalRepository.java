@@ -13,16 +13,14 @@ public interface SucursalRepository extends JpaRepository<Sucursal, Long> {
 
     // Validar nombre único
     boolean existsBySucursalNombre(String nombre);
-
     // Listar solo sucursales activas (sin paginación)
     List<Sucursal> findBySucursalEstadoTrue();
-
     // Listar solo sucursales activas CON paginación
     Page<Sucursal> findBySucursalEstadoTrue(Pageable pageable);
-
     // Buscar por nombre (sin paginación)
     List<Sucursal> findBySucursalNombreContainingIgnoreCase(String nombre);
-
     // Buscar por nombre CON paginación
     Page<Sucursal> findBySucursalNombreContainingIgnoreCase(String nombre, Pageable pageable);
+    Page<Sucursal> findByFarmacia_FarmaciaIdAndSucursalEstadoTrue(Long farmaciaId, Pageable pageable);
+    boolean existsByFarmacia_FarmaciaIdAndSucursalNombre(Long farmaciaId, String nombre);
 }

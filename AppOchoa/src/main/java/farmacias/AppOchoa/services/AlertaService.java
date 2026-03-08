@@ -9,13 +9,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface AlertaService {
 
-    AlertaResponseDTO crear(AlertaCreateDTO dto);
-    AlertaResponseDTO listarPorId(Long id);
-
-    Page<AlertaSimpleDTO> listarTodasPaginadas(Pageable pageable);
-    Page<AlertaSimpleDTO> listarNoLeidasPaginadas(Pageable pageable);
-
-    AlertaResponseDTO actualizar(Long id, AlertaUpdateDTO dto);
-    void cambiarEstado(Long id);
-    void eliminar(Long id);
+    AlertaResponseDTO crear(Long farmaciaId, AlertaCreateDTO dto);
+    AlertaResponseDTO listarPorId(Long farmaciaId, Long id);
+    Page<AlertaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<AlertaSimpleDTO> listarNoLeidasPaginadas(Long farmaciaId, Pageable pageable);
+    AlertaResponseDTO actualizar(Long farmaciaId, Long id, AlertaUpdateDTO dto);
+    void cambiarEstado(Long farmaciaId, Long id);
+    void eliminar(Long farmaciaId, Long id);
 }

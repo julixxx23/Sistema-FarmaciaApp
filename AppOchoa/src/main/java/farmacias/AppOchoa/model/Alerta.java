@@ -48,5 +48,9 @@ public class Alerta {
     @JoinColumn(name = "lote_id")
     private InventarioLotes lote;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id", nullable = false)
+    private Farmacia farmacia;
+
 }
 
