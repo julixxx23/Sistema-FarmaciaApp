@@ -26,7 +26,7 @@ public class PresentacionServiceImpl implements PresentacionService {
     }
 
     @Override
-    public PresentacionResponseDTO crear(PresentacionCreateDTO dto){
+    public PresentacionResponseDTO crear(Long farmaciaId, PresentacionCreateDTO dto){
         if(presentacionRepository.existsByPresentacionNombre(dto.getNombre())){
             throw new RuntimeException("Ya existe una presentación con ese nombre: " + dto.getNombre());
         }
@@ -40,43 +40,27 @@ public class PresentacionServiceImpl implements PresentacionService {
     }
 
     @Override
-    public PresentacionResponseDTO obtenerPorId(Long id){
+    public PresentacionResponseDTO obtenerPorId(Long farmaciaId, Long id){
         Presentacion presentacion = presentacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Presentación no encontrada por ID: " + id));
         return PresentacionResponseDTO.fromEntity(presentacion);
     }
-
-    @Override
-    public List<PresentacionSimpleDTO> listarTodas(){
-        return presentacionRepository.findAll().stream()
-                .map(PresentacionSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PresentacionSimpleDTO> listarActivas(){
-        return presentacionRepository.findByPresentacionEstadoTrue().stream()
-                .map(PresentacionSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-
     @Override
     @Transactional(readOnly = true)
-    public Page<PresentacionSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+    public Page<PresentacionSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable) {
         return presentacionRepository.findByPresentacionEstadoTrue(pageable)
                 .map(PresentacionSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PresentacionSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+    public Page<PresentacionSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable) {
         return presentacionRepository.findAll(pageable)
                 .map(PresentacionSimpleDTO::fromEntity);
     }
 
     @Override
-    public PresentacionResponseDTO actualizar(Long id, PresentacionUpdateDTO dto){
+    public PresentacionResponseDTO actualizar(Long farmaciaId, Long id, PresentacionUpdateDTO dto){
         Presentacion presentacion = presentacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Presentación no encontrada por ID: " + id));
 
@@ -96,7 +80,7 @@ public class PresentacionServiceImpl implements PresentacionService {
     }
 
     @Override
-    public void cambiarEstado(Long id, Boolean estado){
+    public void cambiarEstado(Long farmaciaId, Long id, Boolean estado){
         Presentacion presentacion = presentacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Presentación no encontrada por ID: " + id));
         presentacion.setPresentacionEstado(estado);
@@ -104,7 +88,7 @@ public class PresentacionServiceImpl implements PresentacionService {
     }
 
     @Override
-    public void eliminar(Long id){
-        cambiarEstado(id, false);
+    public void eliminar(Long farmaciaId, Long id){
+        cambiarEstado(farmaciaId, id, false);
     }
 }

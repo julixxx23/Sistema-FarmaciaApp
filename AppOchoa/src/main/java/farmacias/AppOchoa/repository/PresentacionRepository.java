@@ -13,10 +13,10 @@ public interface PresentacionRepository extends JpaRepository<Presentacion, Long
 
     // Para validar si existe antes de crear
     boolean existsByPresentacionNombre(String nombre);
-
     // Para listar presentaciones activas (sin paginación)
     List<Presentacion> findByPresentacionEstadoTrue();
-
     // Para listar presentaciones activas CON paginación
     Page<Presentacion> findByPresentacionEstadoTrue(Pageable pageable);
+    Page<Presentacion> findByFarmacia_FarmaciaIdAndPresentacionEstadoTrue(Long farmaciaId, Pageable pageable);
+    boolean existsByFarmacia_FarmaciaIdAndPresentacionNombre(Long farmaciaId, String nombre);
 }
