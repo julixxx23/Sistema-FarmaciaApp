@@ -29,17 +29,17 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     private final SucursalRepository sucursalRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 2. AGREGAMOS @Lazy AQUÃƒÆ’Ã‚Â ABAJO PARA ROMPER EL CICLO INFINITO
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository,
-                              SucursalRepository sucursalRepository,
-                              @Lazy PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImpl(
+            UsuarioRepository usuarioRepository,
+            SucursalRepository sucursalRepository,
+            @Lazy PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.sucursalRepository = sucursalRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto) {
+    public UsuarioResponseDTO crearUsuario(Long farmaciaId, UsuarioCreateDTO dto) {
         if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
             throw new ResourceNotFoundException("El nombre de usuario '" + dto.getNombreUsuario() + "' ya esta en uso");
         }
@@ -64,7 +64,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UsuarioResponseDTO obtenerPorId(Long id) {
+    public UsuarioResponseDTO obtenerPorId(Long farmaciaId, Long id) {
         return usuarioRepository.findById(id)
                 .map(UsuarioResponseDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
@@ -72,13 +72,13 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UsuarioSimpleDTO> listarUsuariosActivosPaginado(Pageable pageable) {
+    public Page<UsuarioSimpleDTO> listarUsuariosActivosPaginado(Long farmaciaId, Pageable pageable) {
         return usuarioRepository.findByUsuarioEstadoTrue(pageable)
                 .map(UsuarioSimpleDTO::fromEntity);
     }
 
     @Override
-    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto) {
+    public UsuarioResponseDTO actualizarUsuario(Long farmaciaId, Long id, UsuarioUpdateDTO dto) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
 
@@ -105,7 +105,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
-    public void cambiarEstado(Long id, Boolean nuevoEstado) {
+    public void cambiarEstado(Long farmaciaId, Long id, Boolean nuevoEstado) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
         usuario.setUsuarioEstado(nuevoEstado);
@@ -113,13 +113,13 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
-    public void eliminarUsuario(Long id) {
-        cambiarEstado(id, false);
+    public void eliminarUsuario(Long farmaciaId, Long id) {
+        cambiarEstado(farmaciaId, id, false);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UsuarioResponseDTO login(LoginDTO dto) {
+    public UsuarioResponseDTO login(Long farmaciaId, LoginDTO dto) {
         Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
                 .orElseThrow(() -> new RuntimeException("Credenciales invÃƒÆ’Ã‚Â¡lidas"));
 
