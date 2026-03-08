@@ -5,6 +5,7 @@ import farmacias.AppOchoa.dto.inventario.InventarioResponseDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioSimpleDTO;
 import farmacias.AppOchoa.dto.inventario.InventarioUpdateDTO;
 import farmacias.AppOchoa.services.InventarioService;
+import farmacias.AppOchoa.util.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,42 +22,61 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class InventarioController {
     private final InventarioService inventarioService;
+    private final JwtUtil jwtUtil;
+
+    private Long getFarmaciaId(String authHeader){
+        String token = authHeader.substring(7);
+        return jwtUtil.extractFarmaciaId(token);
+    }
 
     @GetMapping
     public ResponseEntity<Page<InventarioSimpleDTO>> listarActivosPaginado(
+            @RequestHeader("Authorization") String authHeader,
             @PageableDefault(size = 10, sort = "inventarioCantidadActual")Pageable pageable){
-        return ResponseEntity.ok(inventarioService.listarActivosPaginado(pageable));
+        Page<InventarioSimpleDTO> inventarios = inventarioService.listarActivosPaginado(getFarmaciaId(authHeader), pageable);
+        return ResponseEntity.ok(inventarios);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<InventarioResponseDTO> listarPorId(@PathVariable Long id){
-        InventarioResponseDTO inventarioResponseDTO = inventarioService.listaPorId(id);
+    public ResponseEntity<InventarioResponseDTO> listarPorId(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long id){
+        InventarioResponseDTO inventarioResponseDTO = inventarioService.listaPorId(getFarmaciaId(authHeader),id);
         return ResponseEntity.ok(inventarioResponseDTO);
     }
 
     @GetMapping("/todos")
     public ResponseEntity<Page<InventarioSimpleDTO>> listarTodosPaginados(
+            @RequestHeader("Authorization") String authHeader,
             @PageableDefault(size = 10, sort = "inventarioCantidadActual")Pageable pageable){
-        return ResponseEntity.ok(inventarioService.listarTodosPaginado(pageable));
+        Page<InventarioSimpleDTO> inventarios1 = inventarioService.listarTodosPaginado(getFarmaciaId(authHeader), pageable);
+
+        return ResponseEntity.ok(inventarios1);
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<InventarioResponseDTO> crear(@Valid @RequestBody InventarioCreateDTO dto){
-        InventarioResponseDTO inventarioResponseDTO = inventarioService.crear(dto);
+    public ResponseEntity<InventarioResponseDTO> crear(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody InventarioCreateDTO dto){
+        InventarioResponseDTO inventarioResponseDTO = inventarioService.crear(getFarmaciaId(authHeader),dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(inventarioResponseDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<InventarioResponseDTO> actualizar(@PathVariable Long id, @Valid @RequestBody InventarioUpdateDTO dto){
-        InventarioResponseDTO inventarioResponseDTO = inventarioService.actualizar(id, dto);
+    public ResponseEntity<InventarioResponseDTO> actualizar(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long id, @Valid @RequestBody InventarioUpdateDTO dto){
+        InventarioResponseDTO inventarioResponseDTO = inventarioService.actualizar(getFarmaciaId(authHeader),id, dto);
         return ResponseEntity.ok(inventarioResponseDTO);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id){
-        inventarioService.eliminar(id);
+    public ResponseEntity<Void> eliminar(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable Long id){
+        inventarioService.eliminar(getFarmaciaId(authHeader),id);
         return ResponseEntity.noContent().build();
     }
 

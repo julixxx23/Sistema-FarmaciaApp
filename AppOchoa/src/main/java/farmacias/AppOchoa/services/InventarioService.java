@@ -9,12 +9,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface InventarioService {
 
-    InventarioResponseDTO crear(InventarioCreateDTO dto);
-
-    InventarioResponseDTO listaPorId(Long id);
-    Page<InventarioSimpleDTO> listarTodosPaginado(Pageable pageable);
-    Page<InventarioSimpleDTO> listarActivosPaginado(Pageable pageable);
-
-    InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto);
-    void eliminar(Long id);
+    InventarioResponseDTO crear(Long farmaciaId, InventarioCreateDTO dto);
+    InventarioResponseDTO listaPorId(Long farmaciaId, Long id);
+    Page<InventarioSimpleDTO> listarTodosPaginado(Long farmaciaId, Pageable pageable);
+    Page<InventarioSimpleDTO> listarActivosPaginado(Long farmaciaId, Pageable pageable);
+    InventarioResponseDTO actualizar(Long farmaciaId, Long id, InventarioUpdateDTO dto);
+    void eliminar(Long farmaciaId, Long id);
 }
