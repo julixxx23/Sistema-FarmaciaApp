@@ -8,9 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-
     boolean existsByProductoNombre(String productoNombre);
-    Optional<Producto> findByProductoCodigoBarras(String productoCodigoBarras);
     boolean existsByProductoCodigoBarras(String productoCodigoBarras);
+    Optional<Producto> findByProductoCodigoBarras(String productoCodigoBarras);
     Page<Producto> findByProductoEstadoTrue(Pageable pageable);
+
+    boolean existsByFarmacia_FarmaciaIdAndProductoNombre(Long farmaciaId, String productoNombre);
+    boolean existsByFarmacia_FarmaciaIdAndProductoCodigoBarras(Long farmaciaId, String codigoBarras);
+    Optional<Producto> findByFarmacia_FarmaciaIdAndProductoCodigoBarras(Long farmaciaId, String codigoBarras);
+    Page<Producto> findByFarmacia_FarmaciaIdAndProductoEstadoTrue(Long farmaciaId, Pageable pageable);
 }

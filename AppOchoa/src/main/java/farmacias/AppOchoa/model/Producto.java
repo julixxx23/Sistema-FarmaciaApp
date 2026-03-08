@@ -52,4 +52,8 @@ public class Producto {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "presentacion_id")
     private Presentacion presentacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id", nullable = false)
+    private Farmacia farmacia;
 }

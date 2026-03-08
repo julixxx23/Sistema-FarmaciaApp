@@ -5,9 +5,11 @@ import farmacias.AppOchoa.dto.producto.ProductoResponseDTO;
 import farmacias.AppOchoa.dto.producto.ProductoSimpleDTO;
 import farmacias.AppOchoa.dto.producto.ProductoUpdateDTO;
 import farmacias.AppOchoa.model.Categoria;
+import farmacias.AppOchoa.model.Farmacia;
 import farmacias.AppOchoa.model.Presentacion;
 import farmacias.AppOchoa.model.Producto;
 import farmacias.AppOchoa.repository.CategoriaRepository;
+import farmacias.AppOchoa.repository.FarmaciaRepository;
 import farmacias.AppOchoa.repository.PresentacionRepository;
 import farmacias.AppOchoa.repository.ProductoRepository;
 import farmacias.AppOchoa.services.ProductoService;
@@ -16,9 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional
 public class ProductoServiceImpl implements ProductoService {
@@ -26,29 +25,37 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
     private final PresentacionRepository presentacionRepository;
+    private final FarmaciaRepository farmaciaRepository;
 
     public ProductoServiceImpl(
             ProductoRepository productoRepository,
             CategoriaRepository categoriaRepository,
-            PresentacionRepository presentacionRepository) {
+            PresentacionRepository presentacionRepository,
+            FarmaciaRepository farmaciaRepository) {
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
         this.presentacionRepository = presentacionRepository;
+        this.farmaciaRepository = farmaciaRepository;
+    }
+
+    private Farmacia buscarFarmacia(Long farmaciaId) {
+        return farmaciaRepository.findById(farmaciaId)
+                .orElseThrow(() -> new RuntimeException("Farmacia no encontrada ID: " + farmaciaId));
     }
 
     @Override
-    public ProductoResponseDTO agregarProducto(ProductoCreateDTO dto) {
-        //Validaciones de unicidad
-        if (productoRepository.existsByProductoNombre(dto.getNombre())) {
+    public ProductoResponseDTO agregarProducto(Long farmaciaId, ProductoCreateDTO dto) {
+        Farmacia farmacia = buscarFarmacia(farmaciaId);
+
+        if (productoRepository.existsByFarmacia_FarmaciaIdAndProductoNombre(farmaciaId, dto.getNombre())) {
             throw new RuntimeException("Ya existe un producto con el nombre: " + dto.getNombre());
         }
 
         if (dto.getCodigoBarras() != null && !dto.getCodigoBarras().isBlank() &&
-                productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
+                productoRepository.existsByFarmacia_FarmaciaIdAndProductoCodigoBarras(farmaciaId, dto.getCodigoBarras())) {
             throw new RuntimeException("El código de barras ya está registrado: " + dto.getCodigoBarras());
         }
 
-        //Buscar entidades relacionadas
         Categoria categoria = buscarCategoria(dto.getCategoriaId());
         Presentacion presentacion = buscarPresentacion(dto.getPresentacionId());
 
@@ -62,38 +69,39 @@ public class ProductoServiceImpl implements ProductoService {
                 .productoEstado(true)
                 .categoria(categoria)
                 .presentacion(presentacion)
+                .farmacia(farmacia)
                 .build();
 
         return ProductoResponseDTO.fromEntity(productoRepository.save(producto));
     }
 
     @Override
-    public ProductoResponseDTO actualizarProducto(Long id, ProductoUpdateDTO dto) {
+    public ProductoResponseDTO actualizarProducto(Long farmaciaId, Long id, ProductoUpdateDTO dto) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
 
-        // Validar unicidad de nombre si cambió
+        if (!producto.getFarmacia().getFarmaciaId().equals(farmaciaId)) {
+            throw new RuntimeException("No tienes permiso para modificar este producto");
+        }
+
         if (!producto.getProductoNombre().equalsIgnoreCase(dto.getNombre()) &&
-                productoRepository.existsByProductoNombre(dto.getNombre())) {
+                productoRepository.existsByFarmacia_FarmaciaIdAndProductoNombre(farmaciaId, dto.getNombre())) {
             throw new RuntimeException("Ya existe otro producto con el nombre: " + dto.getNombre());
         }
 
-        // Validar unicidad de código de barras si cambió
         if (dto.getCodigoBarras() != null &&
                 !dto.getCodigoBarras().equals(producto.getProductoCodigoBarras()) &&
-                productoRepository.existsByProductoCodigoBarras(dto.getCodigoBarras())) {
+                productoRepository.existsByFarmacia_FarmaciaIdAndProductoCodigoBarras(farmaciaId, dto.getCodigoBarras())) {
             throw new RuntimeException("El código de barras ya pertenece a otro producto.");
         }
 
-        // Actualizar relaciones y campos
         producto.setCategoria(buscarCategoria(dto.getCategoriaId()));
         producto.setPresentacion(buscarPresentacion(dto.getPresentacionId()));
-
         producto.setProductoNombre(dto.getNombre());
         producto.setProductoCodigoBarras(dto.getCodigoBarras());
         producto.setProductoPrecioCompra(dto.getPrecioCompra());
         producto.setProductoPrecioVenta(dto.getPrecioVenta());
-        producto.setProductoIva(dto.getIva()); // <-- IVA actualizado
+        producto.setProductoIva(dto.getIva());
 
         if (dto.getEstado() != null) producto.setProductoEstado(dto.getEstado());
         if (dto.getRequiereReceta() != null) producto.setProductoRequiereReceta(dto.getRequiereReceta());
@@ -102,42 +110,51 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public void eliminarProducto(Long id) {
-        cambiarEstado(id, false);
+    public void eliminarProducto(Long farmaciaId, Long id) {
+        cambiarEstado(farmaciaId, id, false);
     }
 
     @Override
-    public void cambiarEstado(Long id, Boolean nuevoEstado) {
+    public void cambiarEstado(Long farmaciaId, Long id, Boolean nuevoEstado) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+
+        if (!producto.getFarmacia().getFarmaciaId().equals(farmaciaId)) {
+            throw new RuntimeException("No tienes permiso para modificar este producto");
+        }
+
         producto.setProductoEstado(nuevoEstado);
         productoRepository.save(producto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProductoResponseDTO obtenerPorCodigoBarras(String codigo) {
-        return productoRepository.findByProductoCodigoBarras(codigo)
+    public ProductoResponseDTO obtenerPorCodigoBarras(Long farmaciaId, String codigo) {
+        return productoRepository.findByFarmacia_FarmaciaIdAndProductoCodigoBarras(farmaciaId, codigo)
                 .map(ProductoResponseDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con código: " + codigo));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProductoResponseDTO obtenerPorId(Long id) {
-        return productoRepository.findById(id)
-                .map(ProductoResponseDTO::fromEntity)
+    public ProductoResponseDTO obtenerPorId(Long farmaciaId, Long id) {
+        Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
+
+        if (!producto.getFarmacia().getFarmaciaId().equals(farmaciaId)) {
+            throw new RuntimeException("No tienes permiso para ver este producto");
+        }
+
+        return ProductoResponseDTO.fromEntity(producto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductoSimpleDTO> listarProductosActivos(Pageable pageable) {
-        return productoRepository.findByProductoEstadoTrue(pageable)
+    public Page<ProductoSimpleDTO> listarProductosActivos(Long farmaciaId, Pageable pageable) {
+        return productoRepository.findByFarmacia_FarmaciaIdAndProductoEstadoTrue(farmaciaId, pageable)
                 .map(ProductoSimpleDTO::fromEntity);
     }
 
-    // Métodos auxiliares privados
     private Categoria buscarCategoria(Long id) {
         if (id == null) return null;
         return categoriaRepository.findById(id)

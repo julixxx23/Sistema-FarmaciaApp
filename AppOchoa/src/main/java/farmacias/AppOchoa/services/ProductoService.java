@@ -8,11 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductoService {
-    ProductoResponseDTO agregarProducto(ProductoCreateDTO dto);
-    ProductoResponseDTO actualizarProducto(Long id, ProductoUpdateDTO dto);
-    void eliminarProducto(Long id);
-    void cambiarEstado(Long id, Boolean nuevoEstado);
-    ProductoResponseDTO obtenerPorCodigoBarras(String productoCodigoBarras);
-    ProductoResponseDTO obtenerPorId(Long id);
-    Page<ProductoSimpleDTO> listarProductosActivos(Pageable pageable);
+    ProductoResponseDTO agregarProducto(Long farmaciaId, ProductoCreateDTO dto);
+    ProductoResponseDTO actualizarProducto(Long farmaciaId, Long id, ProductoUpdateDTO dto);
+    void eliminarProducto(Long farmaciaId, Long id);
+    void cambiarEstado(Long farmaciaId, Long id, Boolean nuevoEstado);
+    ProductoResponseDTO obtenerPorCodigoBarras(Long farmaciaId, String productoCodigoBarras);
+    ProductoResponseDTO obtenerPorId(Long farmaciaId, Long id);
+    Page<ProductoSimpleDTO> listarProductosActivos(Long farmaciaId, Pageable pageable);
 }
