@@ -40,7 +40,7 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public VentaResponseDTO crear(VentaCreateDTO dto) {
+    public VentaResponseDTO crear(Long farmaciaId, VentaCreateDTO dto) {
         Sucursal sucursal = buscarSucursal(dto.getSucursalId());
         Usuario usuario = buscarUsuario(dto.getUsuarioId());
 
@@ -100,7 +100,7 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     @Transactional(readOnly = true)
-    public VentaResponseDTO listarPorId(Long id) {
+    public VentaResponseDTO listarPorId(Long farmaciaId, Long id) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
         return VentaResponseDTO.fromEntity(venta);
@@ -108,20 +108,20 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+    public Page<VentaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable) {
         return ventaRepository.findAll(pageable)
                 .map(VentaSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+    public Page<VentaSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable) {
         return ventaRepository.findByVentaEstado(VentaEstado.completada, pageable)
                 .map(VentaSimpleDTO::fromEntity);
     }
 
     @Override
-    public VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto) {
+    public VentaResponseDTO actualizar(Long farmaciaId, Long id, VentaUpdateDTO dto) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
 
@@ -134,7 +134,7 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public void cambiarEstado(Long id, VentaEstado nuevoEstado) {
+    public void cambiarEstado(Long farmaciaId, Long id, VentaEstado nuevoEstado) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));
 
@@ -161,8 +161,8 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
-    public void eliminar(Long id) {
-        cambiarEstado(id, VentaEstado.anulada);
+    public void eliminar(Long farmaciaId, Long id) {
+        cambiarEstado(farmaciaId, id, VentaEstado.anulada);
     }
 
     // Métodos auxiliares privados
