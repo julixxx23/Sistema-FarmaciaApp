@@ -11,11 +11,11 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface CajaService {
-    CajaResponseDTO crearCaja(CajaCreateDTO dto);
-    CajaResponseDTO actualizarCaja(Long id, CajaUpdateDTO dto);
-    CajaResponseDTO buscarPorId(Long id);
-    Page<CajaSimpleDTO> listarCajasActivas(Pageable pageable);
-    Page<CajaSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
-    void cambiarEstado(Long id, CajaEstado cajaEstado);
-    void eliminar(Long id);
+    CajaResponseDTO crearCaja(Long farmaciaId, CajaCreateDTO dto);
+    CajaResponseDTO actualizarCaja(Long farmaciaId, Long id, CajaUpdateDTO dto);
+    CajaResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<CajaSimpleDTO> listarCajasActivas(Long farmaciaId, Pageable pageable);
+    Page<CajaSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
+    void cambiarEstado(Long farmaciaId, Long id, CajaEstado cajaEstado);
+    void eliminar(Long farmaciaId, Long id);
 }

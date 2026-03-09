@@ -30,7 +30,7 @@ public class CajaServiceImpl implements CajaService {
     }
 
     @Override
-    public CajaResponseDTO crearCaja(CajaCreateDTO dto){
+    public CajaResponseDTO crearCaja(Long farmaciaId, CajaCreateDTO dto){
         if(cajaRepository.existsBySucursalSucursalIdAndCajaNombre(dto.getSucursalId(), dto.getCajaNombre())){
             throw new IllegalArgumentException("Ya existe una caja con este nombre");
         }
@@ -52,7 +52,7 @@ public class CajaServiceImpl implements CajaService {
 
     @Override
     @Transactional(readOnly = true)
-    public CajaResponseDTO buscarPorId(Long id){
+    public CajaResponseDTO buscarPorId(Long farmaciaId, Long id){
         return cajaRepository.findById(id)
                 .map(CajaResponseDTO:: fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Caja no encontrada por ID"));
@@ -60,19 +60,19 @@ public class CajaServiceImpl implements CajaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CajaSimpleDTO> listarCajasActivas(Pageable pageable){
+    public Page<CajaSimpleDTO> listarCajasActivas(Long farmaciaId, Pageable pageable){
         return cajaRepository.findByCajaEstado(CajaEstado.activa, pageable)
                 .map(CajaSimpleDTO::fromEntity);
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<CajaSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<CajaSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return cajaRepository.buscarPorTexto(texto, pageable)
                 .map(CajaSimpleDTO::fromEntity);
     }
 
     @Override
-    public CajaResponseDTO actualizarCaja(Long id, CajaUpdateDTO dto){
+    public CajaResponseDTO actualizarCaja(Long farmaciaId, Long id, CajaUpdateDTO dto){
         Caja caja = cajaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Caja no encontrada por ID"));
         //Validar unicidad de nombre
@@ -86,15 +86,15 @@ public class CajaServiceImpl implements CajaService {
         return CajaResponseDTO.fromEntity(cajaRepository.save(caja));
     }
     @Override
-    public void cambiarEstado(Long id, CajaEstado cajaEstado){
+    public void cambiarEstado(Long farmaciaId, Long id, CajaEstado cajaEstado){
         Caja caja = cajaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Caja no encontrada por ID"));
         caja.setCajaEstado(cajaEstado);
         cajaRepository.save(caja);
     }
     @Override
-    public void eliminar(Long id){
-        cambiarEstado(id, CajaEstado.desactivada);
+    public void eliminar(Long farmaciaId, Long id){
+        cambiarEstado(farmaciaId, id, CajaEstado.desactivada);
     }
 
 }
