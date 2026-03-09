@@ -43,4 +43,9 @@ public class CajaCorte {
     @JoinColumn(name = "usuario_supervisor_id")
     private Usuario usuario;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id")
+    private Farmacia farmacia;
+
+
 }

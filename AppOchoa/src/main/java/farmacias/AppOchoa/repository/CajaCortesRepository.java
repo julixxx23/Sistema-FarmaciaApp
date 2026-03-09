@@ -26,4 +26,5 @@ public interface CajaCortesRepository extends JpaRepository<CajaCorte, Long> {
             "LOWER(c.usuario.usuarioNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
             "LOWER(c.usuario.usuarioApellido) LIKE LOWER(CONCAT('%', :texto, '%'))")
     Page<CajaCorte> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
+    Page<CajaCorte> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
 }

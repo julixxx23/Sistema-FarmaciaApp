@@ -7,9 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CajaCorteService {
-    CajaCorteResponseDTO crear(CajaCorteCreateDTO dto);
-    CajaCorteResponseDTO buscarPorId(Long id);
-    Page<CajaCorteSimpleDTO> listarCortes(Pageable pageable);
-    Page<CajaCorteSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
-    void eliminar(Long id);
+    CajaCorteResponseDTO crear(Long farmaciaId, CajaCorteCreateDTO dto);
+    CajaCorteResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<CajaCorteSimpleDTO> listarCortes(Long farmaciaId, Pageable pageable);
+    Page<CajaCorteSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
+    void eliminar(Long farmaciaId, Long id);
 }

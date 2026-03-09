@@ -38,9 +38,9 @@ public class CajaCorteServiceImpl implements CajaCorteService {
     }
 
     @Override
-    public CajaCorteResponseDTO crear(CajaCorteCreateDTO dto) {
-        CajaSesiones cajaSesiones = buscarSesiones(dto.getSesionId());
-        Usuario usuario = buscarUsuario(dto.getUsuarioSupervisorId());
+    public CajaCorteResponseDTO crear(Long farmaciaId, CajaCorteCreateDTO dto) {
+        CajaSesiones cajaSesiones = buscarSesiones(farmaciaId, dto.getSesionId());
+        Usuario usuario = buscarUsuario(farmaciaId, dto.getUsuarioSupervisorId());
 
         BigDecimal totalCredito = ventaPagoRepository.sumarPorSesionYMetodo(cajaSesiones.getSesionId(), MetodoPagoEstado.tarjetaDeCredito);
         BigDecimal totalDebito = ventaPagoRepository.sumarPorSesionYMetodo(cajaSesiones.getSesionId(), MetodoPagoEstado.tarjetaDeDebito);
@@ -58,27 +58,27 @@ public class CajaCorteServiceImpl implements CajaCorteService {
         return CajaCorteResponseDTO.fromEntity(cajaCortesRepository.save(cajaCorte));
     }
     // Metodos Auxiliares
-    private CajaSesiones buscarSesiones(Long id) {
+    private CajaSesiones buscarSesiones(Long farmaciaId, Long id) {
         if (id == null) return null;
         return cajaSesionesRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sesion no encontrada por ID"));
     }
 
-    private Usuario buscarUsuario(Long id) {
+    private Usuario buscarUsuario(Long farmaciaId, Long id) {
         if (id == null) return null;
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado por ID"));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<CajaCorteSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<CajaCorteSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return cajaCortesRepository.buscarPorTexto(texto, pageable)
                 .map(CajaCorteSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public CajaCorteResponseDTO buscarPorId(Long id) {
+    public CajaCorteResponseDTO buscarPorId(Long farmaciaId, Long id) {
         return cajaCortesRepository.findById(id)
                 .map(CajaCorteResponseDTO::fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Corte no encontrado por ID"));
@@ -86,13 +86,13 @@ public class CajaCorteServiceImpl implements CajaCorteService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CajaCorteSimpleDTO> listarCortes(Pageable pageable) {
+    public Page<CajaCorteSimpleDTO> listarCortes(Long farmaciaId, Pageable pageable) {
         return cajaCortesRepository.findAll(pageable)
                 .map(CajaCorteSimpleDTO::fromEntity);
     }
 
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
 }
