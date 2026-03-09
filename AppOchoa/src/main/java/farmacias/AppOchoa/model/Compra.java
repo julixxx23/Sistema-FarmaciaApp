@@ -53,4 +53,8 @@ public class Compra {
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<CompraDetalle> detalles = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id")
+    private Farmacia farmacia;
 }
