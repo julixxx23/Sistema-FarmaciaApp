@@ -33,4 +33,5 @@ public interface CajaSesionesRepository extends JpaRepository<CajaSesiones, Long
             "LOWER(s.caja.cajaNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
             "LOWER(CAST(s.sesionEstado AS string)) LIKE LOWER(CONCAT('%', :texto, '%'))")
     Page<CajaSesiones> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
+    Page<CajaSesiones> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
 }

@@ -32,9 +32,9 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
         this.cajaRepository = cajaRepository;
     }
     @Override
-    public CajaSesionesResponseDTO crear(CajaSesionesCreateDTO dto){
-        Usuario usuario = buscarUsuario(dto.getUsuarioId());
-        Caja caja = buscarCaja(dto.getCajaId());
+    public CajaSesionesResponseDTO crear(Long farmaciaId, CajaSesionesCreateDTO dto){
+        Usuario usuario = buscarUsuario(farmaciaId, dto.getUsuarioId());
+        Caja caja = buscarCaja(farmaciaId, dto.getCajaId());
 
         CajaSesiones cajaSesiones = CajaSesiones.builder()
                 .caja(caja)
@@ -46,37 +46,37 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
 
     }
     //Metodos Auxiliares
-    private Usuario buscarUsuario(Long id){
+    private Usuario buscarUsuario(Long farmaciaId, Long id){
         if(id == null) return null;
         return usuarioRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Usuario no encontrado por ID"));
     }
-    private Caja buscarCaja(Long id){
+    private Caja buscarCaja(Long farmaciaId, Long id){
         if(id == null) return null;
         return cajaRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Sesion no encontrado por ID"));
     }
     @Transactional(readOnly = true)
     @Override
-    public CajaSesionesResponseDTO buscarPorId(Long id){
+    public CajaSesionesResponseDTO buscarPorId(Long farmaciaId, Long id){
         return cajaSesionesRepository.findById(id)
                 .map(CajaSesionesResponseDTO::fromEntity)
                 .orElseThrow(()-> new ResourceNotFoundException("Caja no encontrada por ID"));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<CajaSesionesSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<CajaSesionesSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return cajaSesionesRepository.buscarPorTexto(texto, pageable)
                 .map(CajaSesionesSimpleDTO::fromEntity);
     }
     @Transactional(readOnly = true)
     @Override
-    public Page<CajaSesionesSimpleDTO> listarSesiones(Pageable pageable){
+    public Page<CajaSesionesSimpleDTO> listarSesiones(Long farmaciaId,Pageable pageable){
         return cajaSesionesRepository.findAll(pageable)
                 .map(CajaSesionesSimpleDTO::fromEntity);
     }
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
     }

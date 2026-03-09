@@ -8,9 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CajaSesionesService {
-    CajaSesionesResponseDTO crear(CajaSesionesCreateDTO dto);
-    CajaSesionesResponseDTO buscarPorId(Long id);
-    Page<CajaSesionesSimpleDTO> listarSesiones(Pageable pageable);
-    Page<CajaSesionesSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
-    void eliminar(Long id);
+    CajaSesionesResponseDTO crear(Long farmaciaId, CajaSesionesCreateDTO dto);
+    CajaSesionesResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<CajaSesionesSimpleDTO> listarSesiones(Long farmaciaId, Pageable pageable);
+    Page<CajaSesionesSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
+    void eliminar(Long farmaciaId, Long id);
 }
