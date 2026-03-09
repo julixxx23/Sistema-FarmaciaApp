@@ -32,4 +32,5 @@ public interface InventarioLotesRepository extends JpaRepository<InventarioLotes
 
     // ESCÁNER / CÓDIGO
     Optional<InventarioLotes> findByLoteNumero(String loteNumero);
+    Page<InventarioLotes> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
 }

@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 
 public interface InventarioLotesService {
-    InventarioLotesResponseDTO crear(InventarioLotesCreateDTO dto);
-    Page<InventarioLotesSimpleDTO> listarPorSucursalPaginado(Long sucursalId, Pageable pageable);
-    InventarioLotesResponseDTO buscarPorId(Long id);
-    InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto);
-    Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(LocalDate fechaLimite, Pageable pageable);
-    void eliminar(Long id);
+    InventarioLotesResponseDTO crear(Long farmaciaId, InventarioLotesCreateDTO dto);
+    Page<InventarioLotesSimpleDTO> listarPorSucursalPaginado(Long farmaciaId, Long sucursalId, Pageable pageable);
+    InventarioLotesResponseDTO buscarPorId(Long farmaciaId, Long id);
+    InventarioLotesResponseDTO actualizar(Long farmaciaId, Long id, InventarioLotesUpdateDTO dto);
+    Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(Long farmaciaId, LocalDate fechaLimite, Pageable pageable);
+    void eliminar(Long farmaciaId, Long id);
 }
