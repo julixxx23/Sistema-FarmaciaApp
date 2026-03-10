@@ -50,4 +50,9 @@ public class VentaFel {
     @Column(name = "auditoria_fecha_creacion", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime auditoriaFechaCreacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id")
+    private Farmacia farmacia;
+
 }

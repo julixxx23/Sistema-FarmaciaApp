@@ -28,8 +28,8 @@ public class VentaFelServiceImpl implements VentaFelService {
     }
 
     @Override
-    public VentaFelResponseDTO crear(VentaFelCreateDTO dto){
-        Venta venta = buscarVenta(dto.getVentaId());
+    public VentaFelResponseDTO crear(Long farmaciaId, VentaFelCreateDTO dto){
+        Venta venta = buscarVenta(farmaciaId, dto.getVentaId());
 
         VentaFel ventaFel = VentaFel.builder()
                 .venta(venta)
@@ -37,7 +37,7 @@ public class VentaFelServiceImpl implements VentaFelService {
         return VentaFelResponseDTO.fromEntity(ventaFelRepository.save(ventaFel));
     }
 
-    private Venta buscarVenta(Long id){
+    private Venta buscarVenta(Long farmaciaId, Long id){
         if(id == null) return null;
         return ventaRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Venta no encontrada por ID"));
@@ -45,7 +45,7 @@ public class VentaFelServiceImpl implements VentaFelService {
 
     @Override
     @Transactional(readOnly = true)
-    public VentaFelResponseDTO buscarPorId(Long id){
+    public VentaFelResponseDTO buscarPorId(Long farmaciaId, Long id){
         return ventaFelRepository.findById(id)
                 .map(VentaFelResponseDTO::fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Documento FEL no encontrado por ID"));
@@ -53,20 +53,20 @@ public class VentaFelServiceImpl implements VentaFelService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaFelSimpleDTO> listarActivas(Pageable pageable){
+    public Page<VentaFelSimpleDTO> listarActivas(Long farmaciaId, Pageable pageable){
         return ventaFelRepository.findAll(pageable)
                 .map(VentaFelSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaFelSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<VentaFelSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return ventaFelRepository.buscarPorTexto(texto, pageable)
                 .map(VentaFelSimpleDTO::fromEntity);
     }
 
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
 
