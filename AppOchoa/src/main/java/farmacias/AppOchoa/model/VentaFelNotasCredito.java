@@ -43,4 +43,8 @@ public class VentaFelNotasCredito {
     @JoinColumn(name = "fel_id")
     private VentaFel ventaFel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id")
+    private Farmacia farmacia;
+
 }
