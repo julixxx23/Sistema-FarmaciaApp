@@ -30,8 +30,8 @@ public class VentaFelNotasCreditoServiceImpl implements VentaFelNotasCreditoServ
         this.ventaFelRepository = ventaFelRepository;
     }
     @Override
-    public VentaFelNotasCreditoResponseDTO crear(VentaFelNotasCreditoCreateDTO dto){
-        VentaFel ventaFel = buscarVentas(dto.getFelId());
+    public VentaFelNotasCreditoResponseDTO crear(Long farmaciaId, VentaFelNotasCreditoCreateDTO dto){
+        VentaFel ventaFel = buscarVentas(farmaciaId, dto.getFelId());
 
         VentaFelNotasCredito ventaFelNotasCredito = VentaFelNotasCredito.builder()
                 .ventaFel(ventaFel)
@@ -40,34 +40,34 @@ public class VentaFelNotasCreditoServiceImpl implements VentaFelNotasCreditoServ
 
         return VentaFelNotasCreditoResponseDTO.fromEntity(ventaFelNotasCreditoRepository.save(ventaFelNotasCredito));
     }
-    private VentaFel buscarVentas(Long id){
+    private VentaFel buscarVentas(Long farmaciaId, Long id){
         if(id == null) return null;
         return ventaFelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Venta fel no encontrada ID"));
     }
     @Override
     @Transactional(readOnly = true)
-    public VentaFelNotasCreditoResponseDTO buscarPorId(Long id){
+    public VentaFelNotasCreditoResponseDTO buscarPorId(Long farmaciaId, Long id){
         return ventaFelNotasCreditoRepository.findById(id)
                 .map(VentaFelNotasCreditoResponseDTO:: fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Nota credito no encontrada por ID"));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaFelNotasCreditoSimpleDTO> listarNotas(Pageable pageable){
+    public Page<VentaFelNotasCreditoSimpleDTO> listarNotas(Long farmaciaId, Pageable pageable){
         return ventaFelNotasCreditoRepository.findAll(pageable)
                 .map(VentaFelNotasCreditoSimpleDTO:: fromEntity);
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaFelNotasCreditoSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<VentaFelNotasCreditoSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return ventaFelNotasCreditoRepository.buscarPorTexto(texto, pageable)
                 .map(VentaFelNotasCreditoSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaFelNotasCreditoSimpleDTO> buscarPorFiltros(NotaEstado estado, LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable) {
+    public Page<VentaFelNotasCreditoSimpleDTO> buscarPorFiltros(Long farmaciaId, NotaEstado estado, LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable) {
         Page<VentaFelNotasCredito> resultados;
 
         boolean tieneEstado = (estado != null);
@@ -89,7 +89,7 @@ public class VentaFelNotasCreditoServiceImpl implements VentaFelNotasCreditoServ
         return resultados.map(VentaFelNotasCreditoSimpleDTO::fromEntity);
     }
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
 

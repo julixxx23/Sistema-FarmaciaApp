@@ -29,4 +29,5 @@ public interface VentaFelNotasCreditoRepository extends JpaRepository<VentaFelNo
             "LOWER(n.notaUuid) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
             "LOWER(CAST(n.notaEstado AS string)) LIKE LOWER(CONCAT('%', :texto, '%'))")
     Page<VentaFelNotasCredito> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
+    Page<VentaFelNotasCredito> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
 }

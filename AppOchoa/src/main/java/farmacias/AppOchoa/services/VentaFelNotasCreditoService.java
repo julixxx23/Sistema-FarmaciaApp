@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 
 public interface VentaFelNotasCreditoService {
-    VentaFelNotasCreditoResponseDTO crear(VentaFelNotasCreditoCreateDTO dto);
-    VentaFelNotasCreditoResponseDTO buscarPorId(Long id);
-    Page<VentaFelNotasCreditoSimpleDTO> listarNotas(Pageable pageable);
-    Page<VentaFelNotasCreditoSimpleDTO> buscarPorFiltros(NotaEstado estado, LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable);
-    Page<VentaFelNotasCreditoSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
-    void eliminar(Long id);
+    VentaFelNotasCreditoResponseDTO crear(Long farmaciaId, VentaFelNotasCreditoCreateDTO dto);
+    VentaFelNotasCreditoResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<VentaFelNotasCreditoSimpleDTO> listarNotas(Long farmaciaId, Pageable pageable);
+    Page<VentaFelNotasCreditoSimpleDTO> buscarPorFiltros(Long farmaciaId, NotaEstado estado, LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable);
+    Page<VentaFelNotasCreditoSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
+    void eliminar(Long farmaciaId, Long id);
 }
