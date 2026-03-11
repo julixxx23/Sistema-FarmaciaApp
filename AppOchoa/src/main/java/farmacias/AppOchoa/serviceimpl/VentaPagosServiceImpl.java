@@ -32,9 +32,9 @@ public class VentaPagosServiceImpl implements VentaPagoService {
         this.cajaSesionesRepository = cajaSesionesRepository;
     }
     @Override
-    public VentaPagoResponseDTO crear(VentaPagoCreateDTO dto){
-        Venta venta = buscarVentas(dto.getVentaId());
-        CajaSesiones cajaSesiones = buscarSesiones(dto.getCajaSesionId());
+    public VentaPagoResponseDTO crear(Long farmaciaId, VentaPagoCreateDTO dto){
+        Venta venta = buscarVentas(farmaciaId, dto.getVentaId());
+        CajaSesiones cajaSesiones = buscarSesiones(farmaciaId, dto.getCajaSesionId());
 
         VentaPago ventaPago = VentaPago.builder()
                 .venta(venta)
@@ -47,13 +47,13 @@ public class VentaPagosServiceImpl implements VentaPagoService {
 
         return VentaPagoResponseDTO.fromEntity(ventaPagoRepository.save(ventaPago));
     }
-    private Venta buscarVentas(Long id){
+    private Venta buscarVentas(Long farmaciaId, Long id){
         if(id == null) return null;
         return ventaRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Venta no encontrada por ID"));
 
     }
-    private CajaSesiones buscarSesiones(Long id){
+    private CajaSesiones buscarSesiones(Long farmaciaId, Long id){
         if(id == null) return null;
         return cajaSesionesRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Sesion no encontrada por ID"));
@@ -61,25 +61,25 @@ public class VentaPagosServiceImpl implements VentaPagoService {
 
     @Override
     @Transactional(readOnly = true)
-    public VentaPagoResponseDTO buscarPorId(Long id){
+    public VentaPagoResponseDTO buscarPorId(Long farmaciaId, Long id){
         return ventaPagoRepository.findById(id)
                 .map(VentaPagoResponseDTO:: fromEntity)
                 .orElseThrow(()-> new ResourceNotFoundException("Pago no encontrado por ID"));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaPagoSimpleDTO> listarActivas(Pageable pageable){
+    public Page<VentaPagoSimpleDTO> listarActivas(Long farmaciaId, Pageable pageable){
         return ventaPagoRepository.findAll(pageable)
                 .map(VentaPagoSimpleDTO:: fromEntity);
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<VentaPagoSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<VentaPagoSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return ventaPagoRepository.buscarPorTexto(texto, pageable)
                 .map(VentaPagoSimpleDTO::fromEntity);
     }
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
 

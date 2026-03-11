@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface VentaPagoService {
-    VentaPagoResponseDTO crear(VentaPagoCreateDTO dto);
-    VentaPagoResponseDTO buscarPorId(Long id);
-    Page<VentaPagoSimpleDTO> listarActivas(Pageable pageable);
-    Page<VentaPagoSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
-    void eliminar(Long id);
+    VentaPagoResponseDTO crear(Long farmaciaId, VentaPagoCreateDTO dto);
+    VentaPagoResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<VentaPagoSimpleDTO> listarActivas(Long farmaciaId, Pageable pageable);
+    Page<VentaPagoSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
+    void eliminar(Long farmaciaId, Long id);
 
 }
