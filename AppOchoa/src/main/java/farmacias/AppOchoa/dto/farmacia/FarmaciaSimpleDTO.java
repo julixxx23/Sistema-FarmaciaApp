@@ -20,8 +20,8 @@ public class FarmaciaSimpleDTO {
     private Boolean farmaciaActiva;
     private LocalDate suscripcionVigencia;
 
-    public static FarmaciaResponseDTO fromEntity(Farmacia farmacia){
-        return FarmaciaResponseDTO.builder()
+    public static FarmaciaSimpleDTO fromEntity(Farmacia farmacia){
+        return FarmaciaSimpleDTO.builder()
                 .farmaciaId(farmacia.getFarmaciaId())
                 .farmaciaNombre(farmacia.getFarmaciaNombre())
                 .planTipo(farmacia.getPlanTipo())
