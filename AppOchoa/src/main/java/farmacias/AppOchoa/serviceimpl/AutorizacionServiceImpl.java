@@ -27,8 +27,8 @@ public class AutorizacionServiceImpl implements AutorizacionService {
         this.usuarioRepository = usuarioRepository;
     }
     @Override
-    public AutorizacionResponseDTO crear(AutorizacionCreateDTO dto){
-        Usuario usuario = buscarCajero(dto.getCajeroId());
+    public AutorizacionResponseDTO crear(Long farmaciaId, AutorizacionCreateDTO dto){
+        Usuario usuario = buscarCajero(farmaciaId, dto.getCajeroId());
         Usuario usuario1 =  buscarSupervisor(dto.getSupervisorId());
 
         Autorizacion autorizacion = Autorizacion.builder()
@@ -40,7 +40,7 @@ public class AutorizacionServiceImpl implements AutorizacionService {
         return AutorizacionResponseDTO.fromEntity(autorizacionRepository.save(autorizacion));
     }
     //Auxiliares
-    private Usuario buscarCajero(Long id){
+    private Usuario buscarCajero(Long farmaciaId, Long id){
         if(id == null) return null;
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cajero no encontrado por ID"));
@@ -52,26 +52,26 @@ public class AutorizacionServiceImpl implements AutorizacionService {
     }
     @Override
     @Transactional(readOnly = true)
-    public AutorizacionResponseDTO buscarPorId(Long id){
+    public AutorizacionResponseDTO buscarPorId(Long farmaciaId, Long id){
         return autorizacionRepository.findById(id)
                 .map(AutorizacionResponseDTO:: fromEntity)
                 .orElseThrow(()-> new ResourceNotFoundException("Autorizacion no encontrada por ID"));
     }
     @Override
     @Transactional(readOnly = true)
-    public Page<AutorizacionSimpleDTO> buscarPorTexto(String texto, Pageable pageable) {
+    public Page<AutorizacionSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable) {
         return autorizacionRepository.buscarPorTexto(texto, pageable)
                 .map(AutorizacionSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AutorizacionSimpleDTO> listarTodas(Pageable pageable){
+    public Page<AutorizacionSimpleDTO> listarTodas(Long farmaciaId, Pageable pageable){
         return autorizacionRepository.findAll(pageable)
                 .map(AutorizacionSimpleDTO:: fromEntity);
     }
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
 

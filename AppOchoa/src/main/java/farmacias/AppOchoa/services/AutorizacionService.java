@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface AutorizacionService {
-    AutorizacionResponseDTO crear(AutorizacionCreateDTO dto);
-    AutorizacionResponseDTO buscarPorId(Long id);
-    Page<AutorizacionSimpleDTO> listarTodas(Pageable pageable);
-    Page<AutorizacionSimpleDTO> buscarPorTexto(String texto, Pageable pageable);
-    void eliminar(Long id);
+    AutorizacionResponseDTO crear(Long farmaciaId, AutorizacionCreateDTO dto);
+    AutorizacionResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<AutorizacionSimpleDTO> listarTodas(Long farmaciaId, Pageable pageable);
+    Page<AutorizacionSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
+    void eliminar(Long farmaciaId, Long id);
 }

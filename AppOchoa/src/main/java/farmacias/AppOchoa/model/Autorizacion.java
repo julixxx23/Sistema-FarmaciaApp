@@ -37,6 +37,10 @@ public class Autorizacion{
     @JoinColumn(name = "usuario_supervisor_id")
     private Usuario supervisor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id")
+    private Farmacia farmacia;
+
 
 
 }
