@@ -2,11 +2,14 @@ package farmacias.AppOchoa.serviceimpl;
 
 import farmacias.AppOchoa.dto.farmacia.FarmaciaCreateDTO;
 import farmacias.AppOchoa.dto.farmacia.FarmaciaResponseDTO;
+import farmacias.AppOchoa.dto.farmacia.FarmaciaSimpleDTO;
 import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Farmacia;
 import farmacias.AppOchoa.model.PlanTipo;
 import farmacias.AppOchoa.repository.FarmaciaRepository;
 import farmacias.AppOchoa.services.FarmaciaService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +43,6 @@ public class FarmaciaServiceImpl implements FarmaciaService {
                 .build();
 
 
-
         return FarmaciaResponseDTO.fromEntity(farmaciaRepository.save(farmacia));
     }
     private int resolverMaxSucursales(PlanTipo plan) {
@@ -59,6 +61,20 @@ public class FarmaciaServiceImpl implements FarmaciaService {
         };
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public FarmaciaResponseDTO buscarPorId(Long id){
+        return farmaciaRepository.findById(id)
+                .map(FarmaciaResponseDTO::fromEntity)
+                .orElseThrow(() -> new ResourceNotFoundException("Id no encontrado"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<FarmaciaSimpleDTO> listarFarmacias(Pageable pageable){
+        return farmaciaRepository.findAll(pageable)
+                .map(FarmaciaSimpleDTO::fromEntity);
+    }
 
 
 }
