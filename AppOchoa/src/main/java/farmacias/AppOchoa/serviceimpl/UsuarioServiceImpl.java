@@ -121,14 +121,14 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Transactional(readOnly = true)
     public UsuarioResponseDTO login(Long farmaciaId, LoginDTO dto) {
         Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
-                .orElseThrow(() -> new RuntimeException("Credenciales invÃƒÆ’Ã‚Â¡lidas"));
+                .orElseThrow(() -> new RuntimeException("Credenciales invalidas"));
 
         if (!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())) {
-            throw new ResourceNotFoundException("Credenciales invÃƒÆ’Ã‚Â¡lidas");
+            throw new ResourceNotFoundException("Credenciales invalidas");
         }
 
         if (Boolean.FALSE.equals(usuario.getUsuarioEstado())) {
-            throw new ResourceNotFoundException("La cuenta de usuario estÃƒÆ’Ã‚Â¡ desactivada");
+            throw new ResourceNotFoundException("La cuenta de usuario esta desactivada");
         }
 
         return UsuarioResponseDTO.fromEntity(usuario);

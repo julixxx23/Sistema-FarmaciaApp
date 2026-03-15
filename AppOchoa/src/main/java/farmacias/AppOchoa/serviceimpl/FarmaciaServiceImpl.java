@@ -76,5 +76,17 @@ public class FarmaciaServiceImpl implements FarmaciaService {
                 .map(FarmaciaSimpleDTO::fromEntity);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<FarmaciaSimpleDTO> buscarPorTexto(String texto, Pageable pageable){
+        Page<Farmacia> resultados;
+    }
+
+    @Override
+    public void eliminar(Long id){
+        throw  new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
+
+    }
+
 
 }
