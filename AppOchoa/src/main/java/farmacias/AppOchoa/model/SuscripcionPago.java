@@ -34,7 +34,7 @@ public class SuscripcionPago {
     private PagoMetodo pagoMetodo = PagoMetodo.efectivo;
 
     @Column(name = "pago_referencia")
-    private BigDecimal pagoReferencia;
+    private String pagoReferencia;
 
     @Column(name = "pago_periodo_inicio", nullable = false, updatable = false)
     @CreationTimestamp

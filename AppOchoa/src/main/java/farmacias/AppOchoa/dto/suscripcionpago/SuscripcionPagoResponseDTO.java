@@ -25,7 +25,7 @@ public class SuscripcionPagoResponseDTO {
     private BigDecimal pagoMonto;
     private PagoPlan pagoPlan;
     private PagoMetodo pagoMetodo;
-    private BigDecimal pagoReferencia;
+    private String pagoReferencia;
     private LocalDate pagoPeriodoInicio;
     private LocalDate pagoPeriodoFin;
     private PagoEstado pagoEstado;

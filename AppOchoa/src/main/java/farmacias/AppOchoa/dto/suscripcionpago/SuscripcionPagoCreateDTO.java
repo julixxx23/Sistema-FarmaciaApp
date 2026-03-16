@@ -27,7 +27,7 @@ public class SuscripcionPagoCreateDTO {
 
     @NotNull(message = "La asignacion del plan es obligatoria")
     private PagoPlan pagoPlan;
-    private BigDecimal pagoReferencia;
+    private String pagoReferencia;
 
     @NotNull(message = "La fecha de inicio es obligatoria")
     private LocalDate pagoPeriodoInicio;
