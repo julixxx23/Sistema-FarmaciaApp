@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class AlertaController {
     private final AlertaService alertaService;
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     private Long getFarmaciaId(String authHeader){
         String token  = authHeader.substring(7);
