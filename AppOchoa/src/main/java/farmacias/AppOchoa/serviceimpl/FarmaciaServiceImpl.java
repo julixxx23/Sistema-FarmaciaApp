@@ -63,7 +63,7 @@ public class FarmaciaServiceImpl implements FarmaciaService {
 
     @Override
     @Transactional(readOnly = true)
-    public FarmaciaResponseDTO buscarPorId(Long id){
+    public FarmaciaResponseDTO buscarId(Long id){
         return farmaciaRepository.findById(id)
                 .map(FarmaciaResponseDTO::fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("Id no encontrado"));
@@ -79,7 +79,8 @@ public class FarmaciaServiceImpl implements FarmaciaService {
     @Override
     @Transactional(readOnly = true)
     public Page<FarmaciaSimpleDTO> buscarPorTexto(String texto, Pageable pageable){
-        Page<Farmacia> resultados;
+        return farmaciaRepository.buscarPorTexto(texto, pageable)
+                .map(FarmaciaSimpleDTO::fromEntity);
     }
 
     @Override
@@ -87,6 +88,5 @@ public class FarmaciaServiceImpl implements FarmaciaService {
         throw  new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
 
     }
-
 
 }
