@@ -23,6 +23,7 @@ public interface SucursalRepository extends JpaRepository<Sucursal, Long> {
     List<Sucursal> findBySucursalNombreContainingIgnoreCase(String nombre);
     // Buscar por nombre CON paginación
     Page<Sucursal> findBySucursalNombreContainingIgnoreCase(String nombre, Pageable pageable);
+    List<Sucursal> findByFarmacia_FarmaciaIdAndSucursalEstadoTrue(Long farmaciaId);
     @Query("SELECT s FROM Sucursal s WHERE " +
             "LOWER(s.sucursalNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
             "LOWER(s.sucursalDireccion) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +

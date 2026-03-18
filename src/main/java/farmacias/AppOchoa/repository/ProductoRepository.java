@@ -15,6 +15,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     Optional<Producto> findByProductoCodigoBarras(String productoCodigoBarras);
     boolean existsByProductoCodigoBarras(String productoCodigoBarras);
     Page<Producto> findByProductoEstadoTrue(Pageable pageable);
+    Page<Producto> findByFarmacia_FarmaciaIdAndProductoEstadoTrue(
+            Long farmaciaId, Pageable pageable);
     @Query("SELECT p FROM Producto p WHERE " +
             "LOWER(p.productoNombre) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +
             "LOWER(p.productoCodigoBarras) LIKE LOWER(CONCAT('%', :texto, '%')) OR " +

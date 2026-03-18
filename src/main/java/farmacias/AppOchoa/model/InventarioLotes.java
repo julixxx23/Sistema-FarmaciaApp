@@ -39,6 +39,7 @@ public class InventarioLotes {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "lote_estado", nullable = false)
+    @Builder.Default
     private LoteEstado loteEstado = LoteEstado.disponible;
 
     @ManyToOne(fetch = FetchType.LAZY)

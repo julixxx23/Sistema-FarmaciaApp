@@ -17,6 +17,7 @@ public class Farmacia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "farmacia_id")
     private Long farmaciaId;
 
     @Column(name = "farmacia_nombre", nullable = false)
