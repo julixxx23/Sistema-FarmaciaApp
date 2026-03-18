@@ -34,6 +34,10 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public Long extractFarmaciaId(String token) {
+        return extractClaim(token, claims -> claims.get("farmaciaId", Long.class));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -53,6 +57,12 @@ public class JwtUtil {
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username);
+    }
+
+    public String generateToken(String username, Long farmaciaId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("farmaciaId", farmaciaId);
         return createToken(claims, username);
     }
 

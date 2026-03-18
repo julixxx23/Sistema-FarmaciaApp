@@ -23,8 +23,7 @@ public class Alerta {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "alerta_tipo", nullable = false)
-    @Builder.Default
-    private AlertaTipo alertaTipo = AlertaTipo.stock_bajo
+    private AlertaTipo alertaTipo = AlertaTipo.stock_bajo;
 
 
     @Column(name = "alerta_mensaje", columnDefinition = "TEXT")
@@ -35,7 +34,6 @@ public class Alerta {
     private LocalDateTime alertaFecha;
 
     @Column(name = "alerta_leida")
-    @Builder.Default
     private Boolean alertaLeida = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,6 +47,10 @@ public class Alerta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lote_id")
     private InventarioLotes lote;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmacia_id", nullable = false)
+    private Farmacia farmacia;
 
 }
 
