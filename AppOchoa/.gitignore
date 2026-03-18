@@ -76,3 +76,5 @@ logs/
 *.crt
 *.jks
 *.p12
+
+/AppOchoa/

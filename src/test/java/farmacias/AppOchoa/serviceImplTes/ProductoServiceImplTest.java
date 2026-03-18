@@ -43,7 +43,7 @@ class ProductoServiceImplTest {
     // TESTS PARA AGREGAR PRODUCTO
 
     @Test
-    @DisplayName("Debería agregar producto correctamente cuando datos son válidos")
+    @DisplayName("Deber├¡a agregar producto correctamente cuando datos son v├ílidos")
     void agregarProducto_Exito() {
         // 1. ARRANGE
         ProductoCreateDTO dto = new ProductoCreateDTO();
@@ -90,7 +90,7 @@ class ProductoServiceImplTest {
     }
 
     @Test
-    @DisplayName("Debería lanzar excepción si el nombre del producto ya existe")
+    @DisplayName("Deber├¡a lanzar excepci├│n si el nombre del producto ya existe")
     void agregarProducto_FallaNombreDuplicado() {
         // ARRANGE
         ProductoCreateDTO dto = new ProductoCreateDTO();
@@ -110,7 +110,7 @@ class ProductoServiceImplTest {
     //TESTS PARA ACTUALIZAR PRODUCTO
 
     @Test
-    @DisplayName("Debería actualizar producto correctamente")
+    @DisplayName("Deber├¡a actualizar producto correctamente")
     void actualizarProducto_Exito() {
         // ARRANGE
         Long idProducto = 1L;
@@ -153,10 +153,10 @@ class ProductoServiceImplTest {
         assertEquals(BigDecimal.valueOf(20.0), productoCapturado.getProductoPrecioCompra());
     }
 
-    // TESTS DE OBTENCIÓN
+    // TESTS DE OBTENCI├ôN
 
     @Test
-    @DisplayName("Debería lanzar excepción si buscamos un ID que no existe")
+    @DisplayName("Deber├¡a lanzar excepci├│n si buscamos un ID que no existe")
     void obtenerPorId_NoEncontrado() {
         // ARRANGE
         Long idNoExistente = 99L;
@@ -166,10 +166,10 @@ class ProductoServiceImplTest {
         assertThrows(RuntimeException.class, () -> productoService.obtenerPorId(idNoExistente));
     }
 
-    //TESTS DE ELIMINACIÓN
+    //TESTS DE ELIMINACI├ôN
 
     @Test
-    @DisplayName("Eliminar producto debería cambiar estado a false (Borrado Lógico)")
+    @DisplayName("Eliminar producto deber├¡a cambiar estado a false (Borrado L├│gico)")
     void eliminarProducto_CambiaEstado() {
         // ARRANGE
         Long id = 5L;
@@ -186,6 +186,6 @@ class ProductoServiceImplTest {
         ArgumentCaptor<Producto> captor = ArgumentCaptor.forClass(Producto.class);
         verify(productoRepository).save(captor.capture());
 
-        assertFalse(captor.getValue().getProductoEstado(), "El estado debería haber cambiado a false");
+        assertFalse(captor.getValue().getProductoEstado(), "El estado deber├¡a haber cambiado a false");
     }
 }

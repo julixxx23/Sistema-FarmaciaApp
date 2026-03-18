@@ -104,7 +104,7 @@ class UsuarioServiceImplTest {
         );
 
         assertEquals(
-                "El nombre de usuario 'steveSenior' ya está en uso",
+                "El nombre de usuario 'steveSenior' ya esta en uso",
                 exception.getMessage()
         );
 
