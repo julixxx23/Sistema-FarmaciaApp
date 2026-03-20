@@ -53,4 +53,5 @@ public class Usuario {
     @JoinColumn(name = "farmacia_id", nullable = false)
     private Farmacia farmacia;
 
+
 }
