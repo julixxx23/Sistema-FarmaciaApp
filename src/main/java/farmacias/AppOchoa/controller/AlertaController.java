@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/alertas")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") // URL Despegada
 public class AlertaController {
     private final AlertaService alertaService;
     private final JwtUtil jwtUtil;
