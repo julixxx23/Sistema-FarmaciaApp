@@ -13,56 +13,49 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/ventasnotascreditos")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "Ventas Fel Notas Credito-controller")
 public class VentaFelNotasCreditoController {
     private final VentaFelNotasCreditoService ventaFelNotasCreditoService;
     private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
-
     @GetMapping("/buscar")
     public ResponseEntity<Page<VentaFelNotasCreditoSimpleDTO>> buscar(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestParam String texto,
-            Pageable pageable) {
-        return ResponseEntity.ok(ventaFelNotasCreditoService.buscarPorTexto(getFarmaciaId(authHeader),texto, pageable));
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<VentaFelNotasCreditoResponseDTO> buscarPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        VentaFelNotasCreditoResponseDTO ventaFelNotasCreditoResponseDTO = ventaFelNotasCreditoService.buscarPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(ventaFelNotasCreditoResponseDTO);
-    }
-    @GetMapping
-    public ResponseEntity<Page<VentaFelNotasCreditoSimpleDTO>> listarNotas(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "notaEstado")Pageable pageable){
-        return ResponseEntity.ok(ventaFelNotasCreditoService.listarNotas(getFarmaciaId(authHeader),pageable));
-    }
-    @PostMapping
-    public ResponseEntity<VentaFelNotasCreditoResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody VentaFelNotasCreditoCreateDTO dto){
-        VentaFelNotasCreditoResponseDTO ventaFelNotasCreditoResponseDTO = ventaFelNotasCreditoService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ventaFelNotasCreditoResponseDTO);
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        ventaFelNotasCreditoService.eliminar(getFarmaciaId(authHeader),id);
-        return ResponseEntity.noContent().build();
+            @RequestParam String texto, Pageable pageable) {
+        return ResponseEntity.ok(ventaFelNotasCreditoService.buscarPorTexto(getFarmaciaId(), texto, pageable));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<VentaFelNotasCreditoResponseDTO> buscarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(ventaFelNotasCreditoService.buscarPorId(getFarmaciaId(), id));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<VentaFelNotasCreditoSimpleDTO>> listarNotas(
+            @PageableDefault(size = 10, sort = "notaEstado") Pageable pageable){
+        return ResponseEntity.ok(ventaFelNotasCreditoService.listarNotas(getFarmaciaId(), pageable));
+    }
+
+    @PostMapping
+    public ResponseEntity<VentaFelNotasCreditoResponseDTO> crear(@Valid @RequestBody VentaFelNotasCreditoCreateDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(ventaFelNotasCreditoService.crear(getFarmaciaId(), dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        ventaFelNotasCreditoService.eliminar(getFarmaciaId(), id);
+        return ResponseEntity.noContent().build();
+    }
 }

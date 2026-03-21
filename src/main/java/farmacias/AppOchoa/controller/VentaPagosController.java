@@ -13,55 +13,49 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/ventapagos")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "Ventas pagos-controller")
 public class VentaPagosController {
     private final VentaPagoService ventaPagoService;
     private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
     @GetMapping
     public ResponseEntity<Page<VentaPagoSimpleDTO>> listarActivas(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "auditoriaFechaCreacion")Pageable pageable){
-        Page<VentaPagoSimpleDTO> ventas = ventaPagoService.listarActivas(getFarmaciaId(authHeader), pageable);
-        return ResponseEntity.ok(ventas);
+            @PageableDefault(size = 10, sort = "auditoriaFechaCreacion") Pageable pageable){
+        return ResponseEntity.ok(ventaPagoService.listarActivas(getFarmaciaId(), pageable));
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<VentaPagoResponseDTO> buscarPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        VentaPagoResponseDTO ventaPagoResponseDTO = ventaPagoService.buscarPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(ventaPagoResponseDTO);
+    public ResponseEntity<VentaPagoResponseDTO> buscarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(ventaPagoService.buscarPorId(getFarmaciaId(), id));
     }
+
     @GetMapping("/buscar")
     public ResponseEntity<Page<VentaPagoSimpleDTO>> buscar(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestParam String texto,
-            Pageable pageable) {
-        return ResponseEntity.ok(ventaPagoService.buscarPorTexto(getFarmaciaId(authHeader),texto, pageable));
+            @RequestParam String texto, Pageable pageable) {
+        return ResponseEntity.ok(ventaPagoService.buscarPorTexto(getFarmaciaId(), texto, pageable));
     }
+
     @PostMapping
-    public ResponseEntity<VentaPagoResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody VentaPagoCreateDTO dto){
-        VentaPagoResponseDTO ventaPagoResponseDTO = ventaPagoService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ventaPagoResponseDTO);
+    public ResponseEntity<VentaPagoResponseDTO> crear(@Valid @RequestBody VentaPagoCreateDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(ventaPagoService.crear(getFarmaciaId(), dto));
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        ventaPagoService.eliminar(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        ventaPagoService.eliminar(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
 }

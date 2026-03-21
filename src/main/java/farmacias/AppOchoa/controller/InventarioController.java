@@ -14,72 +14,56 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/inventarios")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 public class InventarioController {
     private final InventarioService inventarioService;
     private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
     @GetMapping
     public ResponseEntity<Page<InventarioSimpleDTO>> listarActivosPaginado(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "inventarioCantidadActual")Pageable pageable){
-        Page<InventarioSimpleDTO> inventarios = inventarioService.listarActivosPaginado(getFarmaciaId(authHeader), pageable);
-        return ResponseEntity.ok(inventarios);
+            @PageableDefault(size = 10, sort = "inventarioCantidadActual") Pageable pageable){
+        return ResponseEntity.ok(inventarioService.listarActivosPaginado(getFarmaciaId(), pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<InventarioResponseDTO> listarPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        InventarioResponseDTO inventarioResponseDTO = inventarioService.listaPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(inventarioResponseDTO);
+    public ResponseEntity<InventarioResponseDTO> listarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(inventarioService.listaPorId(getFarmaciaId(), id));
     }
 
     @GetMapping("/todos")
     public ResponseEntity<Page<InventarioSimpleDTO>> listarTodosPaginados(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "inventarioCantidadActual")Pageable pageable){
-        Page<InventarioSimpleDTO> inventarios1 = inventarioService.listarTodosPaginado(getFarmaciaId(authHeader), pageable);
-
-        return ResponseEntity.ok(inventarios1);
+            @PageableDefault(size = 10, sort = "inventarioCantidadActual") Pageable pageable){
+        return ResponseEntity.ok(inventarioService.listarTodosPaginado(getFarmaciaId(), pageable));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<InventarioResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody InventarioCreateDTO dto){
-        InventarioResponseDTO inventarioResponseDTO = inventarioService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(inventarioResponseDTO);
+    public ResponseEntity<InventarioResponseDTO> crear(@Valid @RequestBody InventarioCreateDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(inventarioService.crear(getFarmaciaId(), dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<InventarioResponseDTO> actualizar(
-            @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id, @Valid @RequestBody InventarioUpdateDTO dto){
-        InventarioResponseDTO inventarioResponseDTO = inventarioService.actualizar(getFarmaciaId(authHeader),id, dto);
-        return ResponseEntity.ok(inventarioResponseDTO);
+        return ResponseEntity.ok(inventarioService.actualizar(getFarmaciaId(), id, dto));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        inventarioService.eliminar(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        inventarioService.eliminar(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 }

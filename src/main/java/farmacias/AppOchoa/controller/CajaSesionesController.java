@@ -13,55 +13,49 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/cajasesiones")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "CajaSesiones-controller")
 public class CajaSesionesController {
     private final CajaSesionesService cajaSesionesService;
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
     @GetMapping
     public ResponseEntity<Page<CajaSesionesSimpleDTO>> listarSesiones(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "sesionFechaApertura")Pageable pageable){
-        Page<CajaSesionesSimpleDTO> cajasesiones = cajaSesionesService.listarSesiones(getFarmaciaId(authHeader), pageable);
-        return ResponseEntity.ok(cajasesiones);
+            @PageableDefault(size = 10, sort = "sesionFechaApertura") Pageable pageable){
+        return ResponseEntity.ok(cajaSesionesService.listarSesiones(getFarmaciaId(), pageable));
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<CajaSesionesResponseDTO> buscarPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        CajaSesionesResponseDTO cajaSesionesResponseDTO = cajaSesionesService.buscarPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(cajaSesionesResponseDTO);
+    public ResponseEntity<CajaSesionesResponseDTO> buscarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(cajaSesionesService.buscarPorId(getFarmaciaId(), id));
     }
+
     @GetMapping("/buscar")
     public ResponseEntity<Page<CajaSesionesSimpleDTO>> buscar(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestParam String texto,
-            Pageable pageable) {
-        return ResponseEntity.ok(cajaSesionesService.buscarPorTexto(getFarmaciaId(authHeader),texto, pageable));
+            @RequestParam String texto, Pageable pageable) {
+        return ResponseEntity.ok(cajaSesionesService.buscarPorTexto(getFarmaciaId(), texto, pageable));
     }
+
     @PostMapping
-    public ResponseEntity<CajaSesionesResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody CajaSesionesCreateDTO dto){
-        CajaSesionesResponseDTO cajaSesionesResponseDTO = cajaSesionesService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cajaSesionesResponseDTO);
+    public ResponseEntity<CajaSesionesResponseDTO> crear(@Valid @RequestBody CajaSesionesCreateDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(cajaSesionesService.crear(getFarmaciaId(), dto));
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        cajaSesionesService.eliminar(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        cajaSesionesService.eliminar(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
 }

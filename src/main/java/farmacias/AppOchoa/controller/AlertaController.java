@@ -15,79 +15,65 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/alertas")
 @AllArgsConstructor
-@CrossOrigin(origins = "*") // URL Despegada
 public class AlertaController {
     private final AlertaService alertaService;
     private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token  = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
     @GetMapping
     public ResponseEntity<Page<AlertaSimpleDTO>> listarTodasPaginadas(
-            @RequestHeader("Authorization") String authHeader,
             @PageableDefault(size = 10, sort = "alertaFecha", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        Page<AlertaSimpleDTO> alerta = alertaService.listarTodasPaginadas(getFarmaciaId(authHeader),pageable);
-        return ResponseEntity.ok(alerta);
+        return ResponseEntity.ok(alertaService.listarTodasPaginadas(getFarmaciaId(), pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AlertaResponseDTO> listarPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id) {
-        AlertaResponseDTO alertaResponseDTO = alertaService.listarPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(alertaResponseDTO);
+    public ResponseEntity<AlertaResponseDTO> listarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(alertaService.listarPorId(getFarmaciaId(), id));
     }
 
     @GetMapping("/no-leidas")
     public ResponseEntity<Page<AlertaSimpleDTO>> listarNoLeidasPaginadas(
-            @RequestHeader("Authorization") String authHeader,
             @PageableDefault(size = 10, sort = "alertaFecha", direction = Sort.Direction.DESC)
             Pageable pageable) {
-        Page<AlertaSimpleDTO> alertas = alertaService.listarNoLeidasPaginadas(getFarmaciaId(authHeader), pageable);
-        return ResponseEntity.ok(alertas);
+        return ResponseEntity.ok(alertaService.listarNoLeidasPaginadas(getFarmaciaId(), pageable));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<AlertaResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody AlertaCreateDTO dto) {
-        AlertaResponseDTO alertaResponseDTO = alertaService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(alertaResponseDTO);
+    public ResponseEntity<AlertaResponseDTO> crear(@Valid @RequestBody AlertaCreateDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(alertaService.crear(getFarmaciaId(), dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AlertaResponseDTO> actualizar(
-            @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id,
             @Valid @RequestBody AlertaUpdateDTO dto) {
-        AlertaResponseDTO alertaResponseDTO = alertaService.actualizar(getFarmaciaId(authHeader),id, dto);
-        return ResponseEntity.ok(alertaResponseDTO);
+        return ResponseEntity.ok(alertaService.actualizar(getFarmaciaId(), id, dto));
     }
 
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<Void> cambiarEstado(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id) {
-        alertaService.cambiarEstado(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Long id) {
+        alertaService.cambiarEstado(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id) {
-        alertaService.eliminar(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        alertaService.eliminar(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
 }

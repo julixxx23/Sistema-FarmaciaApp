@@ -79,7 +79,7 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
     public void eliminar(Long farmaciaId, Long id) {
         throw new UnsupportedOperationException("Por reglas de auditoría financiera, este registro es histórico y no puede ser eliminado ni modificado.");
     }
-    }
+}
 
 
 

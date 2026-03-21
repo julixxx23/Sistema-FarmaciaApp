@@ -14,74 +14,56 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/presentaciones")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 public class PresentacionController {
     private final PresentacionService presentacionService;
     private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
     @GetMapping
     public ResponseEntity<Page<PresentacionSimpleDTO>> listarActivasPaginadas(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "presentacionNombre")Pageable pageable){
-        Page<PresentacionSimpleDTO> presentaciones = presentacionService.listarActivasPaginadas(getFarmaciaId(authHeader), pageable);
-        return ResponseEntity.ok(presentaciones);
+            @PageableDefault(size = 10, sort = "presentacionNombre") Pageable pageable){
+        return ResponseEntity.ok(presentacionService.listarActivasPaginadas(getFarmaciaId(), pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PresentacionResponseDTO> obtenerPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        PresentacionResponseDTO presentacionResponseDTO = presentacionService.obtenerPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(presentacionResponseDTO);
+    public ResponseEntity<PresentacionResponseDTO> obtenerPorId(@PathVariable Long id){
+        return ResponseEntity.ok(presentacionService.obtenerPorId(getFarmaciaId(), id));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<PresentacionResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody PresentacionCreateDTO dto){
-        PresentacionResponseDTO presentacionResponseDTO = presentacionService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(presentacionResponseDTO);
+    public ResponseEntity<PresentacionResponseDTO> crear(@Valid @RequestBody PresentacionCreateDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(presentacionService.crear(getFarmaciaId(), dto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PresentacionResponseDTO> actualizar(
-            @RequestHeader("Authorization") String authHeader,
             @PathVariable Long id, @Valid @RequestBody PresentacionUpdateDTO dto){
-        PresentacionResponseDTO presentacionResponseDTO = presentacionService.actualizar(getFarmaciaId(authHeader),id, dto);
-        return ResponseEntity.ok(presentacionResponseDTO);
+        return ResponseEntity.ok(presentacionService.actualizar(getFarmaciaId(), id, dto));
     }
 
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<Void> cambiarEstado(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id, @RequestParam Boolean estado){
-        presentacionService.cambiarEstado(getFarmaciaId(authHeader),id, estado);
+    public ResponseEntity<Void> cambiarEstado(@PathVariable Long id, @RequestParam Boolean estado){
+        presentacionService.cambiarEstado(getFarmaciaId(), id, estado);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('administrador')")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        presentacionService.eliminar(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        presentacionService.eliminar(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
-
-
 }

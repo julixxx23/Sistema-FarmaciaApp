@@ -13,56 +13,49 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/autorizaciones")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "Autorizaciones-controller")
 public class AutorizacionController {
     private final AutorizacionService autorizacionService;
     private final JwtUtil jwtUtil;
 
-    private Long getFarmaciaId(String authHeader){
-        String token = authHeader.substring(7);
+    private Long getFarmaciaId(){
+        String token = (String) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials();
         return jwtUtil.extractFarmaciaId(token);
     }
 
     @GetMapping
     public ResponseEntity<Page<AutorizacionSimpleDTO>> listarTodas(
-            @RequestHeader("Authorization") String authHeader,
-            @PageableDefault(size = 10, sort = "autorizacionTipo")Pageable pageable){
-        Page<AutorizacionSimpleDTO> autorizaciones = autorizacionService.listarTodas(getFarmaciaId(authHeader), pageable);
-        return ResponseEntity.ok(autorizaciones);
+            @PageableDefault(size = 10, sort = "autorizacionTipo") Pageable pageable){
+        return ResponseEntity.ok(autorizacionService.listarTodas(getFarmaciaId(), pageable));
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<AutorizacionResponseDTO> buscarPorId(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        AutorizacionResponseDTO autorizacionResponseDTO = autorizacionService.buscarPorId(getFarmaciaId(authHeader),id);
-        return ResponseEntity.ok(autorizacionResponseDTO);
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AutorizacionResponseDTO> buscarPorId(@PathVariable Long id){
+        return ResponseEntity.ok(autorizacionService.buscarPorId(getFarmaciaId(), id));
     }
+
     @PostMapping
-    public ResponseEntity<AutorizacionResponseDTO> crear(
-            @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody AutorizacionCreateDTO dto){
-        AutorizacionResponseDTO autorizacionResponseDTO = autorizacionService.crear(getFarmaciaId(authHeader),dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(autorizacionResponseDTO);
+    public ResponseEntity<AutorizacionResponseDTO> crear(@Valid @RequestBody AutorizacionCreateDTO dto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(autorizacionService.crear(getFarmaciaId(), dto));
     }
+
     @GetMapping("/buscar")
     public ResponseEntity<Page<AutorizacionSimpleDTO>> buscar(
-            @RequestHeader("Authorization") String authHeader,
-            @RequestParam String texto,
-            Pageable pageable) {
-        return ResponseEntity.ok(autorizacionService.buscarPorTexto(getFarmaciaId(authHeader),texto, pageable));
+            @RequestParam String texto, Pageable pageable) {
+        return ResponseEntity.ok(autorizacionService.buscarPorTexto(getFarmaciaId(), texto, pageable));
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @RequestHeader("Authorization") String authHeader,
-            @PathVariable Long id){
-        autorizacionService.eliminar(getFarmaciaId(authHeader),id);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id){
+        autorizacionService.eliminar(getFarmaciaId(), id);
         return ResponseEntity.noContent().build();
     }
 }
