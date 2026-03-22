@@ -1,6 +1,5 @@
 package farmacias.AppOchoa.services;
 
-import farmacias.AppOchoa.dto.usuario.LoginDTO;
 import farmacias.AppOchoa.dto.usuario.UsuarioCreateDTO;
 import farmacias.AppOchoa.dto.usuario.UsuarioUpdateDTO;
 import farmacias.AppOchoa.dto.usuario.UsuarioResponseDTO;
@@ -16,5 +15,4 @@ public interface UsuarioService {
     UsuarioResponseDTO actualizarUsuario(Long farmaciaId, Long id, UsuarioUpdateDTO dto);
     void cambiarEstado(Long farmaciaId, Long id, Boolean nuevoEstado);
     void eliminarUsuario(Long farmaciaId, Long id);
-    UsuarioResponseDTO login(Long farmaciaId, LoginDTO dto);
 }

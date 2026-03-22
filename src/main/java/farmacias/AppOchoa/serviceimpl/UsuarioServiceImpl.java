@@ -10,16 +10,12 @@ import farmacias.AppOchoa.services.UsuarioService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -117,43 +113,16 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
         cambiarEstado(farmaciaId, id, false);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public UsuarioResponseDTO login(Long farmaciaId, LoginDTO dto) {
-        Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(dto.getNombreUsuario())
-                .orElseThrow(() -> new RuntimeException("Credenciales invalidas"));
-
-        if (!passwordEncoder.matches(dto.getContrasena(), usuario.getUsuarioContrasenaHash())) {
-            throw new ResourceNotFoundException("Credenciales invalidas");
-        }
-
-        if (Boolean.FALSE.equals(usuario.getUsuarioEstado())) {
-            throw new ResourceNotFoundException("La cuenta de usuario esta desactivada");
-        }
-
-        return UsuarioResponseDTO.fromEntity(usuario);
-    }
-
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }
 
+    //UserDetailsService
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByNombreUsuarioUsuario(username)
+        return usuarioRepository.findByNombreUsuarioUsuario(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
-
-        GrantedAuthority authority = new SimpleGrantedAuthority(usuario.getUsuarioRol().name());
-
-        return new org.springframework.security.core.userdetails.User(
-                usuario.getNombreUsuarioUsuario(),
-                usuario.getUsuarioContrasenaHash(),
-                usuario.getUsuarioEstado(),
-                true,
-                true,
-                true,
-                List.of(authority)
-        );
     }
 }
