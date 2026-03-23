@@ -59,30 +59,41 @@ public class Usuario implements UserDetails {
 
     // UserDetails
 
+    // Retorna los roles del usuario con prefijo ROLE_ requerido por Spring Security
+    // para que hasRole() funcione en SecurityConfig y @PreAuthorize
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + usuarioRol.name()));
     }
 
+    // Retorna la contraseña hasheada almacenada en DB
+    // DaoAuthenticationProvider la compara contra la contraseña en texto plano usando BCrypt
     @Override
     public String getPassword() {
         return usuarioContrasenaHash;
     }
 
+    // Retorna el identificador único del usuario para Spring Security
+    // Se usa en loadUserByUsername() y como subject del JWT
     @Override
     public String getUsername() {
         return nombreUsuarioUsuario;
     }
 
+    // AppOchoa no maneja expiración de cuentas por tiempo
     @Override
     public boolean isAccountNonExpired() { return true; }
 
+    // AppOchoa no maneja bloqueo por intentos fallidos
     @Override
     public boolean isAccountNonLocked() { return true; }
 
+    // AppOchoa no maneja expiración de contraseñas
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
+    // Mapea usuarioEstado de la DB a Spring Security
+    // Si false, Spring rechaza el login automáticamente con DisabledException
     @Override
     public boolean isEnabled() {
         return Boolean.TRUE.equals(usuarioEstado);

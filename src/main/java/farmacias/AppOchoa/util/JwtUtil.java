@@ -24,7 +24,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // ── Extracción ───────────────────────────────────────────────────────────
+    // ── Extracción
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -50,7 +50,7 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    // ── Generación ───────────────────────────────────────────────────────────
+    // ── Generación
 
     public String generateToken(String username) {
         return createToken(Map.of(), username);
@@ -77,7 +77,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ── Validación ───────────────────────────────────────────────────────────
+    // ── Validación
 
     public Boolean validateToken(String token, String username) {
         return extractUsername(token).equals(username) && !isTokenExpired(token);

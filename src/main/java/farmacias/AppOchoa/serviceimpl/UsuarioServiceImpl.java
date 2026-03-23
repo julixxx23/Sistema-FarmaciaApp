@@ -120,6 +120,11 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     //UserDetailsService
 
+    // Spring Security llama este método internamente en dos momentos:
+    // 1. Durante el login — DaoAuthenticationProvider busca el usuario para comparar credenciales
+    // 2. En cada request — JwtAuthenticationFilter lo llama para cargar el usuario desde la DB
+    // Retorna el Usuario entity directamente porque implementa UserDetails
+    // Si no existe lanza UsernameNotFoundException y Spring responde con 401 automáticamente
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByNombreUsuarioUsuario(username)
