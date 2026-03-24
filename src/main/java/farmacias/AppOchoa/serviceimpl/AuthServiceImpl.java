@@ -41,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
         // Cast directo porque Usuario ahora implementa UserDetails
         Usuario usuario = (Usuario) auth.getPrincipal();
 
+        //Claims personalizados (Consumirlos en JwtUtil)
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", usuario.getUsuarioId());
         claims.put("rol", usuario.getUsuarioRol().name());

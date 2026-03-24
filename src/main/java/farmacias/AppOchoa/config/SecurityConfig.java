@@ -36,12 +36,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable()) //JWT reemplaza la protección CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/v1/auth/**").permitAll() //Publico para el Login
+                        .anyRequest().authenticated() //A partir de aquí todo request reqyiere JWT Valido
                 )
+                //Sin sesiones — cada request se autentica solo con su JWT.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -49,6 +50,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    //Autenticación del usuario y correctas credential para la autorización
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -57,11 +59,13 @@ public class SecurityConfig {
         return provider;
     }
 
+    //Política de Seguridad entre dominios
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
+                // URL DEL FRONTEND, CAMBIARLAS EN PRODUCCIÓN
                 "http://localhost:4200",
                 "http://localhost:3000"
         ));
@@ -70,6 +74,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        //Aplicación de reglas a todos los endpoints del proyecto
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
