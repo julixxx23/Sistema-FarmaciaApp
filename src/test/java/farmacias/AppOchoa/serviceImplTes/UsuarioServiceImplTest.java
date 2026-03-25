@@ -37,6 +37,8 @@ class UsuarioServiceImplTest {
     @Test
     @DisplayName("Deberia crear un usuario correctamente cuando los datos son validos")
     void crearUsuario_ExitoCuandoDatosSonValidos(){
+
+        Long farmaciaId = 1L;
         UsuarioCreateDTO dto = new UsuarioCreateDTO();
         dto.setNombreUsuario("steveSenior");
         dto.setContrasena("password123");
@@ -65,7 +67,7 @@ class UsuarioServiceImplTest {
         when(usuarioRepository.save(any(Usuario.class)))
                 .thenReturn(usuarioGuardado);
 
-        UsuarioResponseDTO resultado = usuarioService.crearUsuario(dto);
+        UsuarioResponseDTO resultado = usuarioService.crearUsuario(farmaciaId, dto);
 
         assertNotNull(resultado);
         assertEquals(1L, resultado.getUsuarioId());
@@ -88,6 +90,8 @@ class UsuarioServiceImplTest {
     @Test
     @DisplayName("Deberia lanzar excepcion cuando el nombre de usuario ya existe")
     void crearUsuario_FallaCuandoNombreUsuarioYaExiste() {
+
+        Long farmaciaId = 1L;
         UsuarioCreateDTO dto = new UsuarioCreateDTO();
         dto.setNombreUsuario("steveSenior");
         dto.setContrasena("password123");
@@ -100,7 +104,7 @@ class UsuarioServiceImplTest {
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> usuarioService.crearUsuario(dto)
+                () -> usuarioService.crearUsuario(farmaciaId, dto)
         );
 
         assertEquals(

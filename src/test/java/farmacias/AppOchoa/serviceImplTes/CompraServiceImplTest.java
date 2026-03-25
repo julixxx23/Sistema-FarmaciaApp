@@ -41,6 +41,7 @@ public class CompraServiceImplTest {
     @Test
     @DisplayName("Deberia de crear una compra correctamente con los datos registrados")
     void crearCompraExitosa(){
+        Long farmaciaId = 1L;
         CompraCreateDTO dto = new CompraCreateDTO();
         dto.setFechaCompra(LocalDate.of(2024, 2, 6));
         dto.setSucursalId(1L);
@@ -70,7 +71,7 @@ public class CompraServiceImplTest {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
         when(compraRepository.save(any(Compra.class))).thenReturn(compra);
         //ACT
-        CompraResponseDTO resultado = compraService.crear(dto);
+        CompraResponseDTO resultado = compraService.crear(farmaciaId, dto);
         //ASSERT
         assertNotNull(resultado);
         assertEquals(1L, resultado.getCompraId());
@@ -80,13 +81,14 @@ public class CompraServiceImplTest {
     @Test
     @DisplayName("Deberia de elimimar (cambiar de estado) la compra")
     void eliminacionExitosa(){
+        Long farmaciaId = 1L;
         Long id = 1L;
         Compra compra = new Compra();
         compra.setCompraId(1L);
         compra.setCompraEstado(CompraEstado.activa);
         when(compraRepository.findById(1L)).thenReturn(Optional.of(compra));
         //ACT
-        compraService.eliminar(id);
+        compraService.eliminar(farmaciaId, id);
         //ASSERT
         ArgumentCaptor<Compra> captor = ArgumentCaptor.forClass(Compra.class);
         verify(compraRepository).save(captor.capture());
@@ -95,11 +97,12 @@ public class CompraServiceImplTest {
     @Test
     @DisplayName("Deberia de lanzar una excepcion al buscar un ID que no existe")
     void buscarFallo(){
+        Long farmaciaId = 1L;
         Long id =  1L;
         when(compraRepository.findById(1L)).thenReturn(Optional.empty());
         //ACT
         assertThrows(RuntimeException.class,()->{
-            compraService.listarPorId(1L);
+            compraService.listarPorId(farmaciaId, 1L);
         });
     }
 

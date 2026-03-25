@@ -42,12 +42,13 @@ class ProductoControllerTest {
     @DisplayName("GET /api/v1/productos/{id} - Debería retornar 200 y el JSON del producto")
     void obtenerPorId_Exito() throws Exception {
         // ARRANGE
+        Long farmaciaId = 1L;
         Long idProducto = 1L;
         ProductoResponseDTO responseDTO = new ProductoResponseDTO();
         responseDTO.setNombre("Paracetamol Test");
         responseDTO.setPrecioVenta(BigDecimal.valueOf(15.50));
 
-        when(productoService.obtenerPorId(idProducto)).thenReturn(responseDTO);
+        when(productoService.obtenerPorId(farmaciaId, idProducto)).thenReturn(responseDTO);
 
         // ACT & ASSERT
         mockMvc.perform(get("/api/v1/productos/{id}", idProducto))
@@ -60,6 +61,7 @@ class ProductoControllerTest {
     @DisplayName("POST /api/v1/productos - Debería retornar 201 Created")
     void agregarProducto_Exito() throws Exception {
         // ARRANGE
+        Long farmaciaId = 1L;
         ProductoCreateDTO createDTO = new ProductoCreateDTO();
         createDTO.setNombre("Nuevo Producto");
         createDTO.setCategoriaId(1L);
@@ -73,7 +75,7 @@ class ProductoControllerTest {
         ProductoResponseDTO responseDTO = new ProductoResponseDTO();
         responseDTO.setNombre("Nuevo Producto");
 
-        when(productoService.agregarProducto(any(ProductoCreateDTO.class))).thenReturn(responseDTO);
+        when(productoService.agregarProducto(farmaciaId, any(ProductoCreateDTO.class))).thenReturn(responseDTO);
 
         // ACT & ASSERT
         mockMvc.perform(post("/api/v1/productos")

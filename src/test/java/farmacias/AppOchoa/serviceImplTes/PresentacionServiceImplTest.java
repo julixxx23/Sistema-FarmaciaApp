@@ -37,6 +37,7 @@ class PresentacionServiceImplTest {
     @DisplayName("Deberia de crear una presentacion correctamente cuando los datos son validos")
     void crearPresentacionExitosa(){
         //ARRANGE
+        Long farmaciaId = 1L;
         PresentacionCreateDTO dto = new PresentacionCreateDTO();
         dto.setNombre("Caja de 12 Unidades");
 
@@ -50,7 +51,7 @@ class PresentacionServiceImplTest {
         when(presentacionRepository.save(ArgumentMatchers.any(Presentacion.class))).thenReturn(presentacionGuardado);
 
         //ACT
-        PresentacionResponseDTO resultado = presentacionService.crear(dto);
+        PresentacionResponseDTO resultado = presentacionService.crear(farmaciaId, dto);
 
         //ASSERT
         assertNotNull(resultado);
@@ -62,6 +63,8 @@ class PresentacionServiceImplTest {
     @DisplayName("Deberia de lanzar una excepcion si ya existe una presentacion con ese nombre")
     void crearPresentacionFallaNombreDuplicado(){
         //ARRANGE
+
+        Long farmaciaId = 1L;
         PresentacionCreateDTO dto = new PresentacionCreateDTO();
         dto.setNombre("Tabletas de 10 Unidades");
 
@@ -75,7 +78,7 @@ class PresentacionServiceImplTest {
 
         //ASSERT & ACT
         assertThrows(RuntimeException.class, () ->{
-            presentacionService.crear(dto);
+            presentacionService.crear(farmaciaId, dto);
         });
         verify(presentacionRepository, never()).save(any(Presentacion.class));
 
@@ -84,12 +87,14 @@ class PresentacionServiceImplTest {
     @Test
     @DisplayName("Deberia lanzar una excepcion si buscamos un ID que no existe")
     void obtenerPorIdNoEncontrado(){
+
+        Long farmaciaId = 1L;
         Long idNoExistente = 1l;
         when(presentacionRepository.findById(idNoExistente)).thenReturn(Optional.empty());
 
         //ACT & ASSERT
         assertThrows(RuntimeException.class, () ->
-            presentacionService.obtenerPorId(idNoExistente));
+            presentacionService.obtenerPorId(farmaciaId, idNoExistente));
         }
 
 
@@ -97,6 +102,8 @@ class PresentacionServiceImplTest {
     @DisplayName("Eliminar una presentacion deberia cambiar a estado false (Borrado Logico")
     void eliminarPresentacion_CambiarEstado(){
         //ARRANGE
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         Presentacion presentacionMock = new Presentacion();
         presentacionMock.setPresentacionId(id);
@@ -104,7 +111,7 @@ class PresentacionServiceImplTest {
 
         when(presentacionRepository.findById(id)).thenReturn(Optional.of(presentacionMock));
         //ACT
-        presentacionService.eliminar(id);
+        presentacionService.eliminar(farmaciaId, id);
         //ASSERT
         ArgumentCaptor<Presentacion> captor = ArgumentCaptor.forClass(Presentacion.class);
         verify(presentacionRepository).save(captor.capture());
@@ -113,6 +120,8 @@ class PresentacionServiceImplTest {
     @Test
     @DisplayName("Deberia crear la actualizacion correctamente")
     void crearActualizacionCorrectamente(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         PresentacionUpdateDTO dto = new PresentacionUpdateDTO();
         dto.setNombre("Liquido 1000 ml.");
@@ -132,7 +141,7 @@ class PresentacionServiceImplTest {
         when(presentacionRepository.findById(id)).thenReturn(Optional.of(presentacionRegistrada));
         when(presentacionRepository.save(any(Presentacion.class))).thenReturn(presentacionActualizacion);
         //ACT
-        PresentacionResponseDTO resultado = presentacionService.actualizar(id, dto);
+        PresentacionResponseDTO resultado = presentacionService.actualizar(farmaciaId, id, dto);
         //ASSERT
         assertNotNull(resultado);
         assertEquals("Liquido 1000 ml.", resultado.getNombre(), "El nombre deberia de haberse actualizado");
@@ -141,6 +150,8 @@ class PresentacionServiceImplTest {
     @Test
     @DisplayName("Deberia de lanzar una excepcion al actualizar un ID que no existe")
     void falloActualizacion(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         PresentacionUpdateDTO dto = new PresentacionUpdateDTO();
         dto.setNombre("Lactancia");
@@ -148,7 +159,7 @@ class PresentacionServiceImplTest {
         when(presentacionRepository.findById(id)).thenReturn(Optional.empty());
         //ASSERT
         assertThrows(RuntimeException.class, () ->{
-            presentacionService.actualizar(id, dto);
+            presentacionService.actualizar(farmaciaId, id, dto);
         });
         verify(presentacionRepository, never()).save(any(Presentacion.class));
     }

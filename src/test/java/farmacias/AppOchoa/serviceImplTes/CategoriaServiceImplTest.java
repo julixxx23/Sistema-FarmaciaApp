@@ -33,6 +33,7 @@ class CategoriaServiceImplTest {
     @Test
     @DisplayName("Deberia de crear una categoria cuando los datos son validos")
     void crearCategoriaExitosa(){
+        Long farmaciaId = 1L;
         CategoriaCreateDTO dto = new CategoriaCreateDTO();
         dto.setNombre("Vitaminas");
         Categoria categoria = Categoria.builder()
@@ -44,7 +45,7 @@ class CategoriaServiceImplTest {
         when(categoriaRepository.existsByCategoriaNombre(any())).thenReturn(false);
         when(categoriaRepository.save(any(Categoria.class))).thenReturn(categoria);
         //ACT
-        CategoriaResponseDTO resultado = categoriaService.crear(dto);
+        CategoriaResponseDTO resultado = categoriaService.crear(farmaciaId, dto);
         //ASSERT
         assertNotNull(resultado);
         assertEquals("Vitaminas", resultado.getNombre());
@@ -54,6 +55,7 @@ class CategoriaServiceImplTest {
     @Test
     @DisplayName("Deberia lanzar una Excepcion si ya existe una Categoria con ese nombre")
     void crearCategoriaDuplicado(){
+        Long farmaciaId = 1L;
         CategoriaCreateDTO dto = new CategoriaCreateDTO();
         dto.setNombre("Suplementos");
         Categoria categoria = Categoria.builder()
@@ -65,22 +67,24 @@ class CategoriaServiceImplTest {
         when(categoriaRepository.existsByCategoriaNombre(any())).thenReturn(true);
         //ACT y ASSERT
         assertThrows(RuntimeException.class, () ->{
-            categoriaService.crear(dto);
+            categoriaService.crear(farmaciaId, dto);
         });
         verify(categoriaRepository, never()).save(any(Categoria.class));
     }
     @Test
     @DisplayName("Deberia de lanzar una excepcion si buscamos un ID que no existe")
     void obtenerPorIdNoEncontrado(){
+        Long farmaciaId = 1L;
         Long idNoExistente = 1l;
         when(categoriaRepository.findById(idNoExistente)).thenReturn(Optional.empty());
         //ACT & ASSERT
         assertThrows(RuntimeException.class, () ->
-                categoriaService.obtenerPorId(idNoExistente));
+                categoriaService.obtenerPorId(farmaciaId, idNoExistente));
     }
     @Test
     @DisplayName("Deberia de eliminar una categoria cambiandole de estado")
     void eliminarCategoria_BorradoLogico(){
+        Long farmaciaId = 1L;
         Long id = 1L;
         Categoria categoria = new Categoria();
         categoria.setCategoriaId(id);
@@ -88,7 +92,7 @@ class CategoriaServiceImplTest {
 
         when(categoriaRepository.findById(id)).thenReturn(Optional.of(categoria));
         //ACT
-        categoriaService.eliminar(id);
+        categoriaService.eliminar(farmaciaId, id);
         //ASSERT
         ArgumentCaptor<Categoria> captor = ArgumentCaptor.forClass(Categoria.class);
         verify(categoriaRepository).save(captor.capture());
@@ -97,6 +101,7 @@ class CategoriaServiceImplTest {
     @Test
     @DisplayName("Deberia de actualizar una categoria correctamente con los datos validos")
     void actualizarCategoriaCorrectamente(){
+        Long farmaciaId = 1L;
         Long id = 1L;
         CategoriaUpdateDTO dto = new CategoriaUpdateDTO();
         dto.setNombre("Bebes");
@@ -116,7 +121,7 @@ class CategoriaServiceImplTest {
         when(categoriaRepository.findById(id)).thenReturn(Optional.of(categoriaRegistrada));
         when(categoriaRepository.save(any(Categoria.class))).thenReturn(categoriaActualizada);
         //ACT
-        CategoriaResponseDTO resultado = categoriaService.actualizar(id, dto);
+        CategoriaResponseDTO resultado = categoriaService.actualizar(farmaciaId, id, dto);
         //ASSERT
         assertNotNull(resultado);
         assertEquals("Bebes", resultado.getNombre(), "El nombre deberia de haberse actualizado");
@@ -125,6 +130,7 @@ class CategoriaServiceImplTest {
     @Test
     @DisplayName("Deberia lanzar una excepcion al actualizar un ID que no existe")
     void falloActualizar(){
+        Long farmaciaId = 1L;
         Long id = 1L;
         CategoriaUpdateDTO dto = new CategoriaUpdateDTO();
         dto.setNombre("Lactancia");
@@ -132,7 +138,7 @@ class CategoriaServiceImplTest {
         when(categoriaRepository.findById(id)).thenReturn(Optional.empty());
         //ASSERT
         assertThrows(RuntimeException.class,() ->{
-            categoriaService.actualizar(id, dto);
+            categoriaService.actualizar(farmaciaId, id, dto);
         });
         verify(categoriaRepository, never()).save(any(Categoria.class));
     }

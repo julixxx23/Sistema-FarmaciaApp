@@ -13,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+
 @ExtendWith(MockitoExtension.class)
 public class SuscripcionPagoServiceImplTest {
     @Mock
@@ -28,8 +30,8 @@ public class SuscripcionPagoServiceImplTest {
         Long farmaciaId = 1L;
         //DTO
         SuscripcionPagoCreateDTO dto = new SuscripcionPagoCreateDTO();
-        dto.getPagoMonto(600.00)
-        dto.getPagoMetodo(PagoMetodo.efectivo)
+        dto.setPagoMonto(new BigDecimal(600.00));
+        dto.setPagoMetodo(PagoMetodo.efectivo);
 
 
     }

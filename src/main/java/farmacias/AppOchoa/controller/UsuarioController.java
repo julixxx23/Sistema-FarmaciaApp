@@ -64,8 +64,4 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioResponseDTO> login(@Valid @RequestBody LoginDTO dto){
-        return ResponseEntity.ok(usuarioService.login(getFarmaciaId(), dto));
-    }
 }

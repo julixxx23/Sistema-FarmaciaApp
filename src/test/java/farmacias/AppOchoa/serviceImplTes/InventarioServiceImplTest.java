@@ -36,6 +36,7 @@ public class InventarioServiceImplTest {
     @Test
     @DisplayName("Deberia registrar un Item correctamente en el inventario")
     void crearRegistroExitoso(){
+        Long farmaciaId = 1L;
         InventarioCreateDTO dto = new InventarioCreateDTO();
         dto.setSucursalId(1L);
         dto.setProductoId(1L);
@@ -63,7 +64,7 @@ public class InventarioServiceImplTest {
         when(sucursalRepository.findById(1L)).thenReturn(Optional.of(sucursal));
         when(inventarioRepository.save(any(Inventario.class))).thenReturn(inventario);
         //ACT
-        InventarioResponseDTO resultado = inventarioService.crear(dto);
+        InventarioResponseDTO resultado = inventarioService.crear(farmaciaId, dto);
         //ASSERT
         assertNotNull(resultado);
         assertEquals(1L, resultado.getInventarioId());
@@ -73,6 +74,8 @@ public class InventarioServiceImplTest {
     @Test
     @DisplayName("Deberia de lanzar una excepcion al registrar un producto ya existente")
     void falloRegistro(){
+
+        Long farmaciaId = 1L;
         InventarioCreateDTO dto =  new InventarioCreateDTO();
         dto.setProductoId(1L);
         dto.setProductoId(1L);
@@ -82,7 +85,7 @@ public class InventarioServiceImplTest {
         when(inventarioRepository.existsByProducto_ProductoIdAndSucursal_SucursalId(1L, 1L)).thenReturn(true);
         //ACT & ASSERT
         RuntimeException excepcion = assertThrows(RuntimeException.class, () ->{
-            inventarioService.crear(dto);
+            inventarioService.crear(farmaciaId, dto);
         });
         assertTrue(excepcion.getMessage().contains("Ya existe un registro de inventario para este producto en la sucursal seleccionada."));
         verify(inventarioRepository, never()).save(any(Inventario.class));
@@ -90,6 +93,8 @@ public class InventarioServiceImplTest {
     @Test
     @DisplayName("Deberia de Actualizar un registro correctamente")
     void actualizarRegistro(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         InventarioUpdateDTO dto = new InventarioUpdateDTO();
         dto.setCantidadActual(60);
@@ -115,7 +120,7 @@ public class InventarioServiceImplTest {
         when(inventarioRepository.save(any(Inventario.class))).thenReturn(inventarioActualizado);
 
         //ACT
-        InventarioResponseDTO resultado = inventarioService.actualizar(id, dto);
+        InventarioResponseDTO resultado = inventarioService.actualizar(farmaciaId, id, dto);
 
         //ASSERT
         assertEquals(60, resultado.getCantidadActual());
@@ -124,10 +129,12 @@ public class InventarioServiceImplTest {
     @Test
     @DisplayName("Deberia de lanzar una excepcion si buscamos un ID no existente")
     void buscarRegistroFallo(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         when(inventarioRepository.findById(id)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class, ()->{
-            inventarioService.listaPorId(id);
+            inventarioService.listaPorId(farmaciaId, id);
         });
     }
 

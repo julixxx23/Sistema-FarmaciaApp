@@ -40,6 +40,8 @@ public class VentaServiceImplTest {
     @Test
     @DisplayName("Debebria crear una correcta venta, con los datos ingresados")
     void ventaExitosa(){
+
+        Long farmaciaId = 1L;
         VentaCreateDTO dto = new VentaCreateDTO();
         dto.setSucursalId(1L);
         dto.setUsuarioId(1L);
@@ -71,7 +73,7 @@ public class VentaServiceImplTest {
         when(sucursalRepository.findById(1L)).thenReturn(Optional.of(sucursal));
         when(ventaRepository.save(any(Venta.class))).thenReturn(venta);
         //ACT
-        VentaResponseDTO resultado = ventaService.crear(dto);
+        VentaResponseDTO resultado = ventaService.crear(farmaciaId, dto);
         //ASSERT
         assertNotNull(resultado);
         assertEquals(1L, resultado.getVentaId());
@@ -80,11 +82,13 @@ public class VentaServiceImplTest {
     @Test
     @DisplayName("Deberia de buscar una venta por ID correctamente ")
     void busquedaVentaExitosa(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         Venta venta = new Venta();
         venta.setVentaId(1L);
         when(ventaRepository.findById(1L)).thenReturn(Optional.of(venta));
-        VentaResponseDTO resultado = ventaService.listarPorId(id);
+        VentaResponseDTO resultado = ventaService.listarPorId(farmaciaId, id);
         //ASSERT
         assertNotNull(resultado);
         assertEquals(1L, resultado.getVentaId());
@@ -94,16 +98,20 @@ public class VentaServiceImplTest {
     @Test
     @DisplayName("Deberia de lanzar una excepcion al buscar una venta con ID no existente")
     void falloBusqueda(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         when(ventaRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(RuntimeException.class,() ->{
-            ventaService.listarPorId(1L);
+            ventaService.listarPorId(farmaciaId, 1L);
         });
         verify(ventaRepository, never()).save(any(Venta.class));
     }
     @Test
     @DisplayName("Deberia de eliminar una venta, correctamente")
     void eliminarVentaExitosa(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         Venta venta = new Venta();
         venta.setVentaId(1L);
@@ -111,7 +119,7 @@ public class VentaServiceImplTest {
 
         when(ventaRepository.findById(1L)).thenReturn(Optional.of(venta));
         //ACT & ASSERT
-        ventaService.eliminar(1L);
+        ventaService.eliminar(farmaciaId, 1L);
         ArgumentCaptor<Venta> captor = ArgumentCaptor.forClass(Venta.class);
         verify(ventaRepository).save(captor.capture());
         assertEquals(VentaEstado.anulada,captor.getValue().getVentaEstado(), "El estado deberia de cambiar a anulada");
@@ -119,11 +127,13 @@ public class VentaServiceImplTest {
     @Test
     @DisplayName("Deberia de lanzar una excepcion al eliminar una venta, con ID incorrecto")
     void eliminarVentaFallo(){
+
+        Long farmaciaId = 1L;
         Long id = 1L;
         when(ventaRepository.findById(1L)).thenReturn(Optional.empty());
         //ACT
         assertThrows(RuntimeException.class,() ->{
-            ventaService.eliminar(1L);
+            ventaService.eliminar(farmaciaId, 1L);
         });
         verify(ventaRepository,  never()).save(any(Venta.class));
     }

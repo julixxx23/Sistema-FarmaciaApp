@@ -4,9 +4,11 @@ import farmacias.AppOchoa.dto.producto.ProductoCreateDTO;
 import farmacias.AppOchoa.dto.producto.ProductoResponseDTO;
 import farmacias.AppOchoa.dto.producto.ProductoUpdateDTO;
 import farmacias.AppOchoa.model.Categoria;
+import farmacias.AppOchoa.model.Farmacia;
 import farmacias.AppOchoa.model.Presentacion;
 import farmacias.AppOchoa.model.Producto;
 import farmacias.AppOchoa.repository.CategoriaRepository;
+import farmacias.AppOchoa.repository.FarmaciaRepository;
 import farmacias.AppOchoa.repository.PresentacionRepository;
 import farmacias.AppOchoa.repository.ProductoRepository;
 import farmacias.AppOchoa.serviceimpl.ProductoServiceImpl;
@@ -24,7 +26,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +37,8 @@ class ProductoServiceImplTest {
     private CategoriaRepository categoriaRepository;
     @Mock
     private PresentacionRepository presentacionRepository;
+    @Mock
+    private FarmaciaRepository farmaciaRepository;
 
     @InjectMocks
     private ProductoServiceImpl productoService;
@@ -43,9 +46,14 @@ class ProductoServiceImplTest {
     // TESTS PARA AGREGAR PRODUCTO
 
     @Test
-    @DisplayName("Deber├¡a agregar producto correctamente cuando datos son v├ílidos")
+    @DisplayName("Debería agregar producto correctamente cuando datos son válidos")
     void agregarProducto_Exito() {
-        // 1. ARRANGE
+        // ARRANGE
+        Long farmaciaId = 1L;
+
+        Farmacia farmaciaMock = new Farmacia();
+        farmaciaMock.setFarmaciaId(farmaciaId);
+
         ProductoCreateDTO dto = new ProductoCreateDTO();
         dto.setNombre("Paracetamol 500mg");
         dto.setCodigoBarras("123456");
@@ -66,6 +74,7 @@ class ProductoServiceImplTest {
         Producto productoGuardado = Producto.builder()
                 .productoId(1L)
                 .productoNombre("Paracetamol 500mg")
+                .farmacia(farmaciaMock)
                 .categoria(categoriaMock)
                 .presentacion(presentacionMock)
                 .productoPrecioCompra(BigDecimal.valueOf(10.0))
@@ -74,46 +83,58 @@ class ProductoServiceImplTest {
                 .productoEstado(true)
                 .build();
 
-        when(productoRepository.existsByProductoNombre(anyString())).thenReturn(false);
-        when(productoRepository.existsByProductoCodigoBarras(anyString())).thenReturn(false);
+        when(farmaciaRepository.findById(farmaciaId)).thenReturn(Optional.of(farmaciaMock));
+        when(productoRepository.existsByFarmacia_FarmaciaIdAndProductoNombre(farmaciaId, dto.getNombre())).thenReturn(false);
+        when(productoRepository.existsByFarmacia_FarmaciaIdAndProductoCodigoBarras(farmaciaId, dto.getCodigoBarras())).thenReturn(false);
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoriaMock));
         when(presentacionRepository.findById(1L)).thenReturn(Optional.of(presentacionMock));
         when(productoRepository.save(any(Producto.class))).thenReturn(productoGuardado);
 
-        // 2. ACT
-        ProductoResponseDTO resultado = productoService.agregarProducto(dto);
+        // ACT
+        ProductoResponseDTO resultado = productoService.agregarProducto(farmaciaId, dto);
 
-        // 3. ASSERT
+        // ASSERT
         assertNotNull(resultado);
         assertEquals("Paracetamol 500mg", resultado.getNombre());
         verify(productoRepository).save(any(Producto.class));
     }
 
     @Test
-    @DisplayName("Deber├¡a lanzar excepci├│n si el nombre del producto ya existe")
+    @DisplayName("Debería lanzar excepción si el nombre del producto ya existe")
     void agregarProducto_FallaNombreDuplicado() {
         // ARRANGE
+        Long farmaciaId = 1L;
+
+        Farmacia farmaciaMock = new Farmacia();
+        farmaciaMock.setFarmaciaId(farmaciaId);
+
         ProductoCreateDTO dto = new ProductoCreateDTO();
         dto.setNombre("Aspirina");
 
-        when(productoRepository.existsByProductoNombre("Aspirina")).thenReturn(true);
+        when(farmaciaRepository.findById(farmaciaId)).thenReturn(Optional.of(farmaciaMock));
+        when(productoRepository.existsByFarmacia_FarmaciaIdAndProductoNombre(farmaciaId, "Aspirina")).thenReturn(true);
 
         // ACT & ASSERT
         RuntimeException excepcion = assertThrows(RuntimeException.class, () -> {
-            productoService.agregarProducto(dto);
+            productoService.agregarProducto(farmaciaId, dto);
         });
 
-        assertTrue(excepcion.getMessage().contains("Ya existe un producto con el nombre"));
+        assertTrue(excepcion.getMessage().contains("Ya existe un producto con el nombre:"));
         verify(productoRepository, never()).save(any());
     }
 
-    //TESTS PARA ACTUALIZAR PRODUCTO
+    // TESTS PARA ACTUALIZAR PRODUCTO
 
     @Test
-    @DisplayName("Deber├¡a actualizar producto correctamente")
+    @DisplayName("Debería actualizar producto correctamente")
     void actualizarProducto_Exito() {
         // ARRANGE
+        Long farmaciaId = 1L;
         Long idProducto = 1L;
+
+        Farmacia farmaciaMock = new Farmacia();
+        farmaciaMock.setFarmaciaId(farmaciaId);
+
         ProductoUpdateDTO updateDto = new ProductoUpdateDTO();
         updateDto.setNombre("Nuevo Nombre");
         updateDto.setCategoriaId(2L);
@@ -128,6 +149,7 @@ class ProductoServiceImplTest {
         productoExistente.setProductoNombre("Nombre Viejo");
         productoExistente.setProductoCodigoBarras("11111");
         productoExistente.setProductoPrecioCompra(BigDecimal.valueOf(10.0));
+        productoExistente.setFarmacia(farmaciaMock);
 
         Categoria catMock = new Categoria();
         catMock.setCategoriaId(2L);
@@ -136,12 +158,14 @@ class ProductoServiceImplTest {
         presMock.setPresentacionId(2L);
 
         when(productoRepository.findById(idProducto)).thenReturn(Optional.of(productoExistente));
+        when(productoRepository.existsByFarmacia_FarmaciaIdAndProductoNombre(farmaciaId, "Nuevo Nombre")).thenReturn(false);
+        when(productoRepository.existsByFarmacia_FarmaciaIdAndProductoCodigoBarras(farmaciaId, "99999")).thenReturn(false);
         when(categoriaRepository.findById(anyLong())).thenReturn(Optional.of(catMock));
         when(presentacionRepository.findById(anyLong())).thenReturn(Optional.of(presMock));
         when(productoRepository.save(any(Producto.class))).thenReturn(productoExistente);
 
         // ACT
-        productoService.actualizarProducto(idProducto, updateDto);
+        productoService.actualizarProducto(farmaciaId, idProducto, updateDto);
 
         // ASSERT
         ArgumentCaptor<Producto> captor = ArgumentCaptor.forClass(Producto.class);
@@ -153,39 +177,46 @@ class ProductoServiceImplTest {
         assertEquals(BigDecimal.valueOf(20.0), productoCapturado.getProductoPrecioCompra());
     }
 
-    // TESTS DE OBTENCI├ôN
+    // TESTS DE OBTENCIÓN
 
     @Test
-    @DisplayName("Deber├¡a lanzar excepci├│n si buscamos un ID que no existe")
+    @DisplayName("Debería lanzar excepción si buscamos un ID que no existe")
     void obtenerPorId_NoEncontrado() {
         // ARRANGE
+        Long farmaciaId = 1L;
         Long idNoExistente = 99L;
         when(productoRepository.findById(idNoExistente)).thenReturn(Optional.empty());
 
         // ACT & ASSERT
-        assertThrows(RuntimeException.class, () -> productoService.obtenerPorId(idNoExistente));
+        assertThrows(RuntimeException.class, () -> productoService.obtenerPorId(farmaciaId, idNoExistente));
     }
 
-    //TESTS DE ELIMINACI├ôN
+    // TESTS DE ELIMINACIÓN
 
     @Test
-    @DisplayName("Eliminar producto deber├¡a cambiar estado a false (Borrado L├│gico)")
+    @DisplayName("Eliminar producto debería cambiar estado a false (Borrado Lógico)")
     void eliminarProducto_CambiaEstado() {
         // ARRANGE
+        Long farmaciaId = 1L;
         Long id = 5L;
+
+        Farmacia farmaciaMock = new Farmacia();
+        farmaciaMock.setFarmaciaId(farmaciaId);
+
         Producto productoMock = new Producto();
         productoMock.setProductoId(id);
         productoMock.setProductoEstado(true);
+        productoMock.setFarmacia(farmaciaMock);
 
         when(productoRepository.findById(id)).thenReturn(Optional.of(productoMock));
 
         // ACT
-        productoService.eliminarProducto(id);
+        productoService.eliminarProducto(farmaciaId, id);
 
         // ASSERT
         ArgumentCaptor<Producto> captor = ArgumentCaptor.forClass(Producto.class);
         verify(productoRepository).save(captor.capture());
 
-        assertFalse(captor.getValue().getProductoEstado(), "El estado deber├¡a haber cambiado a false");
+        assertFalse(captor.getValue().getProductoEstado(), "El estado debería haber cambiado a false");
     }
 }
