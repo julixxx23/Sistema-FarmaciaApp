@@ -42,6 +42,12 @@ public class PresentacionController {
         return ResponseEntity.ok(presentacionService.obtenerPorId(getFarmaciaId(), id));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<PresentacionSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return ResponseEntity.ok(presentacionService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
     public ResponseEntity<PresentacionResponseDTO> crear(@Valid @RequestBody PresentacionCreateDTO dto){

@@ -121,6 +121,13 @@ public class VentaServiceImpl implements VentaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<VentaSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return ventaRepository.buscarPorTexto(texto, pageable)
+                .map(VentaSimpleDTO::fromEntity);
+    }
+
+    @Override
     public VentaResponseDTO actualizar(Long farmaciaId, Long id, VentaUpdateDTO dto) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada ID: " + id));

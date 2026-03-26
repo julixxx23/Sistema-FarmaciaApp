@@ -44,6 +44,12 @@ public class AlertaController {
         return ResponseEntity.ok(alertaService.listarPorId(getFarmaciaId(), id));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<AlertaSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return  ResponseEntity.ok(alertaService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @GetMapping("/no-leidas")
     public ResponseEntity<Page<AlertaSimpleDTO>> listarNoLeidasPaginadas(
             @PageableDefault(size = 10, sort = "alertaFecha", direction = Sort.Direction.DESC)

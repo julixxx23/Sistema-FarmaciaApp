@@ -39,6 +39,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.obtenerPorId(getFarmaciaId(), id));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<UsuarioSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return ResponseEntity.ok(usuarioService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
     public ResponseEntity<UsuarioResponseDTO> crearUsuario(@Valid @RequestBody UsuarioCreateDTO dto){

@@ -14,6 +14,7 @@ public interface CompraService {
     CompraResponseDTO listarPorId(Long farmaciaId, Long id);
     Page<CompraSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
     Page<CompraSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<CompraSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
     CompraResponseDTO actualizar(Long farmaciaId, Long id, CompraUpdateDTO dto);
     void cambiarEstado(Long farmaciaId, Long id, CompraEstado compraEstado);
     void eliminar(Long farmaciaId, Long id);

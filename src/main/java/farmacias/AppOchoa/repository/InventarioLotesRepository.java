@@ -5,6 +5,7 @@ import farmacias.AppOchoa.model.LoteEstado;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -33,4 +34,5 @@ public interface InventarioLotesRepository extends JpaRepository<InventarioLotes
     // ESCÁNER / CÓDIGO
     Optional<InventarioLotes> findByLoteNumero(String loteNumero);
     Page<InventarioLotes> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
+    Page<InventarioLotes> buscarPorTexto(@Param("texto") String texto,Pageable pageable);
 }

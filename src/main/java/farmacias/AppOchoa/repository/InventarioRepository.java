@@ -37,4 +37,5 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
     @Query("SELECT i FROM Inventario i WHERE i.inventarioCantidadActual > 0")
     Page<Inventario> findActivosPaginado(Pageable pageable);
     Page<Inventario> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
+    Page<Inventario> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

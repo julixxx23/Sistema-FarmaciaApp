@@ -49,6 +49,12 @@ public class VentaController {
         return ResponseEntity.ok(ventaService.listarActivasPaginadas(getFarmaciaId(), pageable));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<VentaSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return  ResponseEntity.ok(ventaService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     public ResponseEntity<VentaResponseDTO> crear(@Valid @RequestBody VentaCreateDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(ventaService.crear(getFarmaciaId(), dto));

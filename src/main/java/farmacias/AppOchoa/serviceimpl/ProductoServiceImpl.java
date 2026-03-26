@@ -137,6 +137,13 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<ProductoSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return productoRepository.buscarPorTexto(texto, pageable)
+                .map(ProductoSimpleDTO::fromEntity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ProductoResponseDTO obtenerPorId(Long farmaciaId, Long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));

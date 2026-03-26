@@ -64,6 +64,15 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<CategoriaSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return categoriaRepository.buscarPorTexto(texto, pageable)
+                .map(CategoriaSimpleDTO::fromEntity);
+    }
+
+
+
+    @Override
     public CategoriaResponseDTO actualizar(Long farmaciaId, Long id, CategoriaUpdateDTO dto){
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Categoria no encontrada con ID: " +id));

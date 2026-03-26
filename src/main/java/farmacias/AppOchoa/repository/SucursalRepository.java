@@ -1,9 +1,11 @@
 package farmacias.AppOchoa.repository;
 
+import farmacias.AppOchoa.model.Caja;
 import farmacias.AppOchoa.model.Sucursal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,4 +25,6 @@ public interface SucursalRepository extends JpaRepository<Sucursal, Long> {
     Page<Sucursal> findBySucursalNombreContainingIgnoreCase(String nombre, Pageable pageable);
     Page<Sucursal> findByFarmacia_FarmaciaIdAndSucursalEstadoTrue(Long farmaciaId, Pageable pageable);
     boolean existsByFarmacia_FarmaciaIdAndSucursalNombre(Long farmaciaId, String nombre);
+    Page<Sucursal> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
+    Page<Sucursal> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

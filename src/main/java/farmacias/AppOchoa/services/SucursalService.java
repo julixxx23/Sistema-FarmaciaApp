@@ -13,9 +13,8 @@ public interface SucursalService {
     SucursalResponseDTO actualizar(Long farmaciaId, Long id, SucursalUpdateDTO dto);
     void cambiarEstado(Long farmaciaId, Long id, Boolean estado);
     void eliminar(Long farmaciaId, Long id);
-    // Métodos de consulta
     SucursalResponseDTO obtenerPorId(Long farmaciaId, Long id);
-    // Métodos de paginación
+    Page<SucursalSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
     Page<SucursalSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
     Page<SucursalSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
 }

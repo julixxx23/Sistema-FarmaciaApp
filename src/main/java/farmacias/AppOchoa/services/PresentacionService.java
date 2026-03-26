@@ -18,4 +18,5 @@ public interface PresentacionService {
     PresentacionResponseDTO obtenerPorId(Long farmaciaId, Long id);
     Page<PresentacionSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
     Page<PresentacionSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<PresentacionSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
 }

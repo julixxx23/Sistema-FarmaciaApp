@@ -13,7 +13,7 @@ public class ProductoSimpleDTO {
     private Long id;
     private String nombre;
     private String codigoBarras;
-    private BigDecimal precioVenta; // Solo el de venta para mostrar al vendedor
+    private BigDecimal precioVenta;
     private String nombreCategoria;
     private Boolean requiereReceta;
 

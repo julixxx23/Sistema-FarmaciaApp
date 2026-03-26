@@ -53,6 +53,12 @@ public class InventarioLotesController {
         return ResponseEntity.ok(inventarioLotesService.listarProximosAVencerPaginado(getFarmaciaId(), fechaLimite, pageable));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<InventarioLotesSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return ResponseEntity.ok(inventarioLotesService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
     public ResponseEntity<InventarioLotesResponseDTO> crear(@Valid @RequestBody InventarioLotesCreateDTO dto){

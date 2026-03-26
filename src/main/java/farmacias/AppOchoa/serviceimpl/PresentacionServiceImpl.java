@@ -60,6 +60,13 @@ public class PresentacionServiceImpl implements PresentacionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<PresentacionSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return presentacionRepository.buscarPorTexto(texto, pageable)
+                .map(PresentacionSimpleDTO::fromEntity);
+    }
+
+    @Override
     public PresentacionResponseDTO actualizar(Long farmaciaId, Long id, PresentacionUpdateDTO dto){
         Presentacion presentacion = presentacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Presentación no encontrada por ID: " + id));

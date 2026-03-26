@@ -74,6 +74,13 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<UsuarioSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return usuarioRepository.buscarPorTexto(texto, pageable)
+                .map(UsuarioSimpleDTO::fromEntity);
+    }
+
+    @Override
     public UsuarioResponseDTO actualizarUsuario(Long farmaciaId, Long id, UsuarioUpdateDTO dto) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));

@@ -4,6 +4,7 @@ import farmacias.AppOchoa.model.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -17,4 +18,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Page<Usuario> findByUsuarioEstadoTrue(Pageable pageable);
     Page<Usuario> findByFarmacia_FarmaciaIdAndUsuarioEstadoTrue(Long farmaciaId, Pageable pageable);
     boolean existsByFarmacia_FarmaciaIdAndNombreUsuarioUsuario(Long farmaciaId, String nombreUsuario);
+    Page<Usuario> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
+    Page<Usuario> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

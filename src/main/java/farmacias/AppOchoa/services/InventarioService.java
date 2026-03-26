@@ -13,6 +13,7 @@ public interface InventarioService {
     InventarioResponseDTO listaPorId(Long farmaciaId, Long id);
     Page<InventarioSimpleDTO> listarTodosPaginado(Long farmaciaId, Pageable pageable);
     Page<InventarioSimpleDTO> listarActivosPaginado(Long farmaciaId, Pageable pageable);
+    Page<InventarioSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
     InventarioResponseDTO actualizar(Long farmaciaId, Long id, InventarioUpdateDTO dto);
     void eliminar(Long farmaciaId, Long id);
 }

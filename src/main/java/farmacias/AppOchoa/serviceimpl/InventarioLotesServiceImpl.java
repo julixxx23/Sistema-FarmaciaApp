@@ -75,6 +75,13 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<InventarioLotesSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return inventarioLotesRepository.buscarPorTexto(texto, pageable)
+                .map(InventarioLotesSimpleDTO::fromEntity);
+    }
+
+    @Override
     public InventarioLotesResponseDTO actualizar(Long farmaciaId, Long id, InventarioLotesUpdateDTO dto) {
         InventarioLotes lote = inventarioLotesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));

@@ -13,6 +13,7 @@ public interface InventarioLotesService {
     InventarioLotesResponseDTO crear(Long farmaciaId, InventarioLotesCreateDTO dto);
     Page<InventarioLotesSimpleDTO> listarPorSucursalPaginado(Long farmaciaId, Long sucursalId, Pageable pageable);
     InventarioLotesResponseDTO buscarPorId(Long farmaciaId, Long id);
+    Page<InventarioLotesSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
     InventarioLotesResponseDTO actualizar(Long farmaciaId, Long id, InventarioLotesUpdateDTO dto);
     Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(Long farmaciaId, LocalDate fechaLimite, Pageable pageable);
     void eliminar(Long farmaciaId, Long id);

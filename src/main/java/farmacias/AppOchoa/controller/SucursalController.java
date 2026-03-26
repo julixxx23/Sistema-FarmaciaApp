@@ -43,6 +43,12 @@ public class SucursalController {
         return ResponseEntity.ok(sucursalService.obtenerPorId(getFarmaciaId(), id));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<SucursalSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return ResponseEntity.ok(sucursalService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
     public ResponseEntity<SucursalResponseDTO> crear(@Valid @RequestBody SucursalCreateDTO dto) {

@@ -48,6 +48,10 @@ public class CompraController {
             @PageableDefault(size = 10, sort = "compraFecha") Pageable pageable){
         return ResponseEntity.ok(compraService.listarActivasPaginadas(getFarmaciaId(), pageable));
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<CompraSimpleDTO>> buscarPorTexto(@RequestParam String texto, Pageable pageable){
+        return ResponseEntity.ok(compraService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
 
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")

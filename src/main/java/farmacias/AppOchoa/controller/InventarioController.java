@@ -48,6 +48,11 @@ public class InventarioController {
         return ResponseEntity.ok(inventarioService.listarTodosPaginado(getFarmaciaId(), pageable));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<InventarioSimpleDTO>> buscarPorTexto(@RequestParam String texto, Pageable pageable){
+        return ResponseEntity.ok(inventarioService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
     public ResponseEntity<InventarioResponseDTO> crear(@Valid @RequestBody InventarioCreateDTO dto){

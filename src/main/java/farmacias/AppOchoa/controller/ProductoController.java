@@ -48,6 +48,14 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.obtenerPorCodigoBarras(getFarmaciaId(), codigo));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<ProductoSimpleDTO>> buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return  ResponseEntity.ok(productoService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
+
+
     @PostMapping
     public ResponseEntity<ProductoResponseDTO> agregarProducto(@Valid @RequestBody ProductoCreateDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.agregarProducto(getFarmaciaId(), dto));

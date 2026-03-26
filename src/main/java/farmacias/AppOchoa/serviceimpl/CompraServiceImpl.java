@@ -120,6 +120,14 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<CompraSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return compraRepository.buscarPorTexto(texto, pageable)
+                .map(CompraSimpleDTO::fromEntity);
+    }
+
+
+    @Override
     public CompraResponseDTO actualizar(Long farmaciaId, Long id, CompraUpdateDTO dto) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));

@@ -50,4 +50,5 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
             "AND c.compraEstado = 'activa'")
     Page<Compra> findComprasConMontoMayorA(@Param("montoMinimo") BigDecimal montoMinimo, Pageable pageable);
     Page<Compra> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
+    Page<Compra> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

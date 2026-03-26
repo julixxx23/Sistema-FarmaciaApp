@@ -61,6 +61,13 @@ public class SucursalServiceImpl implements SucursalService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<SucursalSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return sucursalRepository.buscarPorTexto(texto, pageable)
+                .map(SucursalSimpleDTO::fromEntity);
+    }
+
+    @Override
     public SucursalResponseDTO actualizar(Long farmaciaId, Long id, SucursalUpdateDTO dto){
         Sucursal sucursal = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));

@@ -46,4 +46,5 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
             "AND v.ventaEstado = 'completada'")
     Double findTotalVendidoHoyPorUsuario(@Param("usuarioId") Long usuarioId);
     Page<Venta> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
+    Page<Venta> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 }

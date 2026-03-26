@@ -15,4 +15,5 @@ public interface ProductoService {
     ProductoResponseDTO obtenerPorCodigoBarras(Long farmaciaId, String productoCodigoBarras);
     ProductoResponseDTO obtenerPorId(Long farmaciaId, Long id);
     Page<ProductoSimpleDTO> listarProductosActivos(Long farmaciaId, Pageable pageable);
+    Page<ProductoSimpleDTO> buscarPorTexto(Long farmaciaID, String texto, Pageable pageable);
 }

@@ -16,7 +16,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permission for Gradle  # ✅ fix exit code 126
+      - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
       - name: Build with Gradle

@@ -13,4 +13,5 @@ public interface CategoriaService {
     CategoriaResponseDTO obtenerPorId(Long farmaciaId, Long id);
     Page<CategoriaSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
     Page<CategoriaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<CategoriaSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);
 }

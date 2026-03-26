@@ -43,6 +43,12 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.obtenerPorId(getFarmaciaId(), id));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Page<CategoriaSimpleDTO>>buscarPorTexto(
+            @RequestParam String texto, Pageable pageable){
+        return  ResponseEntity.ok(categoriaService.buscarPorTexto(getFarmaciaId(), texto, pageable));
+    }
+
     @PostMapping
     @PreAuthorize("hasAuthority('administrador')")
     public ResponseEntity<CategoriaResponseDTO> crear(@Valid @RequestBody CategoriaCreateDTO dto){

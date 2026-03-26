@@ -78,6 +78,12 @@ public class AlertaServiceImpl implements AlertaService {
         return alertaRepository.findByAlertaLeidaFalse(pageable)
                 .map(AlertaSimpleDTO::fromEntity);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AlertaSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable){
+        return  alertaRepository.buscarPorTexto(texto, pageable)
+                .map(AlertaSimpleDTO::fromEntity);
+    }
 
     @Override
     public AlertaResponseDTO actualizar(Long farmaciaId, Long id, AlertaUpdateDTO dto) {
