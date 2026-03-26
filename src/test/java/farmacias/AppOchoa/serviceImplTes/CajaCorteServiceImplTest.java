@@ -2,6 +2,7 @@ package farmacias.AppOchoa.serviceImplTes;
 
 import farmacias.AppOchoa.dto.cajacorte.CajaCorteCreateDTO;
 import farmacias.AppOchoa.dto.cajacorte.CajaCorteResponseDTO;
+import farmacias.AppOchoa.dto.cajacorte.CajaCorteSimpleDTO;
 import farmacias.AppOchoa.model.CajaCorte;
 import farmacias.AppOchoa.model.CajaSesiones;
 import farmacias.AppOchoa.model.Usuario;
@@ -17,8 +18,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,6 +82,27 @@ public class CajaCorteServiceImplTest {
 
         ArgumentCaptor<CajaCorte> cajaCorteArgumentCaptor = ArgumentCaptor.forClass(CajaCorte.class);
         verify(cajaCortesRepository).save(cajaCorteArgumentCaptor.capture());
+    }
+
+    @Test
+    @DisplayName("Deberia de buscar por Texto un corte de Caja")
+    void buscarTexto(){
+
+        Long farmaciaId = 1L;
+        String texto = "Caja1";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        //ARRANGE
+        CajaCorte cajaCorte = new CajaCorte();
+        cajaCorte.setCorteId(1L);
+
+        Page<CajaCorte> page = new PageImpl<>(List.of(cajaCorte));
+        when(cajaCortesRepository.buscarPorTexto(texto, pageable)).thenReturn(page);
+
+        Page<CajaCorteSimpleDTO> resultado = cajaCorteService.buscarPorTexto(farmaciaId, texto, pageable);
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+
     }
 
 
