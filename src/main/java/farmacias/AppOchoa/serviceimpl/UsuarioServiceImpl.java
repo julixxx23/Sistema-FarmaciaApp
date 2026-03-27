@@ -63,7 +63,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     public UsuarioResponseDTO obtenerPorId(Long farmaciaId, Long id) {
         return usuarioRepository.findById(id)
                 .map(UsuarioResponseDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Override
     public UsuarioResponseDTO actualizarUsuario(Long farmaciaId, Long id, UsuarioUpdateDTO dto) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
 
         if (!usuario.getNombreUsuarioUsuario().equals(dto.getNombreUsuario())) {
             if (usuarioRepository.existsByNombreUsuarioUsuario(dto.getNombreUsuario())) {
@@ -110,7 +110,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
     @Override
     public void cambiarEstado(Long farmaciaId, Long id, Boolean nuevoEstado) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado ID: " + id));
         usuario.setUsuarioEstado(nuevoEstado);
         usuarioRepository.save(usuario);
     }
@@ -122,7 +122,7 @@ public class UsuarioServiceImpl implements UsuarioService, UserDetailsService {
 
     private Sucursal buscarSucursal(Long id) {
         return sucursalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sucursal no encontrada ID: " + id));
     }
 
     //UserDetailsService
