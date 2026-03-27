@@ -6,6 +6,7 @@ import farmacias.AppOchoa.dto.producto.ProductoCreateDTO;
 import farmacias.AppOchoa.dto.producto.ProductoResponseDTO;
 import farmacias.AppOchoa.services.ProductoService;
 import farmacias.AppOchoa.util.JwtUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +14,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductoController.class)
-@AutoConfigureMockMvc(addFilters = false) //Desactiva la seguridad para facilitar el test
+@AutoConfigureMockMvc(addFilters = false)
 class ProductoControllerTest {
 
     @Autowired
@@ -38,17 +42,27 @@ class ProductoControllerTest {
     @MockBean
     private JwtUtil jwtUtil;
 
+    @BeforeEach
+    void setup() {
+        // Simula un usuario autenticado con un token falso
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken("user", "fake-token");
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        // Mockea el JwtUtil para retornar farmaciaId = 1
+        when(jwtUtil.extractFarmaciaId("fake-token")).thenReturn(1L);
+    }
+
     @Test
     @DisplayName("GET /api/v1/productos/{id} - Debería retornar 200 y el JSON del producto")
     void obtenerPorId_Exito() throws Exception {
         // ARRANGE
-        Long farmaciaId = 1L;
         Long idProducto = 1L;
         ProductoResponseDTO responseDTO = new ProductoResponseDTO();
         responseDTO.setNombre("Paracetamol Test");
         responseDTO.setPrecioVenta(BigDecimal.valueOf(15.50));
 
-        when(productoService.obtenerPorId(farmaciaId, idProducto)).thenReturn(responseDTO);
+        when(productoService.obtenerPorId(anyLong(), anyLong())).thenReturn(responseDTO);
 
         // ACT & ASSERT
         mockMvc.perform(get("/api/v1/productos/{id}", idProducto))
@@ -61,7 +75,6 @@ class ProductoControllerTest {
     @DisplayName("POST /api/v1/productos - Debería retornar 201 Created")
     void agregarProducto_Exito() throws Exception {
         // ARRANGE
-        Long farmaciaId = 1L;
         ProductoCreateDTO createDTO = new ProductoCreateDTO();
         createDTO.setNombre("Nuevo Producto");
         createDTO.setCategoriaId(1L);
@@ -69,13 +82,12 @@ class ProductoControllerTest {
         createDTO.setPrecioCompra(BigDecimal.valueOf(10));
         createDTO.setPrecioVenta(BigDecimal.valueOf(20));
         createDTO.setCodigoBarras("ABC-123");
-
         createDTO.setIva(BigDecimal.ZERO);
 
         ProductoResponseDTO responseDTO = new ProductoResponseDTO();
         responseDTO.setNombre("Nuevo Producto");
 
-        when(productoService.agregarProducto(farmaciaId, any(ProductoCreateDTO.class))).thenReturn(responseDTO);
+        when(productoService.agregarProducto(anyLong(), any(ProductoCreateDTO.class))).thenReturn(responseDTO);
 
         // ACT & ASSERT
         mockMvc.perform(post("/api/v1/productos")
