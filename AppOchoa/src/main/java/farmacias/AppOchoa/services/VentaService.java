@@ -10,13 +10,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface VentaService {
 
-    VentaResponseDTO crear(VentaCreateDTO dto);
-
-    VentaResponseDTO listarPorId(Long id);
-    Page<VentaSimpleDTO> listarTodasPaginadas(Pageable pageable);
-    Page<VentaSimpleDTO> listarActivasPaginadas(Pageable pageable);
-
-    VentaResponseDTO actualizar(Long id, VentaUpdateDTO dto);
-    void cambiarEstado(Long id, VentaEstado nuevoEstado);
-    void eliminar(Long id);
+    VentaResponseDTO crear(Long farmaciaId, VentaCreateDTO dto);
+    VentaResponseDTO listarPorId(Long farmaciaId, Long id);
+    Page<VentaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<VentaSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
+    VentaResponseDTO actualizar(Long farmaciaId, Long id, VentaUpdateDTO dto);
+    void cambiarEstado(Long farmaciaId, Long id, VentaEstado nuevoEstado);
+    void eliminar(Long farmaciaId, Long id);
 }

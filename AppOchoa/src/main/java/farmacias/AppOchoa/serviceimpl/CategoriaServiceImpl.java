@@ -26,7 +26,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public CategoriaResponseDTO crear(CategoriaCreateDTO dto){
+    public CategoriaResponseDTO crear(Long farmaciaId, CategoriaCreateDTO dto){
         if(categoriaRepository.existsByCategoriaNombre(dto.getNombre())){
             throw new RuntimeException("Ya existe una categoria con ese nombre: " + dto.getNombre());
         }
@@ -42,47 +42,29 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoriaResponseDTO obtenerPorId(Long id){
+    public CategoriaResponseDTO obtenerPorId(Long farmaciaId, Long id){
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada por id: " + id));
 
         return CategoriaResponseDTO.fromEntity(categoria);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CategoriaSimpleDTO> listarTodas(){
-        List<Categoria> categorias = categoriaRepository.findAll();
-        return categorias.stream()
-                .map(CategoriaSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CategoriaSimpleDTO> listarActivas(){
-        List<Categoria> categoriaActivas = categoriaRepository.findByCategoriaEstadoTrue();
-        return categoriaActivas.stream()
-                .map(CategoriaSimpleDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
     
     @Override
     @Transactional(readOnly = true)
-    public Page<CategoriaSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+    public Page<CategoriaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable) {
         return categoriaRepository.findAll(pageable)
                 .map(CategoriaSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CategoriaSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+    public Page<CategoriaSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable) {
         return categoriaRepository.findByCategoriaEstadoTrue(pageable)
                 .map(CategoriaSimpleDTO::fromEntity);
     }
 
     @Override
-    public CategoriaResponseDTO actualizar(Long id, CategoriaUpdateDTO dto){
+    public CategoriaResponseDTO actualizar(Long farmaciaId, Long id, CategoriaUpdateDTO dto){
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Categoria no encontrada con ID: " +id));
 
@@ -100,7 +82,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public void cambiarEstado(Long id, Boolean estado){
+    public void cambiarEstado(Long farmaciaId, Long id, Boolean estado){
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada con ID: " + id));
 
@@ -109,8 +91,8 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public void eliminar(Long id){
+    public void eliminar(Long farmaciaId, Long id){
         // Usamos tu lógica de borrado lógico
-        this.cambiarEstado(id, false);
+        this.cambiarEstado(farmaciaId, id, false);
     }
 }

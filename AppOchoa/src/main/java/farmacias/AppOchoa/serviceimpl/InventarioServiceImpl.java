@@ -32,14 +32,14 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     @Override
-    public InventarioResponseDTO crear(InventarioCreateDTO dto) {
+    public InventarioResponseDTO crear(Long farmaciaId, InventarioCreateDTO dto) {
         if (inventarioRepository.existsByProducto_ProductoIdAndSucursal_SucursalId(
                 dto.getProductoId(), dto.getSucursalId())) {
             throw new RuntimeException("Ya existe un registro de inventario para este producto en la sucursal seleccionada.");
         }
 
-        Producto producto = buscarProducto(dto.getProductoId());
-        Sucursal sucursal = buscarSucursal(dto.getSucursalId());
+        Producto producto = buscarProducto(farmaciaId, dto.getProductoId());
+        Sucursal sucursal = buscarSucursal(farmaciaId, dto.getSucursalId());
 
         Inventario inventario = Inventario.builder()
                 .inventarioCantidadActual(dto.getCantidadActual())
@@ -53,7 +53,7 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public InventarioResponseDTO listaPorId(Long id) {
+    public InventarioResponseDTO listaPorId(Long farmaciaId, Long id) {
         Inventario inventario = inventarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inventario no encontrado ID: " + id));
         return InventarioResponseDTO.fromEntity(inventario);
@@ -61,20 +61,20 @@ public class InventarioServiceImpl implements InventarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<InventarioSimpleDTO> listarTodosPaginado(Pageable pageable) {
+    public Page<InventarioSimpleDTO> listarTodosPaginado(Long farmaciaId, Pageable pageable) {
         return inventarioRepository.findAll(pageable)
                 .map(InventarioSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<InventarioSimpleDTO> listarActivosPaginado(Pageable pageable) {
+    public Page<InventarioSimpleDTO> listarActivosPaginado(Long farmaciaId, Pageable pageable) {
         return inventarioRepository.findActivosPaginado(pageable)
                 .map(InventarioSimpleDTO::fromEntity);
     }
 
     @Override
-    public InventarioResponseDTO actualizar(Long id, InventarioUpdateDTO dto) {
+    public InventarioResponseDTO actualizar(Long farmaciaId, Long id, InventarioUpdateDTO dto) {
         Inventario inventario = inventarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inventario no encontrado ID: " + id));
 
@@ -86,7 +86,7 @@ public class InventarioServiceImpl implements InventarioService {
 
 
     @Override
-    public void eliminar(Long id){
+    public void eliminar(Long farmaciaId, Long id){
         if(!inventarioRepository.existsById(id)){
             throw new RuntimeException("Inventario no encontrado con ID: " +id);
         }
@@ -94,12 +94,12 @@ public class InventarioServiceImpl implements InventarioService {
     }
 
     // Métodos auxiliares privados
-    private Producto buscarProducto(Long id) {
+    private Producto buscarProducto(Long farmaciaId, Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
     }
 
-    private Sucursal buscarSucursal(Long id) {
+    private Sucursal buscarSucursal(Long farmaciaId, Long id) {
         return sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }

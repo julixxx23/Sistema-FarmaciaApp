@@ -11,4 +11,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     // Este método debe recibir Pageable para que el Service no marque error
     Page<Categoria> findByCategoriaEstadoTrue(Pageable pageable);
     boolean existsByCategoriaNombre(String nombre);
+    Page<Categoria> findByFarmacia_FarmaciaIdAndCategoriaEstadoTrue(Long farmaciaId, Pageable pageable);
+    boolean existsByFarmacia_FarmaciaIdAndCategoriaNombre(Long farmaciaId, String nombre);
 }

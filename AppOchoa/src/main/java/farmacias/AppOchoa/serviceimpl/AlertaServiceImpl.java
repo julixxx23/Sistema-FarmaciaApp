@@ -9,6 +9,7 @@ import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.Producto;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.repository.*;
+import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.services.AlertaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,13 +37,13 @@ public class AlertaServiceImpl implements AlertaService {
     }
 
     @Override
-    public AlertaResponseDTO crear(AlertaCreateDTO dto) {
-        Producto producto = buscarProducto(dto.getProductoId());
-        Sucursal sucursal = buscarSucursal(dto.getSucursalId());
+    public AlertaResponseDTO crear(Long farmaciaId, AlertaCreateDTO dto) {
+        Producto producto = buscarProducto(farmaciaId, dto.getProductoId());
+        Sucursal sucursal = buscarSucursal(farmaciaId, dto.getSucursalId());
 
         InventarioLotes lote = null;
         if (dto.getLoteId() != null) {
-            lote = buscarInventarioLotes(dto.getLoteId());
+            lote = buscarInventarioLotes(farmaciaId, dto.getLoteId());
         }
 
         Alerta alerta = Alerta.builder()
@@ -58,7 +59,7 @@ public class AlertaServiceImpl implements AlertaService {
 
     @Override
     @Transactional(readOnly = true)
-    public AlertaResponseDTO listarPorId(Long id) {
+    public AlertaResponseDTO listarPorId(Long farmaciaId, Long id) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
         return AlertaResponseDTO.fromEntity(alerta);
@@ -66,20 +67,20 @@ public class AlertaServiceImpl implements AlertaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AlertaSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+    public Page<AlertaSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable) {
         return alertaRepository.findAll(pageable)
                 .map(AlertaSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AlertaSimpleDTO> listarNoLeidasPaginadas(Pageable pageable) {
+    public Page<AlertaSimpleDTO> listarNoLeidasPaginadas(Long farmaciaId, Pageable pageable) {
         return alertaRepository.findByAlertaLeidaFalse(pageable)
                 .map(AlertaSimpleDTO::fromEntity);
     }
 
     @Override
-    public AlertaResponseDTO actualizar(Long id, AlertaUpdateDTO dto) {
+    public AlertaResponseDTO actualizar(Long farmaciaId, Long id, AlertaUpdateDTO dto) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
 
@@ -91,7 +92,7 @@ public class AlertaServiceImpl implements AlertaService {
     }
 
     @Override
-    public void cambiarEstado(Long id) {
+    public void cambiarEstado(Long farmaciaId, Long id) {
         Alerta alerta = alertaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Alerta no encontrada ID: " + id));
         alerta.setAlertaLeida(!alerta.getAlertaLeida());
@@ -99,25 +100,25 @@ public class AlertaServiceImpl implements AlertaService {
     }
 
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         if (!alertaRepository.existsById(id)) {
-            throw new RuntimeException("Alerta no encontrada ID: " + id);
+            throw new ResourceNotFoundException("Alerta no encontrada ID: " + id);
         }
         alertaRepository.deleteById(id);
     }
 
-    // Métodos auxiliares privados
-    private Producto buscarProducto(Long id) {
+    // MÃƒÂ©todos auxiliares privados
+    private Producto buscarProducto(Long farmaciaId, Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
     }
 
-    private Sucursal buscarSucursal(Long id) {
+    private Sucursal buscarSucursal(Long farmaciaId, Long id) {
         return sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }
 
-    private InventarioLotes buscarInventarioLotes(Long id) {
+    private InventarioLotes buscarInventarioLotes(Long farmaciaId, Long id) {
         return inventarioLotesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
     }

@@ -40,7 +40,7 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public CompraResponseDTO crear(CompraCreateDTO dto) {
+    public CompraResponseDTO crear(Long farmaciaId, CompraCreateDTO dto) {
         Sucursal sucursal = buscarSucursal(dto.getSucursalId());
         Usuario usuario = buscarUsuario(dto.getUsuarioId());
 
@@ -99,7 +99,7 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional(readOnly = true)
-    public CompraResponseDTO listarPorId(Long id) {
+    public CompraResponseDTO listarPorId(Long farmaciaId, Long id) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
         return CompraResponseDTO.fromEntity(compra);
@@ -107,20 +107,20 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CompraSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+    public Page<CompraSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable) {
         return compraRepository.findAll(pageable)
                 .map(CompraSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CompraSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+    public Page<CompraSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable) {
         return compraRepository.findByCompraEstado(CompraEstado.activa, pageable)
                 .map(CompraSimpleDTO::fromEntity);
     }
 
     @Override
-    public CompraResponseDTO actualizar(Long id, CompraUpdateDTO dto) {
+    public CompraResponseDTO actualizar(Long farmaciaId, Long id, CompraUpdateDTO dto) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
 
@@ -132,7 +132,7 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public void cambiarEstado(Long id, CompraEstado nuevoEstado) {
+    public void cambiarEstado(Long farmaciaId, Long id, CompraEstado nuevoEstado) {
         Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compra no encontrada ID: " + id));
 
@@ -150,8 +150,8 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public void eliminar(Long id) {
-        cambiarEstado(id, CompraEstado.anulada);
+    public void eliminar(Long farmaciaId, Long id) {
+        cambiarEstado(farmaciaId, id, CompraEstado.anulada);
     }
 
     // Métodos auxiliares privados

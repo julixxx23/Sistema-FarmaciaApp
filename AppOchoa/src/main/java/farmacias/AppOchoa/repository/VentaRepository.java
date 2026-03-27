@@ -45,4 +45,5 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
             "AND DATE(v.ventaFecha) = CURRENT_DATE " +
             "AND v.ventaEstado = 'completada'")
     Double findTotalVendidoHoyPorUsuario(@Param("usuarioId") Long usuarioId);
+    Page<Venta> findByFarmacia_FarmaciaId(Long farmaciaId, Pageable pageable);
 }

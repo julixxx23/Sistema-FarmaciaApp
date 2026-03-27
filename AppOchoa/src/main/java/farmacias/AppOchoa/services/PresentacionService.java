@@ -11,18 +11,11 @@ import java.util.List;
 
 public interface PresentacionService {
 
-    // Métodos de escritura
-    PresentacionResponseDTO crear(PresentacionCreateDTO dto);
-    PresentacionResponseDTO actualizar(Long id, PresentacionUpdateDTO dto);
-    void cambiarEstado(Long id, Boolean estado);
-    void eliminar(Long id);
-
-    // Métodos de consulta simple
-    PresentacionResponseDTO obtenerPorId(Long id);
-    List<PresentacionSimpleDTO> listarTodas();
-    List<PresentacionSimpleDTO> listarActivas();
-
-    // Métodos de paginación
-    Page<PresentacionSimpleDTO> listarActivasPaginadas(Pageable pageable);
-    Page<PresentacionSimpleDTO> listarTodasPaginadas(Pageable pageable);
+    PresentacionResponseDTO crear(Long farmaciaId, PresentacionCreateDTO dto);
+    PresentacionResponseDTO actualizar(Long farmaciaId, Long id, PresentacionUpdateDTO dto);
+    void cambiarEstado(Long farmaciaId, Long id, Boolean estado);
+    void eliminar(Long farmaciaId, Long id);
+    PresentacionResponseDTO obtenerPorId(Long farmaciaId, Long id);
+    Page<PresentacionSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable);
+    Page<PresentacionSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable);
 }

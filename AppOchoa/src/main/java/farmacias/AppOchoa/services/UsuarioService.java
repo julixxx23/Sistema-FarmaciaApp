@@ -10,14 +10,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface UsuarioService {
 
-    UsuarioResponseDTO crearUsuario(UsuarioCreateDTO dto);
-
-    UsuarioResponseDTO obtenerPorId(Long id);
-    Page<UsuarioSimpleDTO> listarUsuariosActivosPaginado(Pageable pageable);
-
-    UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateDTO dto);
-    void cambiarEstado(Long id, Boolean nuevoEstado);
-    void eliminarUsuario(Long id);
-
-    UsuarioResponseDTO login(LoginDTO dto);
+    UsuarioResponseDTO crearUsuario(Long farmaciaId, UsuarioCreateDTO dto);
+    UsuarioResponseDTO obtenerPorId(Long farmaciaId, Long id);
+    Page<UsuarioSimpleDTO> listarUsuariosActivosPaginado(Long farmaciaId, Pageable pageable);
+    UsuarioResponseDTO actualizarUsuario(Long farmaciaId, Long id, UsuarioUpdateDTO dto);
+    void cambiarEstado(Long farmaciaId, Long id, Boolean nuevoEstado);
+    void eliminarUsuario(Long farmaciaId, Long id);
+    UsuarioResponseDTO login(Long farmaciaId, LoginDTO dto);
 }

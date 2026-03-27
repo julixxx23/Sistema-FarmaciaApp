@@ -23,7 +23,7 @@ public class SucursalServiceImpl implements SucursalService {
     }
 
     @Override
-    public SucursalResponseDTO crear(SucursalCreateDTO dto){
+    public SucursalResponseDTO crear(Long farmaciaId, SucursalCreateDTO dto){
         if(sucursalRepository.existsBySucursalNombre(dto.getNombre())){
             throw new RuntimeException("Ya existe una sucursal con ese nombre: " + dto.getNombre());
         }
@@ -40,7 +40,7 @@ public class SucursalServiceImpl implements SucursalService {
 
     @Override
     @Transactional(readOnly = true)
-    public SucursalResponseDTO obtenerPorId(Long id){
+    public SucursalResponseDTO obtenerPorId(Long farmaciaId, Long id){
         return sucursalRepository.findById(id)
                 .map(SucursalResponseDTO::fromEntity)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
@@ -48,20 +48,20 @@ public class SucursalServiceImpl implements SucursalService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SucursalSimpleDTO> listarActivasPaginadas(Pageable pageable) {
+    public Page<SucursalSimpleDTO> listarActivasPaginadas(Long farmaciaId, Pageable pageable) {
         return sucursalRepository.findBySucursalEstadoTrue(pageable)
                 .map(SucursalSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SucursalSimpleDTO> listarTodasPaginadas(Pageable pageable) {
+    public Page<SucursalSimpleDTO> listarTodasPaginadas(Long farmaciaId, Pageable pageable) {
         return sucursalRepository.findAll(pageable)
                 .map(SucursalSimpleDTO::fromEntity);
     }
 
     @Override
-    public SucursalResponseDTO actualizar(Long id, SucursalUpdateDTO dto){
+    public SucursalResponseDTO actualizar(Long farmaciaId, Long id, SucursalUpdateDTO dto){
         Sucursal sucursal = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
 
@@ -84,7 +84,7 @@ public class SucursalServiceImpl implements SucursalService {
     }
 
     @Override
-    public void cambiarEstado(Long id, Boolean estado){
+    public void cambiarEstado(Long farmaciaId, Long id, Boolean estado){
         Sucursal sucursal = sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada por ID: " + id));
         sucursal.setSucursalEstado(estado);
@@ -92,7 +92,7 @@ public class SucursalServiceImpl implements SucursalService {
     }
 
     @Override
-    public void eliminar(Long id){
-        cambiarEstado(id, false);
+    public void eliminar(Long farmaciaId, Long id){
+        cambiarEstado(farmaciaId, id, false);
     }
 }

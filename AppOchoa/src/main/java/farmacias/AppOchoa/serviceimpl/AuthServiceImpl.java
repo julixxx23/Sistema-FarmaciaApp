@@ -31,7 +31,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Map<String, Object> login(String nombreUsuario, String contrasena) {
 
-        //Buscar usuario
         Optional<Usuario> usuarioOpt = usuarioRepository.findByNombreUsuarioUsuario(nombreUsuario);
 
         if (usuarioOpt.isEmpty()) {
@@ -40,30 +39,28 @@ public class AuthServiceImpl implements AuthService {
 
         Usuario usuario = usuarioOpt.get();
 
-        //Verificar que esté activo
         if (!usuario.getUsuarioEstado()) {
             throw new RuntimeException("Usuario desactivado");
         }
 
-        //Validar contraseña
         if (!passwordEncoder.matches(contrasena, usuario.getUsuarioContrasenaHash())) {
             throw new RuntimeException("Contraseña incorrecta");
         }
 
-        //Generar token con claims adicionales
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", usuario.getUsuarioId());
         claims.put("rol", usuario.getUsuarioRol().name());
         claims.put("nombre", usuario.getUsuarioNombre());
         claims.put("apellido", usuario.getUsuarioApellido());
+        claims.put("farmaciaId", usuario.getFarmacia().getFarmaciaId());
 
         String token = jwtUtil.generateToken(claims, nombreUsuario);
 
-        //Preparar respuesta
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
         response.put("tipo", "Bearer");
         response.put("usuarioId", usuario.getUsuarioId());
+        response.put("farmaciaId", usuario.getFarmacia().getFarmaciaId());
         response.put("nombreUsuario", usuario.getNombreUsuarioUsuario());
         response.put("nombreCompleto", usuario.getUsuarioNombre() + " " + usuario.getUsuarioApellido());
         response.put("rol", usuario.getUsuarioRol().name());

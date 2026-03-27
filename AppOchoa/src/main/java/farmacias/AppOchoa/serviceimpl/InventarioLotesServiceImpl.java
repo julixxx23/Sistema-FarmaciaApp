@@ -30,13 +30,13 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     private final SucursalRepository sucursalRepository;
 
     @Override
-    public InventarioLotesResponseDTO crear(InventarioLotesCreateDTO dto) {
+    public InventarioLotesResponseDTO crear(Long farmaciaId, InventarioLotesCreateDTO dto) {
         if (inventarioLotesRepository.existsByLoteNumeroAndSucursal_SucursalId(dto.getNumeroLote(), dto.getSucursalId())) {
             throw new RuntimeException("El número de lote " + dto.getNumeroLote() + " ya existe en esta sucursal.");
         }
 
-        Producto producto = buscarProducto(dto.getProductoId());
-        Sucursal sucursal = buscarSucursal(dto.getSucursalId());
+        Producto producto = buscarProducto(farmaciaId, dto.getProductoId());
+        Sucursal sucursal = buscarSucursal(farmaciaId, dto.getSucursalId());
 
         InventarioLotes lote = InventarioLotes.builder()
                 .loteNumero(dto.getNumeroLote())
@@ -54,7 +54,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
 
     @Override
     @Transactional(readOnly = true)
-    public InventarioLotesResponseDTO buscarPorId(Long id) {
+    public InventarioLotesResponseDTO buscarPorId(Long farmaciaId, Long id) {
         InventarioLotes lote = inventarioLotesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
         return InventarioLotesResponseDTO.fromEntity(lote);
@@ -62,20 +62,20 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<InventarioLotesSimpleDTO> listarPorSucursalPaginado(Long sucursalId, Pageable pageable) {
+    public Page<InventarioLotesSimpleDTO> listarPorSucursalPaginado(Long farmaciaId, Long sucursalId, Pageable pageable) {
         return inventarioLotesRepository.findBySucursal_SucursalId(sucursalId, pageable)
                 .map(InventarioLotesSimpleDTO::fromEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(LocalDate fechaLimite, Pageable pageable) {
+    public Page<InventarioLotesSimpleDTO> listarProximosAVencerPaginado(Long farmaciaId, LocalDate fechaLimite, Pageable pageable) {
         return inventarioLotesRepository.findByLoteFechaVencimientoLessThanEqual(fechaLimite, pageable)
                 .map(InventarioLotesSimpleDTO::fromEntity);
     }
 
     @Override
-    public InventarioLotesResponseDTO actualizar(Long id, InventarioLotesUpdateDTO dto) {
+    public InventarioLotesResponseDTO actualizar(Long farmaciaId, Long id, InventarioLotesUpdateDTO dto) {
         InventarioLotes lote = inventarioLotesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lote no encontrado ID: " + id));
 
@@ -86,7 +86,7 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     }
 
     @Override
-    public void eliminar(Long id) {
+    public void eliminar(Long farmaciaId, Long id) {
         if (!inventarioLotesRepository.existsById(id)) {
             throw new RuntimeException("Lote no encontrado ID: " + id);
         }
@@ -94,12 +94,12 @@ public class InventarioLotesServiceImpl implements InventarioLotesService {
     }
 
     // Métodos auxiliares privados
-    private Producto buscarProducto(Long id) {
+    private Producto buscarProducto(Long farmaciaId, Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + id));
     }
 
-    private Sucursal buscarSucursal(Long id) {
+    private Sucursal buscarSucursal(Long farmaciaId, Long id) {
         return sucursalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sucursal no encontrada ID: " + id));
     }

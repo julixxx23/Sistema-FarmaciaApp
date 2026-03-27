@@ -15,4 +15,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByNombreUsuarioUsuario(String nombreUsuarioUsuario);
     // Lista todos los usuarios que tengan usuarioEstado = true - con paginación
     Page<Usuario> findByUsuarioEstadoTrue(Pageable pageable);
+    Page<Usuario> findByFarmacia_FarmaciaIdAndUsuarioEstadoTrue(Long farmaciaId, Pageable pageable);
+    boolean existsByFarmacia_FarmaciaIdAndNombreUsuarioUsuario(Long farmaciaId, String nombreUsuario);
 }
