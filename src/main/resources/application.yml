@@ -7,17 +7,11 @@ spring:
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #pool de conexiones
     hikari:
-      # máximo 10 conexiones abiertas al mismo tiempo
       maximum-pool-size: 10
-      # mínimo 5 conexiones siempre listas aunque no haya tráfico
       minimum-idle: 5
-      # si no hay conexión disponible, espera 20 segundos antes de lanzar error
       connection-timeout: 20000
-      # una conexión inactiva se cierra después de 5 minutos
       idle-timeout: 300000
-      # una conexión vive máximo 20 minutos, luego se recrea
       max-lifetime: 1200000
 
   jpa:
@@ -50,7 +44,6 @@ management:
       application: "AppOchoa"
       environment: "production"
 
-#Configuración JWT
 jwt:
   secret: ${JWT_SECRET:defaultSecretKeyForDevelopmentOnly}
   expiration: ${JWT_EXPIRATION:86400000}
@@ -59,9 +52,15 @@ logging:
   level:
     root: INFO
     farmacias.AppOchoa: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
 
 springdoc:
   packages-to-scan: farmacias.AppOchoa
   paths-to-match: /**
+
+# Loki - expone las variables de entorno a logback-spring.xml
+loki:
+  url: ${LOKI_URL:https://logs-prod-042.grafana.net/loki/api/v1/push}
+  username: ${LOKI_USERNAME:1499882}
+  password: ${LOKI_PASSWORD:}
