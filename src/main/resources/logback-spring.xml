@@ -8,8 +8,10 @@
     </appender>
 
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
-        <http>
-            <url>${LOKI_URL:-http://localhost:3100/loki/api/v1/push}</url>
+        <http class="com.github.loki4j.logback.BasicAuthHttpSender">
+            <url>${LOKI_URL:-https://logs-prod-042.grafana.net/loki/api/v1/push}</url>
+            <username>${LOKI_USERNAME:-1499882}</username>
+            <password>${LOKI_PASSWORD:-}</password>
         </http>
         <format>
             <label>
@@ -20,10 +22,4 @@
             </message>
         </format>
     </appender>
-
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="LOKI"/>
-    </root>
-
 </configuration>
