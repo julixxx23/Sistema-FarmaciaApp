@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //JWT reemplaza la protección CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll() //Publico para el Login
                         .anyRequest().authenticated() //A partir de aquí todo request reqyiere JWT Valido
                 )
