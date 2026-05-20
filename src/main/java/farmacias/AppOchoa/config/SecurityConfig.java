@@ -80,11 +80,13 @@ public class SecurityConfig {
         return source;
     }
 
+    //Compara el texto plano del usuario contra el hash guardado en BB
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    //Expone el authController para autenticar al usuario/login
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

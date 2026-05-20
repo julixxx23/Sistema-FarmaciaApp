@@ -6,7 +6,7 @@ COPY settings.gradle .
 COPY src ./src
 RUN gradle build -x test
 
-# ---- Stage 2: correr ----
+# ---- Stage 2: correr imagen
 FROM eclipse-temurin:17-jre-alpine
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
