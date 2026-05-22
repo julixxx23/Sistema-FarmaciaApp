@@ -41,7 +41,6 @@ dependencies {
     implementation 'com.itextpdf:itext7-core:7.2.5'
     // Excel
     implementation 'org.apache.poi:poi-oas:5.2.3'
-    implementation 'org.apache.poi:poi-ooxml:5.2.3'
     // Actuator — expone /actuator/prometheus
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // Micrometer — métricas en formato Prometheus
