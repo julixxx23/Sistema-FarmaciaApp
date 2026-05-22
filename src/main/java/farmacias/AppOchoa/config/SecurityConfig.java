@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //JWT reemplaza la protección CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll() //Publico para el Login
                         .anyRequest().authenticated() //A partir de aquí todo request reqyiere JWT Valido
                 )
@@ -65,9 +66,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                // URL DEL FRONTEND, CAMBIARLAS EN PRODUCCIÓN
                 "http://localhost:4200",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "https://farmacloud.software"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
@@ -79,11 +80,13 @@ public class SecurityConfig {
         return source;
     }
 
+    //Compara el texto plano del usuario contra el hash guardado en BB
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    //Expone el authController para autenticar al usuario/login
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

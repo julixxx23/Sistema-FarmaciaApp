@@ -40,7 +40,7 @@ public class JwtUtil {
     }
 
     public Long extractFarmaciaId(String token) {
-        //extrae el farmaciaId creado omo claim extra
+        //extrae el farmaciaId creado como claim extra
         return extractClaim(token, claims -> claims.get("farmaciaId", Long.class));
     }
 
@@ -89,7 +89,7 @@ public class JwtUtil {
                 .compact();                   // construye el string eyJ...
     }
 
-    // ── Validación
+    //Validación
 
     //valida que el username coincida Y que no esté expirado
     public Boolean validateToken(String token, String username) {
