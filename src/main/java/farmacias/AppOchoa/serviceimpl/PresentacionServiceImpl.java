@@ -29,7 +29,7 @@ public class PresentacionServiceImpl implements PresentacionService {
 
     @Override
     public PresentacionResponseDTO crear(Long farmaciaId, PresentacionCreateDTO dto){
-        if(presentacionRepository.existsByPresentacionNombre(dto.getNombre())){
+        if(presentacionRepository.existsByFarmacia_FarmaciaIdAndPresentacionNombre(farmaciaId, dto.getNombre())){
             throw new DuplicateResourceException("Ya existe una presentación con ese nombre: " + dto.getNombre());
         }
 
@@ -74,7 +74,7 @@ public class PresentacionServiceImpl implements PresentacionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Presentación no encontrada por ID: " + id));
 
         if(!presentacion.getPresentacionNombre().equalsIgnoreCase(dto.getNombre())){
-            if(presentacionRepository.existsByPresentacionNombre(dto.getNombre())){
+            if(presentacionRepository.existsByFarmacia_FarmaciaIdAndPresentacionNombre(farmaciaId, dto.getNombre())){
                 throw new DuplicateResourceException("Ya existe otra presentación con el nombre: " + dto.getNombre());
             }
         }

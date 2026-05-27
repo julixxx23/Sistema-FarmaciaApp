@@ -26,8 +26,8 @@ public class SucursalServiceImpl implements SucursalService {
 
     @Override
     public SucursalResponseDTO crear(Long farmaciaId, SucursalCreateDTO dto){
-        if(sucursalRepository.existsBySucursalNombre(dto.getNombre())){
-            throw new DuplicateResourceException("Ya existe una sucursal con ese nombre: " + dto.getNombre());
+        if(sucursalRepository.existsByFarmacia_FarmaciaIdAndSucursalNombre(farmaciaId, dto.getNombre())){
+            throw new DuplicateResourceException("Ya existe una sucursal con ese nombre en tu farmacia: " + dto.getNombre());
         }
 
         Sucursal sucursal = Sucursal.builder()
@@ -76,8 +76,8 @@ public class SucursalServiceImpl implements SucursalService {
 
         String nuevoNombre = dto.getNombre().trim();
         if(!sucursal.getSucursalNombre().equalsIgnoreCase(nuevoNombre)){
-            if(sucursalRepository.existsBySucursalNombre(nuevoNombre)){
-                throw new DuplicateResourceException("Ya existe otra sucursal con ese nombre: " + nuevoNombre);
+            if(sucursalRepository.existsByFarmacia_FarmaciaIdAndSucursalNombre(farmaciaId, nuevoNombre)){
+                throw new DuplicateResourceException("Ya existe otra sucursal con ese nombre en tu farmacia: " + nuevoNombre);
             }
             sucursal.setSucursalNombre(nuevoNombre);
         }

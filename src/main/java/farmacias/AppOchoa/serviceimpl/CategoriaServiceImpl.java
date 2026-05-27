@@ -29,7 +29,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public CategoriaResponseDTO crear(Long farmaciaId, CategoriaCreateDTO dto){
-        if(categoriaRepository.existsByCategoriaNombre(dto.getNombre())){
+        if(categoriaRepository.existsByFarmacia_FarmaciaIdAndCategoriaNombre(farmaciaId, dto.getNombre())){
             throw new DuplicateResourceException("Ya existe una categoría con ese nombre: " + dto.getNombre());
         }
 
@@ -80,7 +80,7 @@ public class CategoriaServiceImpl implements CategoriaService {
                 .orElseThrow(()-> new ResourceNotFoundException("Categoría no encontrada con ID: " + id));
 
         if(!categoria.getCategoriaNombre().equals(dto.getNombre())){
-            if(categoriaRepository.existsByCategoriaNombre(dto.getNombre())){
+            if(categoriaRepository.existsByFarmacia_FarmaciaIdAndCategoriaNombre(farmaciaId, dto.getNombre())){
                 throw new DuplicateResourceException("Ya existe otra categoría con el nombre: " + dto.getNombre());
             }
         }
