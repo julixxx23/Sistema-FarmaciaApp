@@ -7,29 +7,28 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers(disabledWithoutDocker = true)
 public abstract class BaseIntegrationTest {
 
-    // Un solo contenedor MySQL compartido por todos los tests
-    @Container
-    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("farmacia_test")
-            .withUsername("test")
-            .withPassword("test");
+    static final MySQLContainer<?> mysql;
 
-    // Sobreescribe las propiedades de BD con las del contenedor
-    @DynamicPropertySource
-    static void configurarPropiedades(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysql::getJdbcUrl);
-        registry.add("spring.datasource.username", mysql::getUsername);
-        registry.add("spring.datasource.password", mysql::getPassword);
+    static {
+        mysql = new MySQLContainer<>("mysql:8.0")
+                .withDatabaseName("farmacia_test")
+                .withUsername("test")
+                .withPassword("test");
+        mysql.start();
     }
 
-    // Puerto aleatorio del servidor embebido
+    @DynamicPropertySource
+    static void configurarPropiedades(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url",      mysql::getJdbcUrl);
+        registry.add("spring.datasource.username", mysql::getUsername);
+        registry.add("spring.datasource.password", mysql::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    }
+
     @LocalServerPort
     protected int puerto;
 
