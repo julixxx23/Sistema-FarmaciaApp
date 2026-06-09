@@ -5,16 +5,33 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a5bf38d0-3a47-4a3e-bd2a-1c0e01f379f4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/integrationTest/AuthIntegrationTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/integrationTest/BaseIntegrationTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/integrationTest/TestDataBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/UsuarioServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/UsuarioServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/CajaCorteServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/CajaCorteServiceImplTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/CategoriaServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/CategoriaServiceImplTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/PresentacionServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/PresentacionServiceImplTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/UsuarioServiceImplTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/farmacias/AppOchoa/serviceImplTes/UsuarioServiceImplTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.3/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.3/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.3/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.3/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14.3/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14.3/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/AppOchoa.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/AppOchoa.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/config/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/controller/BaseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/controller/BaseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/AutorizacionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/AutorizacionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/CajaCortesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/CajaCortesRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/CompraRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/CompraRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/SucursalRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/SucursalRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/VentaFelRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/VentaFelRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/VentaPagoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/VentaPagoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/VentaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/repository/VentaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/AutorizacionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/AutorizacionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/CajaCorteServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/CajaCorteServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/CompraServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/CompraServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/SucursalServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/SucursalServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/SuscripcionPagoServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/SuscripcionPagoServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/VentaFelServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/VentaFelServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/VentaPagosServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/VentaPagosServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/VentaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/farmacias/AppOchoa/serviceimpl/VentaServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +117,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.AppOchoaApplication.executor": "Run",
-    "git-widget-placeholder": "feature/refactor-services-impl",
+    "git-widget-placeholder": "develop",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/jo460/IdeaProjects/AppOchoa",
     "node.js.detected.package.eslint": "true",
