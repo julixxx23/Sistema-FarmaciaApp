@@ -78,6 +78,15 @@ public class VentaServiceImpl implements VentaService {
             Producto producto = buscarProducto(farmaciaId, detalleDto.getProductoId());
             InventarioLotes lote = buscarLote(farmaciaId, detalleDto.getLoteId());
 
+            // El lote debe pertenecer al producto indicado: si no, se estaria
+            // descontando stock del lote de un producto y cobrando el precio de
+            // otro (fraude de precios / corrupcion de inventario) (A1).
+            if (lote.getProducto() == null ||
+                    !lote.getProducto().getProductoId().equals(producto.getProductoId())) {
+                throw new BadRequestException(
+                        "El lote " + lote.getLoteNumero() + " no pertenece al producto indicado");
+            }
+
             // El precio lo dicta el servidor, nunca el cliente
             BigDecimal precioUnitario = producto.getProductoPrecioVenta();
 
