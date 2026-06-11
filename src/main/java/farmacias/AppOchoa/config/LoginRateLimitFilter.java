@@ -19,6 +19,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -30,6 +31,15 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
     private static final String LOGIN_PATH    = "/api/v1/auth/login";
     private static final int    MAX_INTENTOS  = 10;           // máximo por ventana
     private static final long   VENTANA_MS    = 60_000L;      // 60 segundos en ms
+
+    // Solo se confía en X-Forwarded-For si la conexión directa viene de uno de
+    // estos hosts. El proxy inverso (Nginx / LB) corre en el mismo host que la
+    // app en el despliegue Docker, así que llega por loopback. Si la conexión
+    // no viene de aquí, el header lo controla el cliente y es spoofeable.
+    private static final Set<String> PROXIES_CONFIABLES = Set.of(
+            "127.0.0.1",
+            "0:0:0:0:0:0:0:1",
+            "::1");
 
     // IP → timestamps de intentos dentro de la ventana actual
     private final ConcurrentHashMap<String, Deque<Long>> intentosPorIp = new ConcurrentHashMap<>();
@@ -84,12 +94,22 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
     }
 
     private String obtenerIp(HttpServletRequest request) {
-        // Respeta cabeceras de proxy inverso (Nginx, DigitalOcean Load Balancer)
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !ip.isBlank()) {
-            return ip.split(",")[0].trim();   // tomar la primera IP (la del cliente real)
+        String remoteAddr = request.getRemoteAddr();
+
+        // Solo se respeta X-Forwarded-For si la conexión directa viene de un proxy
+        // de confianza. De lo contrario el cliente podría enviar una IP distinta en
+        // cada request y evadir el límite por completo (cada intento contaría como
+        // una "IP" nueva). En ese caso se usa la dirección real de la conexión.
+        if (PROXIES_CONFIABLES.contains(remoteAddr)) {
+            String xff = request.getHeader("X-Forwarded-For");
+            if (xff != null && !xff.isBlank()) {
+                // El proxy de confianza appendea la IP real al final de la lista;
+                // las entradas previas pueden ser falsificadas por el cliente.
+                String[] partes = xff.split(",");
+                return partes[partes.length - 1].trim();
+            }
         }
-        return request.getRemoteAddr();
+        return remoteAddr;
     }
 
     private void escribirErrorJson(HttpServletResponse response, long segundosRestantes)

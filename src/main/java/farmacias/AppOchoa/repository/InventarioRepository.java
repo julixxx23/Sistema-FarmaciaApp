@@ -1,9 +1,11 @@
 package farmacias.AppOchoa.repository;
 
 import farmacias.AppOchoa.model.Inventario;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,6 +17,16 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
 
     // Buscar inventario por producto y sucursal
     Optional<Inventario> findByProducto_ProductoIdAndSucursal_SucursalId(Long productoId, Long sucursalId);
+
+    // SELECT ... FOR UPDATE: bloquea la fila del inventario agregado mientras una
+    // venta o compra ajusta inventario_cantidad_actual, igual que se hace con el
+    // lote. Sin lock, dos operaciones concurrentes del mismo producto+sucursal
+    // pierden actualizaciones aunque sus lotes estén bien bloqueados (M9).
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT i FROM Inventario i WHERE i.producto.productoId = :productoId " +
+            "AND i.sucursal.sucursalId = :sucursalId")
+    Optional<Inventario> findByProductoYSucursalForUpdate(@Param("productoId") Long productoId,
+                                                          @Param("sucursalId") Long sucursalId);
 
     // Consultar stock bajo o igual a cierta cantidad - con paginación
     @Query("SELECT i FROM Inventario i WHERE i.inventarioCantidadActual <= :cantidad")

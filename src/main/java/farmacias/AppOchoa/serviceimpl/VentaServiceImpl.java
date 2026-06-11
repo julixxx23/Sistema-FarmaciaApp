@@ -30,6 +30,7 @@ public class VentaServiceImpl implements VentaService {
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
     private final InventarioLotesRepository loteRepository;
+    private final InventarioRepository inventarioRepository;
     private final FarmaciaRepository farmaciaRepository;
 
 
@@ -39,12 +40,14 @@ public class VentaServiceImpl implements VentaService {
             UsuarioRepository usuarioRepository,
             ProductoRepository productoRepository,
             InventarioLotesRepository loteRepository,
+            InventarioRepository inventarioRepository,
             FarmaciaRepository farmaciaRepository) {
         this.ventaRepository = ventaRepository;
         this.sucursalRepository = sucursalRepository;
         this.usuarioRepository = usuarioRepository;
         this.productoRepository = productoRepository;
         this.loteRepository = loteRepository;
+        this.inventarioRepository = inventarioRepository;
         this.farmaciaRepository = farmaciaRepository;
     }
 
@@ -99,9 +102,15 @@ public class VentaServiceImpl implements VentaService {
                 throw new BadRequestException("Stock insuficiente en el lote: " + lote.getLoteNumero());
             }
 
-            // Descuento de inventario
+            // Descuento de inventario por lote
             lote.setLoteCantidadActual(lote.getLoteCantidadActual() - detalleDto.getCantidad());
             loteRepository.save(lote);
+
+            // Mantener sincronizado el inventario agregado (producto+sucursal): es
+            // la fuente que consultan las alertas de stock bajo. Se bloquea después
+            // del lote para conservar un orden de locks consistente (M9).
+            ajustarInventarioAgregado(producto.getProductoId(), sucursal.getSucursalId(),
+                    -detalleDto.getCantidad());
 
             // Cálculos monetarios
             BigDecimal subtotalLinea = precioUnitario.multiply(BigDecimal.valueOf(detalleDto.getCantidad()));
@@ -212,6 +221,10 @@ public class VentaServiceImpl implements VentaService {
                 }
 
                 loteRepository.save(lote);
+
+                // Devolver también la cantidad al inventario agregado (M9)
+                ajustarInventarioAgregado(lote.getProducto().getProductoId(),
+                        lote.getSucursal().getSucursalId(), detalle.getDetalleCantidad());
             }
         }
 
@@ -246,5 +259,19 @@ public class VentaServiceImpl implements VentaService {
     private InventarioLotes buscarLote(Long farmaciaId, Long id) {
         return loteRepository.findByLoteIdAndFarmaciaIdForUpdate(id, farmaciaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Lote no encontrado en tu farmacia ID: " + id));
+    }
+
+    // Aplica un delta (negativo al vender, positivo al anular) sobre el inventario
+    // agregado producto+sucursal, con lock pesimista. En una venta el inventario
+    // siempre debe existir (no se vende sin stock previo); si falta es una
+    // inconsistencia de datos y se aborta antes de torcer más el inventario (M9).
+    private void ajustarInventarioAgregado(Long productoId, Long sucursalId, int delta) {
+        Inventario inventario = inventarioRepository
+                .findByProductoYSucursalForUpdate(productoId, sucursalId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Inventario inexistente para producto " + productoId
+                                + " en sucursal " + sucursalId));
+        inventario.setInventarioCantidadActual(inventario.getInventarioCantidadActual() + delta);
+        inventarioRepository.save(inventario);
     }
 }
