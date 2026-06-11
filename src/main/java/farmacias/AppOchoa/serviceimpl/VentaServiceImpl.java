@@ -128,6 +128,12 @@ public class VentaServiceImpl implements VentaService {
             }
         }
 
+        // El descuento no puede superar el subtotal: un total negativo
+        // permitiria sacar dinero de caja como "vuelto" (M6)
+        if (descuento.compareTo(acumuladorSubtotal) > 0) {
+            throw new BadRequestException("El descuento no puede superar el subtotal de la venta");
+        }
+
         venta.setVentaDescuento(descuento);
         venta.setVentaTotal(acumuladorSubtotal.subtract(descuento));
 

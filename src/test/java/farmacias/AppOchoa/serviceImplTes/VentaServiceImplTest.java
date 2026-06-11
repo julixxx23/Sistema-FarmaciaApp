@@ -2,8 +2,10 @@ package farmacias.AppOchoa.serviceImplTes;
 
 import farmacias.AppOchoa.dto.venta.VentaCreateDTO;
 import farmacias.AppOchoa.dto.venta.VentaResponseDTO;
+import farmacias.AppOchoa.exception.BadRequestException;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.model.Usuario;
+import farmacias.AppOchoa.model.UsuarioRol;
 import farmacias.AppOchoa.model.Venta;
 import farmacias.AppOchoa.model.VentaEstado;
 import farmacias.AppOchoa.repository.FarmaciaRepository;
@@ -11,6 +13,7 @@ import farmacias.AppOchoa.repository.SucursalRepository;
 import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.repository.VentaRepository;
 import farmacias.AppOchoa.serviceimpl.VentaServiceImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +21,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,6 +45,12 @@ public class VentaServiceImplTest {
     private VentaServiceImpl ventaService;
     @Mock
     private FarmaciaRepository farmaciaRepository;
+
+    @AfterEach
+    void limpiarContextoSeguridad() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     @DisplayName("Debebria crear una correcta venta, con los datos ingresados")
     void ventaExitosa(){
@@ -82,6 +93,37 @@ public class VentaServiceImplTest {
         assertEquals(1L, resultado.getVentaId());
         verify(ventaRepository).save(any(Venta.class));
    }
+    @Test
+    @DisplayName("Deberia rechazar un descuento que supera el subtotal de la venta")
+    void descuentoMayorAlSubtotalFalla(){
+
+        Long farmaciaId = 1L;
+        VentaCreateDTO dto = new VentaCreateDTO();
+        dto.setSucursalId(1L);
+        dto.setUsuarioId(1L);
+        dto.setDetalles(new ArrayList<>());
+        dto.setDescuento(BigDecimal.valueOf(50)); // subtotal queda en 0 (sin detalles)
+
+        Sucursal sucursal = new Sucursal();
+        sucursal.setSucursalId(1L);
+
+        Usuario admin = new Usuario();
+        admin.setUsuarioId(1L);
+        admin.setUsuarioRol(UsuarioRol.administrador);
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(admin, null));
+
+        when(usuarioRepository.findByUsuarioIdAndFarmacia_FarmaciaId(1L, farmaciaId)).thenReturn(Optional.of(admin));
+        when(sucursalRepository.findBySucursalIdAndFarmacia_FarmaciaId(1L, farmaciaId)).thenReturn(Optional.of(sucursal));
+
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> ventaService.crear(farmaciaId, dto));
+
+        assertEquals("El descuento no puede superar el subtotal de la venta", ex.getMessage());
+        verify(ventaRepository, never()).save(any(Venta.class));
+    }
+
     @Test
     @DisplayName("Deberia de buscar una venta por ID correctamente ")
     void busquedaVentaExitosa(){
