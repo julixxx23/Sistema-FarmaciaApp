@@ -7,6 +7,7 @@ import farmacias.AppOchoa.dto.compra.CompraUpdateDTO;
 import farmacias.AppOchoa.dto.compradetalle.CompraDetalleCreateDTO;
 import farmacias.AppOchoa.model.*;
 import farmacias.AppOchoa.repository.*;
+import farmacias.AppOchoa.exception.BadRequestException;
 import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.services.CompraService;
 import org.springframework.data.domain.Page;
@@ -160,7 +161,22 @@ public class CompraServiceImpl implements CompraService {
         // Revertir stock si se anula
         if (nuevoEstado == CompraEstado.anulada && compra.getCompraEstado() == CompraEstado.activa) {
             for (CompraDetalle detalle : compra.getDetalles()) {
-                InventarioLotes lote = detalle.getLoteId();
+                // Lock pesimista: evita que una venta concurrente descuente el lote
+                // entre el check y el commit de la anulacion (M5)
+                InventarioLotes lote = loteRepository
+                        .findByLoteIdAndFarmaciaIdForUpdate(detalle.getLoteId().getLoteId(), farmaciaId)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Lote no encontrado en tu farmacia ID: " + detalle.getLoteId().getLoteId()));
+
+                // Si parte de lo comprado ya se vendio, revertir dejaria stock negativo (M5)
+                if (lote.getLoteCantidadActual() < detalle.getDetalleCantidad()) {
+                    throw new BadRequestException(
+                            "No se puede anular la compra: el lote " + lote.getLoteNumero()
+                                    + " ya tiene unidades vendidas (stock actual "
+                                    + lote.getLoteCantidadActual() + ", se necesitan "
+                                    + detalle.getDetalleCantidad() + ")");
+                }
+
                 lote.setLoteCantidadActual(lote.getLoteCantidadActual() - detalle.getDetalleCantidad());
                 loteRepository.save(lote);
             }

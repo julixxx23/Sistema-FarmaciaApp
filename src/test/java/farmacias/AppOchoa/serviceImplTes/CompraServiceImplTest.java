@@ -3,8 +3,11 @@ package farmacias.AppOchoa.serviceImplTes;
 import farmacias.AppOchoa.dto.compra.CompraCreateDTO;;
 import farmacias.AppOchoa.dto.compra.CompraResponseDTO;
 import farmacias.AppOchoa.dto.compra.CompraUpdateDTO;
+import farmacias.AppOchoa.exception.BadRequestException;
 import farmacias.AppOchoa.model.Compra;
+import farmacias.AppOchoa.model.CompraDetalle;
 import farmacias.AppOchoa.model.CompraEstado;
+import farmacias.AppOchoa.model.InventarioLotes;
 import farmacias.AppOchoa.model.Sucursal;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.*;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +43,8 @@ public class CompraServiceImplTest {
     private SucursalRepository sucursalRepository;
     @Mock
     private UsuarioRepository usuarioRepository;
+    @Mock
+    private InventarioLotesRepository loteRepository;
     @InjectMocks
     private CompraServiceImpl compraService;
     @Mock
@@ -107,6 +113,33 @@ public class CompraServiceImplTest {
         verify(compraRepository).save(captor.capture());
         assertEquals(CompraEstado.anulada, captor.getValue().getCompraEstado(), "El estado deber├¡a haber cambiado a INACTIVA");
     }
+    @Test
+    @DisplayName("Deberia rechazar anular una compra cuyo lote ya tiene unidades vendidas")
+    void anularCompraConLoteVendidoFalla(){
+        Long farmaciaId = 1L;
+
+        InventarioLotes lote = new InventarioLotes();
+        lote.setLoteId(1L);
+        lote.setLoteNumero("L-001");
+        lote.setLoteCantidadActual(2); // de las 5 compradas ya se vendieron 3
+
+        CompraDetalle detalle = new CompraDetalle();
+        detalle.setLoteId(lote);
+        detalle.setDetalleCantidad(5);
+
+        Compra compra = new Compra();
+        compra.setCompraId(1L);
+        compra.setCompraEstado(CompraEstado.activa);
+        compra.getDetalles().add(detalle);
+
+        when(compraRepository.findByCompraIdAndFarmacia_FarmaciaId(1L, farmaciaId)).thenReturn(Optional.of(compra));
+        when(loteRepository.findByLoteIdAndFarmaciaIdForUpdate(1L, farmaciaId)).thenReturn(Optional.of(lote));
+
+        assertThrows(BadRequestException.class, () -> compraService.eliminar(farmaciaId, 1L));
+        verify(compraRepository, Mockito.never()).save(any(Compra.class));
+        verify(loteRepository, Mockito.never()).save(any(InventarioLotes.class));
+    }
+
     @Test
     @DisplayName("Deberia de lanzar una excepcion al buscar un ID que no existe")
     void buscarFallo(){

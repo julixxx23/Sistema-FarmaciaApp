@@ -45,6 +45,15 @@ public class Usuario implements UserDetails {
     @Builder.Default
     private Boolean usuarioEstado = true;
 
+    // M2: lockout por intentos fallidos
+    @Column(name = "usuario_intentos_fallidos", nullable = false)
+    @Builder.Default
+    private Integer usuarioIntentosFallidos = 0;
+
+    // Momento hasta el cual la cuenta está bloqueada; null si nunca se bloqueó o ya expiró
+    @Column(name = "usuario_bloqueado_hasta")
+    private LocalDateTime usuarioBloqueadoHasta;
+
     @Column(name = "auditoria_fecha_creacion", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime auditoriaFechaCreacion;
@@ -84,9 +93,12 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isAccountNonExpired() { return true; }
 
-    // AppOchoa no maneja bloqueo por intentos fallidos
+    // M2: la cuenta está bloqueada mientras usuarioBloqueadoHasta esté en el futuro.
+    // Spring Security lanza LockedException antes de comparar la contraseña.
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return usuarioBloqueadoHasta == null || usuarioBloqueadoHasta.isBefore(LocalDateTime.now());
+    }
 
     // AppOchoa no maneja expiración de contraseñas
     @Override
