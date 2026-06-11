@@ -3,8 +3,10 @@ package farmacias.AppOchoa.serviceImplTes;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesCreateDTO;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesResponseDTO;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesSimpleDTO;
+import farmacias.AppOchoa.exception.BadRequestException;
 import farmacias.AppOchoa.model.Caja;
 import farmacias.AppOchoa.model.CajaSesiones;
+import farmacias.AppOchoa.model.SesionEstado;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.CajaRepository;
 import farmacias.AppOchoa.repository.CajaSesionesRepository;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -106,6 +109,42 @@ public class CajaSesionesImplTest {
         assertNotNull(resultado);
         assertEquals(1, resultado.getTotalElements());
 
+    }
+
+    @Test
+    @DisplayName("Deberia cerrar una sesion abierta seteando fecha de cierre y estado")
+    void cerrarSesionExitoso(){
+
+        Long farmaciaId = 1L;
+        CajaSesiones sesion = new CajaSesiones();
+        sesion.setSesionId(1L);
+        sesion.setSesionEstado(SesionEstado.abierta);
+
+        when(cajaSesionesRepository.findBySesionIdAndFarmacia_FarmaciaId(1L, farmaciaId)).thenReturn(Optional.of(sesion));
+        when(cajaSesionesRepository.save(any(CajaSesiones.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        CajaSesionesResponseDTO resultado = cajaSesionesService.cerrar(farmaciaId, 1L);
+
+        assertNotNull(resultado);
+        ArgumentCaptor<CajaSesiones> captor = ArgumentCaptor.forClass(CajaSesiones.class);
+        verify(cajaSesionesRepository).save(captor.capture());
+        assertEquals(SesionEstado.cerrada, captor.getValue().getSesionEstado());
+        assertNotNull(captor.getValue().getSesionFechaCierre());
+    }
+
+    @Test
+    @DisplayName("Deberia rechazar el cierre de una sesion ya cerrada")
+    void cerrarSesionYaCerradaFalla(){
+
+        Long farmaciaId = 1L;
+        CajaSesiones sesion = new CajaSesiones();
+        sesion.setSesionId(1L);
+        sesion.setSesionEstado(SesionEstado.cerrada);
+
+        when(cajaSesionesRepository.findBySesionIdAndFarmacia_FarmaciaId(1L, farmaciaId)).thenReturn(Optional.of(sesion));
+
+        assertThrows(BadRequestException.class, () -> cajaSesionesService.cerrar(farmaciaId, 1L));
+        verify(cajaSesionesRepository, Mockito.never()).save(any(CajaSesiones.class));
     }
 
     @Test
