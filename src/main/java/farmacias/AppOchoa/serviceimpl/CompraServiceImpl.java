@@ -11,6 +11,7 @@ import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.services.CompraService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,10 @@ public class CompraServiceImpl implements CompraService {
     @Override
     public CompraResponseDTO crear(Long farmaciaId, CompraCreateDTO dto) {
         Sucursal sucursal = buscarSucursal(farmaciaId, dto.getSucursalId());
-        Usuario usuario = buscarUsuario(farmaciaId, dto.getUsuarioId());
+
+        // Quien registra la compra es quien esta autenticado, nunca un id del request (M4)
+        Usuario solicitante = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = buscarUsuario(farmaciaId, solicitante.getUsuarioId());
         Farmacia farmacia = farmaciaRepository.getReferenceById(farmaciaId);
 
         // 1. Crear Cabecera

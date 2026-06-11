@@ -51,7 +51,11 @@ public class VentaServiceImpl implements VentaService {
     @Override
     public VentaResponseDTO crear(Long farmaciaId, VentaCreateDTO dto) {
         Sucursal sucursal = buscarSucursal(farmaciaId, dto.getSucursalId());
-        Usuario usuario = buscarUsuario(farmaciaId, dto.getUsuarioId());
+
+        // El cajero es quien esta autenticado, nunca un id del request (M4).
+        // Se re-busca en BD para obtener la entidad managed y validar el tenant.
+        Usuario solicitante = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = buscarUsuario(farmaciaId, solicitante.getUsuarioId());
         Farmacia farmacia = farmaciaRepository.getReferenceById(farmaciaId);
 
         // Crear cabecera de venta
@@ -121,11 +125,10 @@ public class VentaServiceImpl implements VentaService {
         BigDecimal descuento = dto.getDescuento() != null ? dto.getDescuento() : BigDecimal.ZERO;
 
         // Solo un administrador puede aplicar descuentos
-        if (descuento.compareTo(BigDecimal.ZERO) > 0) {
-            Usuario solicitante = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (solicitante.getUsuarioRol() != UsuarioRol.administrador) {
-                throw new BadRequestException("Solo un administrador puede aplicar descuentos");
-            }
+        // (rol leido de BD via buscarUsuario, no del token)
+        if (descuento.compareTo(BigDecimal.ZERO) > 0
+                && usuario.getUsuarioRol() != UsuarioRol.administrador) {
+            throw new BadRequestException("Solo un administrador puede aplicar descuentos");
         }
 
         // El descuento no puede superar el subtotal: un total negativo

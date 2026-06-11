@@ -8,6 +8,7 @@ import farmacias.AppOchoa.model.CajaSesiones;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.serviceimpl.CajaCorteServiceImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -46,6 +49,10 @@ public class CajaCorteServiceImplTest {
     @InjectMocks
     private CajaCorteServiceImpl cajaCorteService;
 
+    @AfterEach
+    void limpiarContextoSeguridad() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     @DisplayName("Deberia crear un corte de caja correctamente")
@@ -57,13 +64,15 @@ public class CajaCorteServiceImplTest {
         //ASSERT
         CajaCorteCreateDTO dto = new CajaCorteCreateDTO();
         dto.setSesionId(1L);
-        dto.setUsuarioSupervisorId(1L);
         dto.setEfectivoFisicoContado(new BigDecimal(800.00));
 
         CajaSesiones cajaSesiones = new CajaSesiones();
         cajaSesiones.setSesionId(1L);
         Usuario usuario = new Usuario();
         usuario.setUsuarioId(1L);
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(usuario, null));
 
         CajaCorte cajaCorte = new CajaCorte();
         cajaCorte.setCorteId(1L);

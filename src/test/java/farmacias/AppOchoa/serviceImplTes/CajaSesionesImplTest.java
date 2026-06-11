@@ -13,6 +13,7 @@ import farmacias.AppOchoa.repository.CajaSesionesRepository;
 import farmacias.AppOchoa.repository.FarmaciaRepository;
 import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.serviceimpl.CajaSesionesServiceImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +52,11 @@ public class CajaSesionesImplTest {
     @InjectMocks
     private CajaSesionesServiceImpl cajaSesionesService;
 
+    @AfterEach
+    void limpiarContextoSeguridad() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     @DisplayName("Deberia de crear un inicio de sesion en un caja exitosamente")
     void crearSesion(){
@@ -57,12 +65,14 @@ public class CajaSesionesImplTest {
 
         //ASSERT
         CajaSesionesCreateDTO dto = new CajaSesionesCreateDTO();
-        dto.setUsuarioId(1L);
         dto.setCajaId(1L);
         dto.setSesionFondoInicial(new BigDecimal(500.00));
 
         Usuario usuario = new Usuario();
         usuario.setUsuarioId(1L);
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(usuario, null));
 
         Caja caja = new Caja();
         caja.setCajaId(1L);

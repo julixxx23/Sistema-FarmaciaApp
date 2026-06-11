@@ -58,7 +58,6 @@ public class VentaServiceImplTest {
         Long farmaciaId = 1L;
         VentaCreateDTO dto = new VentaCreateDTO();
         dto.setSucursalId(1L);
-        dto.setUsuarioId(1L);
         dto.setDetalles(new ArrayList<>());
 
         Sucursal sucursal = new Sucursal();
@@ -69,6 +68,9 @@ public class VentaServiceImplTest {
         usuario.setUsuarioId(1L);
         usuario.setUsuarioNombre("Pamela");
         usuario.setUsuarioApellido("Ochoa");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(usuario, null));
 
         Venta venta = Venta.builder()
                 .ventaId(1L)
@@ -100,7 +102,6 @@ public class VentaServiceImplTest {
         Long farmaciaId = 1L;
         VentaCreateDTO dto = new VentaCreateDTO();
         dto.setSucursalId(1L);
-        dto.setUsuarioId(1L);
         dto.setDetalles(new ArrayList<>());
         dto.setDescuento(BigDecimal.valueOf(50)); // subtotal queda en 0 (sin detalles)
 
