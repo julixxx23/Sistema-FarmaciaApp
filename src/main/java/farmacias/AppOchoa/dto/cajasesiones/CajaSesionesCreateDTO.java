@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 public class CajaSesionesCreateDTO {
     @NotNull(message = "El Id de la caja es obligatorio")
     private Long cajaId;
-    @NotNull(message = "El Id del usuario es obligatorio")
-    private Long usuarioId;
     @NotNull(message = "El monto de apertura es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "El monto de apertura debe ser mayor a 0")
     private BigDecimal sesionFondoInicial;

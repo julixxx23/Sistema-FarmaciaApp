@@ -3,10 +3,12 @@ package farmacias.AppOchoa.serviceimpl;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesCreateDTO;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesResponseDTO;
 import farmacias.AppOchoa.dto.cajasesiones.CajaSesionesSimpleDTO;
+import farmacias.AppOchoa.exception.BadRequestException;
 import farmacias.AppOchoa.exception.ResourceNotFoundException;
 import farmacias.AppOchoa.model.Caja;
 import farmacias.AppOchoa.model.CajaSesiones;
 import farmacias.AppOchoa.model.Farmacia;
+import farmacias.AppOchoa.model.SesionEstado;
 import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.CajaRepository;
 import farmacias.AppOchoa.repository.CajaSesionesRepository;
@@ -15,8 +17,11 @@ import farmacias.AppOchoa.repository.UsuarioRepository;
 import farmacias.AppOchoa.services.CajaSesionesService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -38,7 +43,9 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
     }
     @Override
     public CajaSesionesResponseDTO crear(Long farmaciaId, CajaSesionesCreateDTO dto){
-        Usuario usuario = buscarUsuario(farmaciaId, dto.getUsuarioId());
+        // La sesion la abre quien esta autenticado, nunca un id del request (M4)
+        Usuario solicitante = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = buscarUsuario(farmaciaId, solicitante.getUsuarioId());
         Caja caja = buscarCaja(farmaciaId, dto.getCajaId());
         Farmacia farmacia = farmaciaRepository.getReferenceById(farmaciaId);
 
@@ -51,6 +58,21 @@ public class CajaSesionesServiceImpl implements CajaSesionesService {
 
         return CajaSesionesResponseDTO.fromEntity(cajaSesionesRepository.save(cajaSesiones));
 
+    }
+    @Override
+    public CajaSesionesResponseDTO cerrar(Long farmaciaId, Long id){
+        CajaSesiones sesion = cajaSesionesRepository.findBySesionIdAndFarmacia_FarmaciaId(id, farmaciaId)
+                .orElseThrow(()-> new ResourceNotFoundException("Sesion no encontrada por ID"));
+
+        // No re-cerrar: pisaria la fecha de cierre original (M7)
+        if (sesion.getSesionEstado() == SesionEstado.cerrada) {
+            throw new BadRequestException("La sesión ya está cerrada");
+        }
+
+        sesion.setSesionFechaCierre(LocalDateTime.now());
+        sesion.setSesionEstado(SesionEstado.cerrada);
+
+        return CajaSesionesResponseDTO.fromEntity(cajaSesionesRepository.save(sesion));
     }
     //Metodos Auxiliares
     private Usuario buscarUsuario(Long farmaciaId, Long id){

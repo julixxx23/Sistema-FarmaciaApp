@@ -48,6 +48,11 @@ public class CajaSesionesController extends BaseController{
         return ResponseEntity.status(HttpStatus.CREATED).body(cajaSesionesService.crear(getFarmaciaId(), dto));
     }
 
+    @PatchMapping("/{id}/cerrar")
+    public ResponseEntity<CajaSesionesResponseDTO> cerrar(@PathVariable Long id){
+        return ResponseEntity.ok(cajaSesionesService.cerrar(getFarmaciaId(), id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id){
         cajaSesionesService.eliminar(getFarmaciaId(), id);

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface CajaSesionesService {
     CajaSesionesResponseDTO crear(Long farmaciaId, CajaSesionesCreateDTO dto);
+    CajaSesionesResponseDTO cerrar(Long farmaciaId, Long id);
     CajaSesionesResponseDTO buscarPorId(Long farmaciaId, Long id);
     Page<CajaSesionesSimpleDTO> listarSesiones(Long farmaciaId, Pageable pageable);
     Page<CajaSesionesSimpleDTO> buscarPorTexto(Long farmaciaId, String texto, Pageable pageable);

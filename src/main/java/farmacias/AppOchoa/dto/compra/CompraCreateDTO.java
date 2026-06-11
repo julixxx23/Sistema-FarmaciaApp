@@ -19,9 +19,6 @@ public class CompraCreateDTO {
     @NotNull(message = "La sucursal es obligatoria")
     private Long sucursalId;
 
-    @NotNull(message = "El usuario es obligatorio")
-    private Long usuarioId;
-
     @NotNull(message = "La fecha de compra es obligatoria")
     private LocalDate fechaCompra;
 

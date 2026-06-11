@@ -17,10 +17,6 @@ public class VentaCreateDTO {
     @NotNull(message = "La sucursal es obligatoria")
     private Long sucursalId;
 
-    @NotNull(message = "El usuario es obligatorio")
-    private Long usuarioId;
-
-
     @NotBlank(message = "El NIT del cliente es obligatorio")
     @Size(max = 20, message = "El NIT no debe exceder 20 caracteres")
     @Pattern(regexp = "^(CF|[0-9]{1,13}(-[0-9K])?)$",

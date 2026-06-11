@@ -10,6 +10,7 @@ import farmacias.AppOchoa.model.Usuario;
 import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.serviceimpl.CompraServiceImpl;
 import org.hibernate.cache.spi.AbstractCacheTransactionSynchronization;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,6 +43,12 @@ public class CompraServiceImplTest {
     private CompraServiceImpl compraService;
     @Mock
     private FarmaciaRepository farmaciaRepository;
+
+    @AfterEach
+    void limpiarContextoSeguridad() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     @DisplayName("Deberia de crear una compra correctamente con los datos registrados")
     void crearCompraExitosa(){
@@ -47,7 +56,6 @@ public class CompraServiceImplTest {
         CompraCreateDTO dto = new CompraCreateDTO();
         dto.setFechaCompra(LocalDate.of(2024, 2, 6));
         dto.setSucursalId(1L);
-        dto.setUsuarioId(1L);
         dto.setDetalles(new ArrayList<>());
 
         Sucursal sucursal = new Sucursal();
@@ -58,6 +66,9 @@ public class CompraServiceImplTest {
         usuario.setUsuarioId(1L);
         usuario.setNombreUsuarioUsuario("JuaSolu");
         usuario.setUsuarioNombre("Julian");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(usuario, null));
 
         Compra compra = Compra.builder()
                 .compraId(1L)

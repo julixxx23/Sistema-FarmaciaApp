@@ -9,6 +9,7 @@ import farmacias.AppOchoa.repository.*;
 import farmacias.AppOchoa.services.CajaCorteService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +41,11 @@ public class CajaCorteServiceImpl implements CajaCorteService {
     @Override
     public CajaCorteResponseDTO crear(Long farmaciaId, CajaCorteCreateDTO dto) {
         CajaSesiones cajaSesiones = buscarSesiones(farmaciaId, dto.getSesionId());
-        Usuario usuario = buscarUsuario(farmaciaId, dto.getUsuarioSupervisorId());
+
+        // El corte lo registra el cajero autenticado; no hay supervisor en tiempo
+        // real, el admin revisa los cortes despues desde los reportes (M4)
+        Usuario solicitante = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Usuario usuario = buscarUsuario(farmaciaId, solicitante.getUsuarioId());
 
         BigDecimal totalCredito = ventaPagoRepository.sumarPorSesionYMetodo(cajaSesiones.getSesionId(), MetodoPagoEstado.tarjetaDeCredito);
         BigDecimal totalDebito = ventaPagoRepository.sumarPorSesionYMetodo(cajaSesiones.getSesionId(), MetodoPagoEstado.tarjetaDeDebito);
