@@ -28,6 +28,7 @@ public class CompraServiceImpl implements CompraService {
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
     private final InventarioLotesRepository loteRepository;
+    private final InventarioRepository inventarioRepository;
     private final FarmaciaRepository farmaciaRepository;
 
     public CompraServiceImpl(
@@ -36,12 +37,14 @@ public class CompraServiceImpl implements CompraService {
             UsuarioRepository usuarioRepository,
             ProductoRepository productoRepository,
             InventarioLotesRepository loteRepository,
+            InventarioRepository inventarioRepository,
             FarmaciaRepository farmaciaRepository) {
         this.compraRepository = compraRepository;
         this.sucursalRepository = sucursalRepository;
         this.usuarioRepository = usuarioRepository;
         this.productoRepository = productoRepository;
         this.loteRepository = loteRepository;
+        this.inventarioRepository = inventarioRepository;
         this.farmaciaRepository = farmaciaRepository;
     }
 
@@ -85,9 +88,13 @@ public class CompraServiceImpl implements CompraService {
                             .sucursal(sucursal)
                             .build());
 
-            // Aumentar stock
+            // Aumentar stock del lote
             lote.setLoteCantidadActual(lote.getLoteCantidadActual() + detDto.getCantidad());
             loteRepository.save(lote);
+
+            // Mantener sincronizado el inventario agregado (producto+sucursal),
+            // creándolo si la compra es el primer ingreso de stock de ese par (M9)
+            ajustarInventarioAgregado(farmacia, producto, sucursal, detDto.getCantidad());
 
             // Cálculos
             BigDecimal subtotal = detDto.getPrecioUnitario().multiply(BigDecimal.valueOf(detDto.getCantidad()));
@@ -179,6 +186,13 @@ public class CompraServiceImpl implements CompraService {
 
                 lote.setLoteCantidadActual(lote.getLoteCantidadActual() - detalle.getDetalleCantidad());
                 loteRepository.save(lote);
+
+                // Revertir también la cantidad del inventario agregado (M9).
+                // El inventario ya existe (la compra original lo creó/incrementó), así
+                // que la farmacia solo se usaría al crear: la tomamos del lote, que
+                // siempre la tiene seteada.
+                ajustarInventarioAgregado(lote.getFarmacia(),
+                        lote.getProducto(), lote.getSucursal(), -detalle.getDetalleCantidad());
             }
         }
 
@@ -206,5 +220,24 @@ public class CompraServiceImpl implements CompraService {
         return productoRepository.findById(id)
                 .filter(p -> p.getFarmacia().getFarmaciaId().equals(farmaciaId))
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado en tu farmacia ID: " + id));
+    }
+
+    // Aplica un delta sobre el inventario agregado producto+sucursal, con lock
+    // pesimista. Si la compra es el primer ingreso de stock de ese par, no existe
+    // todavía la fila Inventario y se crea (cantidad mínima por defecto 0). Se
+    // bloquea después del lote para conservar un orden de locks consistente (M9).
+    private void ajustarInventarioAgregado(Farmacia farmacia, Producto producto, Sucursal sucursal, int delta) {
+        Inventario inventario = inventarioRepository
+                .findByProductoYSucursalForUpdate(producto.getProductoId(), sucursal.getSucursalId())
+                .orElseGet(() -> Inventario.builder()
+                        .producto(producto)
+                        .sucursal(sucursal)
+                        .farmacia(farmacia)
+                        .inventarioCantidadActual(0)
+                        .inventarioCantidadMinima(0)
+                        .build());
+
+        inventario.setInventarioCantidadActual(inventario.getInventarioCantidadActual() + delta);
+        inventarioRepository.save(inventario);
     }
 }
