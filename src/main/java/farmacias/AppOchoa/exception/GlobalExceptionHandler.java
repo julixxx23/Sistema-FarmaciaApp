@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -41,6 +42,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<Object> manejarUsuarioDesactivado(DisabledException ex, WebRequest request) {
         return construirRespuesta(HttpStatus.UNAUTHORIZED, "La cuenta de usuario está desactivada", request);
+    }
+
+    // M2: cuenta bloqueada temporalmente por intentos fallidos
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<Object> manejarCuentaBloqueada(LockedException ex, WebRequest request) {
+        return construirRespuesta(HttpStatus.UNAUTHORIZED,
+                "Cuenta bloqueada temporalmente por demasiados intentos fallidos. Intenta de nuevo en unos minutos.",
+                request);
     }
 
     @ExceptionHandler(BadRequestException.class)
